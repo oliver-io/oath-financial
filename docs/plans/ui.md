@@ -79,29 +79,21 @@ crossover link is shareable.
   navbar and persists across tab switches (URL state unchanged in shape — tabs are the
   existing routes).
 
-### `/` Dashboard (revision — user directive: findings + top visuals + category cards)
-The landing page is a **dashboard**, three zones top to bottom:
-1. **Finding cards** (≤8, ranked by actionability): one-sentence claim ("Portal auth
-  failures spiked 10× Mar 29–31, touching 63 sessions and all 7 auditors"), audience tag
-  (OPS/PRODUCT), one supporting number or 30px sparkline, provenance chip, and an
-  **"open →"** button landing on the relevant page *with filters pre-set*
-  (e.g. `/ops?signature=portal-auth-403&range=03-28..04-01`).
-2. **Top-level visuals** — the two or three most useful whole-dataset charts, compact:
-  the failure time series with incident bands (ops headline), the job-type share bar
-  (product headline), and the daily-activity strip. Each is the same component as its
-  room's full version, rendered compact and click-through to its tab.
-3. **Category cards** — one card per sub-category (Failures, Environments, Rhythm,
-  Usage, Outcomes, Agent), nicely arranged in a grid: room-colored accent, the page's
-  named question as the description ("Do tasks finish, and what do they cost in human
-  interactions?"), one live summary stat, and the whole card is the link. Ghost cards
-  (cost, latency) sit in the same grid, greyed with their one-line explanations.
-- Cards are generated from **threshold rules over the derived tables** (top signature by
-  session-spread, top capability gap by cost, job-concentration, outcome anomalies) — not
-  hand-written prose, so they survive new data (resolved — §7: rules, emitted by the
-  ETL as `ref/findings`).
-- Two **disabled ghost cards**: "Cost analysis" and "Tool latency" — greyed, one line
-  each on why this telemetry cannot support them (README traps 2 & 5). Taste about what
-  not to build, made visible.
+### `/` Hub (revision 2 — user directive 2026-08-22: hub/router, not a dashboard)
+The landing page is a **hub/router** to the two rooms — no finding cards, no charts:
+- Title + one-line subtitle framing "one dataset, two rooms".
+- Two side-by-side **room cards** — "Ops — system health" (steel-blue accent) and
+  "Product — the work" (teal-green accent) — each with its framing question and its
+  sub-categories (Ops: Failures & incidents, Environments, Working rhythm; Product:
+  Usage, Outcomes, Agent behavior) as navigation entries with one-line descriptions.
+- A **deliberately-not-built caption** (cost/token analysis, per-tool latency) with
+  reasons — README traps 2 & 5, made visible.
+- Shared header (time-window control + Ops/Product tabs) and run/rules-version footer.
+
+Superseded revision 1 (dashboard: ranked finding cards + compact headline visuals +
+category-card grid) is preserved in git history; the finding cards and headline charts
+live in their rooms instead. `ref/findings` remains an ETL output; the hub does not
+render it.
 
 ### `/ops` Failures & incidents
 - **Failure time series** (stacked bar, x=day, y=error events, color=signature_class,
