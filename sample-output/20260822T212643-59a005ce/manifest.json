@@ -1,0 +1,457 @@
+{
+  "run_id": "20260822T212643-59a005ce",
+  "published_at": "2026-08-22T21:26:43.231Z",
+  "date_coverage": {
+    "start_day": "2026-03-02",
+    "end_day": "2026-04-01"
+  },
+  "partitions": [
+    {
+      "table": "tool_events",
+      "day": "2026-03-02",
+      "path": "facts/tool_events/day=2026-03-02.parquet",
+      "rows": 124
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-03",
+      "path": "facts/tool_events/day=2026-03-03.parquet",
+      "rows": 45
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-04",
+      "path": "facts/tool_events/day=2026-03-04.parquet",
+      "rows": 119
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-08",
+      "path": "facts/tool_events/day=2026-03-08.parquet",
+      "rows": 235
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-09",
+      "path": "facts/tool_events/day=2026-03-09.parquet",
+      "rows": 152
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-10",
+      "path": "facts/tool_events/day=2026-03-10.parquet",
+      "rows": 135
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-11",
+      "path": "facts/tool_events/day=2026-03-11.parquet",
+      "rows": 234
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-12",
+      "path": "facts/tool_events/day=2026-03-12.parquet",
+      "rows": 458
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-15",
+      "path": "facts/tool_events/day=2026-03-15.parquet",
+      "rows": 29
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-16",
+      "path": "facts/tool_events/day=2026-03-16.parquet",
+      "rows": 76
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-17",
+      "path": "facts/tool_events/day=2026-03-17.parquet",
+      "rows": 216
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-18",
+      "path": "facts/tool_events/day=2026-03-18.parquet",
+      "rows": 31
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-19",
+      "path": "facts/tool_events/day=2026-03-19.parquet",
+      "rows": 208
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-20",
+      "path": "facts/tool_events/day=2026-03-20.parquet",
+      "rows": 158
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-22",
+      "path": "facts/tool_events/day=2026-03-22.parquet",
+      "rows": 127
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-23",
+      "path": "facts/tool_events/day=2026-03-23.parquet",
+      "rows": 461
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-24",
+      "path": "facts/tool_events/day=2026-03-24.parquet",
+      "rows": 76
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-25",
+      "path": "facts/tool_events/day=2026-03-25.parquet",
+      "rows": 484
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-26",
+      "path": "facts/tool_events/day=2026-03-26.parquet",
+      "rows": 417
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-28",
+      "path": "facts/tool_events/day=2026-03-28.parquet",
+      "rows": 85
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-29",
+      "path": "facts/tool_events/day=2026-03-29.parquet",
+      "rows": 572
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-30",
+      "path": "facts/tool_events/day=2026-03-30.parquet",
+      "rows": 894
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-31",
+      "path": "facts/tool_events/day=2026-03-31.parquet",
+      "rows": 938
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-04-01",
+      "path": "facts/tool_events/day=2026-04-01.parquet",
+      "rows": 282
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-02",
+      "path": "facts/turns/day=2026-03-02.parquet",
+      "rows": 10
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-03",
+      "path": "facts/turns/day=2026-03-03.parquet",
+      "rows": 7
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-04",
+      "path": "facts/turns/day=2026-03-04.parquet",
+      "rows": 20
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-08",
+      "path": "facts/turns/day=2026-03-08.parquet",
+      "rows": 40
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-09",
+      "path": "facts/turns/day=2026-03-09.parquet",
+      "rows": 33
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-10",
+      "path": "facts/turns/day=2026-03-10.parquet",
+      "rows": 30
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-11",
+      "path": "facts/turns/day=2026-03-11.parquet",
+      "rows": 47
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-12",
+      "path": "facts/turns/day=2026-03-12.parquet",
+      "rows": 23
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-15",
+      "path": "facts/turns/day=2026-03-15.parquet",
+      "rows": 5
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-16",
+      "path": "facts/turns/day=2026-03-16.parquet",
+      "rows": 11
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-17",
+      "path": "facts/turns/day=2026-03-17.parquet",
+      "rows": 35
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-18",
+      "path": "facts/turns/day=2026-03-18.parquet",
+      "rows": 5
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-19",
+      "path": "facts/turns/day=2026-03-19.parquet",
+      "rows": 17
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-20",
+      "path": "facts/turns/day=2026-03-20.parquet",
+      "rows": 10
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-22",
+      "path": "facts/turns/day=2026-03-22.parquet",
+      "rows": 13
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-23",
+      "path": "facts/turns/day=2026-03-23.parquet",
+      "rows": 54
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-24",
+      "path": "facts/turns/day=2026-03-24.parquet",
+      "rows": 6
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-25",
+      "path": "facts/turns/day=2026-03-25.parquet",
+      "rows": 42
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-26",
+      "path": "facts/turns/day=2026-03-26.parquet",
+      "rows": 49
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-28",
+      "path": "facts/turns/day=2026-03-28.parquet",
+      "rows": 7
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-29",
+      "path": "facts/turns/day=2026-03-29.parquet",
+      "rows": 73
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-30",
+      "path": "facts/turns/day=2026-03-30.parquet",
+      "rows": 85
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-31",
+      "path": "facts/turns/day=2026-03-31.parquet",
+      "rows": 95
+    },
+    {
+      "table": "turns",
+      "day": "2026-04-01",
+      "path": "facts/turns/day=2026-04-01.parquet",
+      "rows": 46
+    }
+  ],
+  "ref": [
+    {
+      "table": "sessions",
+      "path": "ref/sessions.parquet",
+      "rows": 116
+    },
+    {
+      "table": "failure_signatures",
+      "path": "ref/failure_signatures.parquet",
+      "rows": 9
+    },
+    {
+      "table": "incidents",
+      "path": "ref/incidents.parquet",
+      "rows": 7
+    },
+    {
+      "table": "capability_gaps",
+      "path": "ref/capability_gaps.parquet",
+      "rows": 3
+    },
+    {
+      "table": "gap_sessions",
+      "path": "ref/gap_sessions.parquet",
+      "rows": 76
+    },
+    {
+      "table": "findings",
+      "path": "ref/findings.parquet",
+      "rows": 2
+    },
+    {
+      "table": "auditor_timeline",
+      "path": "ref/auditor_timeline.parquet",
+      "rows": 70
+    },
+    {
+      "table": "dims",
+      "path": "ref/dims.parquet",
+      "rows": 39
+    }
+  ],
+  "enrichment": {},
+  "rule_versions": {
+    "signatures": "sig-v1",
+    "tool_families": "fam-v0",
+    "thresholds": "thr-v2",
+    "findings": "fnd-v1"
+  },
+  "stated_params": {
+    "gap_cap_s": 1800,
+    "quick_restart_window_s": 3600,
+    "matched_snippet_radius_chars": 300,
+    "incident_excursion_multiplier": 4,
+    "small_n_call_threshold": 5,
+    "grind_run_threshold": 20
+  },
+  "created_at": "2026-08-22T21:26:43.231Z",
+  "git_rev": null,
+  "input_hashes": {
+    "traces.jsonl": "5afa3f226fb588c7c6b6baceec474affe7851c0c91e11e8c9db6a77ee309f4d4",
+    "observations.jsonl": "a94d4c47f429742a873dce3acc48300b009439590bb5db3ec8d1c9a9b6b64fdb"
+  },
+  "rule_hashes": {
+    "signatures.yaml": "fb48a40d935b0a142df96a214d7a45149e8cf2b50fa4cf1034db6cee48ce5cc6",
+    "tool_families.yaml": "691051dba56374840b46ef82ca6deb98615e4989aaea7729f5d4e4184e2228d8",
+    "thresholds.yaml": "c37735c3d32a08134ae11e125f38e899ed7d836ba7ae4aeb8dec790cb4e1c8d8",
+    "findings.yaml": "0d860d78008b154a5851f69486a86f542c7bedef502a46702f61d9759b1b7ffc"
+  },
+  "thresholds": {
+    "version": "thr-v2",
+    "gap_cap_s": 1800,
+    "quick_restart_window_s": 3600,
+    "matched_snippet_radius_chars": 300,
+    "incident_excursion_multiplier": 4,
+    "fork_lockstep_threshold_s": 600,
+    "small_n_call_threshold": 5,
+    "grind_run_threshold": 20,
+    "enrichment": {
+      "max_transport_attempts": 6,
+      "backoff_base_ms": 250
+    },
+    "j5": {
+      "unmatched_sample_n": 150,
+      "matched_sample_m": 100,
+      "seed": 20260401
+    },
+    "markers": {
+      "task_notification": "<task-notification>",
+      "skill_body": "Base directory for this skill:",
+      "extract_paste": "Here's the extract I'm working from:"
+    },
+    "correction_candidate": {
+      "max_typed_chars": 80,
+      "max_gap_s": 120
+    }
+  },
+  "stages": [
+    {
+      "stage": "s0_raw",
+      "row_counts": {
+        "raw.traces": 763,
+        "raw.observations": 8082
+      },
+      "gates": [
+        {
+          "gate": "raw_spot_check",
+          "passed": true,
+          "detail": null
+        }
+      ],
+      "wall_ms": 191.23169999999993
+    },
+    {
+      "stage": "s1_clean",
+      "row_counts": {
+        "clean.turns": 763,
+        "clean.observations": 8082
+      },
+      "gates": [
+        {
+          "gate": "referential_integrity",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "gate": "fork_detector",
+          "passed": true,
+          "detail": null
+        }
+      ],
+      "wall_ms": 299.8053
+    },
+    {
+      "stage": "s2_derive",
+      "row_counts": {
+        "derive.tool_events": 6556,
+        "derive.turns": 763,
+        "derive.sessions": 116
+      },
+      "gates": [],
+      "wall_ms": 329.79690000000005
+    },
+    {
+      "stage": "s4_aggregate",
+      "row_counts": {
+        "agg.failure_verdicts": 6556,
+        "agg.failure_signatures": 9,
+        "agg.incidents": 7,
+        "agg.auditor_timeline": 70,
+        "agg.gap_sessions": 76,
+        "agg.capability_gaps": 3
+      },
+      "gates": [],
+      "wall_ms": 125.57659999999987
+    }
+  ],
+  "model_ids": {},
+  "prompt_versions": {}
+}
