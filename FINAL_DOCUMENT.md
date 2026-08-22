@@ -30,4 +30,4 @@ I started with a rough sketch of my own architecture, built that into a spec.  A
 - In the flow state of step 6, above, around 3:30 and waiting on implementor loops for the most part.  
 - Will rock a deploy as soon as the infra lands.  Reviewing mostly, finding UI nitpicks.
 - Infra agent deploying around 4:15.
-- Hey, site's up at 4:23.
+- Hey, site's up at 4:23 serving the fake data.  Yet to run the entire LLM enrichment pipeline for the real ETL.

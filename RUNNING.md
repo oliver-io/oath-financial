@@ -1,15 +1,12 @@
 # Running the tool
 
-> Status note: the ETL and app tracks are being built (see `docs/_HANDOFF.md`,
-> `docs/_HANDOFF_APP.md`). The commands below are the stable contract those tracks
-> implement; this file is updated as they land.
-
 ## Prerequisites
 
 - [Bun](https://bun.sh) ≥ 1.1 (runtime, package manager, test runner — no Node needed)
 - Optional, for LLM enrichment only: an OpenAI-compatible API key
-  (`OPENAI_API_KEY`, optional `OPENAI_BASE_URL`) — **the pipeline runs fully without
-  it** in degraded (rule-only) mode.
+  (`OPENAI_API_KEY`; optional `OPENAI_BASE_URL`, `ETL_MODEL_FAST`,
+  `ETL_MODEL_STRONG`) — **the pipeline runs fully without it** in degraded
+  (rule-only) mode.
 
 ```
 bun install
@@ -18,15 +15,17 @@ bun install
 ## Pipeline (offline, produces everything the app reads)
 
 ```
-bun etl run --no-enrich     # deterministic pipeline: stages 0–2, 4–5 (no API needed)
-bun etl run                 # full run incl. LLM enrichment (cached; <1,500 calls)
-bun test                    # integration test suite (no network; no credentials)
+bun run etl run --no-enrich   # deterministic pipeline: stages 0–2, 4–5 (no API needed)
+bun run etl run               # full run incl. LLM enrichment (cached; <1,500 calls)
+bun run etl enrich --job J3   # run/resume one enrichment job (J1..J5)
+bun run etl run --sqlite      # also writes build/inspect.sqlite (local inspection only)
+bun run test:etl              # ETL integration suite (no network; no credentials)
 ```
 
 Output: `build/serve/` — time-partitioned Parquet + `manifest.json` + `latest.json`.
 This tree is both what the app serves and the machine-readable deliverable ("structured
 output" per the challenge README); a committed sample run from the provided data lives
-in `sample-output/` once ETL milestone M2 lands.
+in `sample-output/` (degraded mode — enrichment columns NULL by design).
 
 ## App
 
