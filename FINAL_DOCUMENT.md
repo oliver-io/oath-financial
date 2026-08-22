@@ -14,3 +14,13 @@ The data we have right now resembles something like a daily output dump, so I'm 
 
 # Architecture Caveats
 - This is not meant for live data ingestion or massive payloads (something like viewing years of the raw output at once).  If it were, the constraints change.  I would fall back to something like Elasticsearch with stored queries on the frontend and a cache layer; for the analysis jobs that require loading potentially massive amounts of data into memory, an ECS task group that runs on a schedule and builds data reports back into Elasticsearch.  However, for the kind of data up to orders of magnitude more, this architecture is fine.
+
+# My Process
+
+I started with a rough sketch of my own architecture, built that into a spec.  At this point, fire up Claude Code (Fable) and separate this into work tracks and documents that are relevant to the different parallelizable work tracks:
+1) An over-arching agent helping me watch the other agents, where I work on reviewing output and improving specs, plans, etc. in live time.
+    2) An agent in a guided loop working on the spec for data ingestion and ETL digestion
+    3) An agent in a guided loop working on the spec for the frontend application
+    4) An agent in a guided loop working on the spec for the AWS deployment
+    5) An ad-hoc agent doing some adversarial review and visual double-checks with Gemini (Gemini has better eyes than Claude).
+6) Me: reading code as though in the Matrix(tm), double-checking Claude convos, and loading the actual app to act like a QA professional.  Bounce back and forth between step 1 and use it to present me with the junctures in 2-5 need review or next-steps.
