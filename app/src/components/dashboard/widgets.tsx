@@ -1,94 +1,126 @@
-// Widget registry for the room dashboards (user directive): each widget is a
-// self-contained compact render of a construct from one of the room's
-// sub-pages — the sub-page keeps the focused report; the dashboard tile links
-// back to it. Every renderer fetches its own rows through the same queries.ts
-// entries the full pages use, so semantics cannot fork.
+// The PANEL REGISTRY (user directive): every construct is a panel with a
+// full DETAIL view (rendered on its page via <PanelSection>) and a WIDGET
+// view (a summary for the dashboard — or the detail itself where a construct
+// can't be summarized). Pinning happens on the page; the dashboard tile's
+// title links back to the anchored detail. One title per panel, used in both
+// places, so names can never diverge.
 
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import { useFilters, useRows, useWindow } from "../../data/DataContext.tsx";
+import { useData, useFilters, useRows, useWindow } from "../../data/DataContext.tsx";
 import {
-  AuditorDaySchema,
   AuthOverheadSchema,
   DashboardStatsSchema,
-  FailureSeriesPointSchema,
-  IncidentRowQ,
-  JobShareSchema,
-  OutcomeCountSchema,
-  qAuditorDaily,
   qAuthOverhead,
   qDashboardStats,
-  qFailureSeries,
-  qIncidents,
-  qJobShare,
-  qOutcomesByJob,
 } from "../../data/queries.ts";
-import { count } from "../../fmt.ts";
+import { count, duration } from "../../fmt.ts";
 import type { Side } from "../../state/pins.ts";
 import { DEFAULT_FILTERS, filtersToSearch } from "../../state/urlState.ts";
-import { ActivityStrips } from "../ops/ActivityStrips.tsx";
-import { FailureTimeSeries } from "../ops/FailureTimeSeries.tsx";
-import { JobShareBar } from "../product/JobShareBar.tsx";
-import { OutcomeBars } from "../product/OutcomeBars.tsx";
-import { Skeleton } from "../shared/honesty.tsx";
+import {
+  ActivityStripsPanel,
+  BoutProfilePanel,
+  EnvHeatmapPanel,
+  FailureSeriesPanel,
+  IntegrityStripPanel,
+  QuickRestartsPanel,
+  SignatureTablePanel,
+  SignatureTableWidget,
+  SpanScatterPanel,
+} from "../ops/panels.tsx";
+import {
+  AuditorClientGridPanel,
+  CorrectionFeedPanel,
+  FamilyAdoptionPanel,
+  FamilyShapesPanel,
+  FrictionTablePanel,
+  GapLedgerPanel,
+  GrindTablePanel,
+  GrindThresholdParam,
+  InteractionStripPanel,
+  JobSharePanel,
+  LobTimelinePanel,
+  OutcomeBarsPanel,
+  RepeatChainsPanel,
+} from "../product/panels.tsx";
+import { ProvenanceChip, Skeleton, StatedParam } from "../shared/honesty.tsx";
 
 export interface WidgetDef {
   id: string;
   side: Side;
+  /** The one name: section title on the page AND tile title on the board. */
   title: string;
-  /** The sub-page carrying the focused report; the tile header links here. */
+  /** The page carrying the detail view; tiles link to `source#panel-<id>`. */
   source: string;
-  /** Content-fitted flex sizing: stat tiles pack several per row, half
-   * widgets pair up, full widgets take the whole row. */
+  /** Widget sizing: stat tiles pack, half pair up, full take the row. */
   size: "stat" | "half" | "full";
-  render: () => ReactNode;
+  /** Provenance chips / ⚙ stated params shown beside the title. */
+  chip?: () => ReactNode;
+  /** The full construct, rendered on its page. */
+  detail: () => ReactNode;
+  /** The dashboard summary; omitted = the detail renders on the board too. */
+  widget?: () => ReactNode;
 }
 
-// ---- widget renderers (each fetches its own data) ---------------------------
+// ---- shared chrome bits -----------------------------------------------------
 
-function FailureSeriesWidget() {
-  const win = useWindow();
-  const filters = useFilters();
-  const series = useRows(FailureSeriesPointSchema, qFailureSeries(win, filters), win);
-  const incidents = useRows(IncidentRowQ, qIncidents(), null);
-  if (series.loading || incidents.loading) return <Skeleton progress={series.fetchProgress} />;
-  if (!series.rows || !incidents.rows) return null;
+function GapCapParam() {
+  const { manifest } = useData();
   return (
-    <FailureTimeSeries
-      points={series.rows}
-      incidents={incidents.rows}
-      win={win}
-      filters={filters}
+    <StatedParam
+      label="gap cap"
+      value={duration(manifest.stated_params.gap_cap_s)}
+      rationale="Inter-turn gaps above this cap are treated as absence: they end a bout and are excluded from engaged-time sums. Some sub-cap gaps contain agent background work, so 'engaged' still overclaims slightly."
     />
   );
 }
 
-function ActivityStripsWidget() {
-  const win = useWindow();
-  const filters = useFilters();
-  const daily = useRows(AuditorDaySchema, qAuditorDaily(win, filters), win);
-  if (daily.loading) return <Skeleton progress={daily.fetchProgress} />;
-  return daily.rows ? <ActivityStrips rows={daily.rows} win={win} compact /> : null;
+function QuickRestartParam() {
+  const { manifest } = useData();
+  return (
+    <StatedParam
+      label="quick-restart window"
+      value={duration(manifest.stated_params.quick_restart_window_s)}
+      rationale="A new session by the same auditor within this window of the previous one. Explicitly NOT a continuation claim — the next session is presumed a distinct task."
+    />
+  );
 }
 
-function JobShareWidget() {
-  const win = useWindow();
-  const filters = useFilters();
-  const jobShare = useRows(JobShareSchema, qJobShare(win, filters), null);
-  if (jobShare.loading) return <Skeleton />;
-  return jobShare.rows ? <JobShareBar rows={jobShare.rows} compact /> : null;
-}
+// ---- stat renderers ---------------------------------------------------------
 
-function OutcomeBarsWidget() {
+function StatWidget({
+  pick,
+  label,
+  caption,
+}: {
+  pick: (s: {
+    failure_events: number;
+    active_clients: number;
+    active_auditors: number;
+    turns: number;
+    determined: number;
+    contained: number;
+    chain_turns: number;
+  }) => string;
+  label: string;
+  caption: string;
+}) {
   const win = useWindow();
   const filters = useFilters();
-  const outcomes = useRows(OutcomeCountSchema, qOutcomesByJob(win, filters), null);
-  if (outcomes.loading) return <Skeleton />;
-  return outcomes.rows ? <OutcomeBars rows={outcomes.rows} /> : null;
+  const stats = useRows(DashboardStatsSchema, qDashboardStats(win, filters), win);
+  const s = stats.rows?.[0];
+  if (stats.loading) return <Skeleton lines={2} />;
+  return (
+    <div>
+      <div className="text-2xl font-semibold tabular text-ink">{s ? pick(s) : "—"}</div>
+      <div className="text-[11px] text-ink-3">{label}</div>
+      <div className="mt-1 text-[10px] text-ink-3">{caption}</div>
+    </div>
+  );
 }
 
 /** Auth overhead: sessions touched by portal-auth failures, with the ops
- * crossover (ui.md §4 pattern — always a visible chip, never a merged view). */
+ * crossover chip (ui.md §4 — always a visible chip, never a merged view). */
 function AuthOverheadWidget() {
   const win = useWindow();
   const filters = useFilters();
@@ -121,56 +153,99 @@ function AuthOverheadWidget() {
   );
 }
 
-/** One stat tile off the shared dashboard-stats query. */
-function StatWidget({
-  pick,
-  label,
-  caption,
-}: {
-  pick: (s: {
-    failure_events: number;
-    active_clients: number;
-    active_auditors: number;
-    turns: number;
-    determined: number;
-    contained: number;
-    chain_turns: number;
-  }) => string;
-  label: string;
-  caption: string;
-}) {
-  const win = useWindow();
-  const filters = useFilters();
-  const stats = useRows(DashboardStatsSchema, qDashboardStats(win, filters), win);
-  const s = stats.rows?.[0];
-  if (stats.loading) return <Skeleton lines={2} />;
-  return (
-    <div>
-      <div className="text-2xl font-semibold tabular text-ink">{s ? pick(s) : "—"}</div>
-      <div className="text-[11px] text-ink-3">{label}</div>
-      <div className="mt-1 text-[10px] text-ink-3">{caption}</div>
-    </div>
-  );
-}
-
 // ---- the registry -----------------------------------------------------------
 
 export const WIDGETS: WidgetDef[] = [
+  // ------------------------------------------------------------------- ops
   {
     id: "failure-series",
     side: "ops",
-    title: "Failures over time",
+    title: "When is it failing, and what kind?",
     source: "/ops/failures",
     size: "full",
-    render: () => <FailureSeriesWidget />,
+    chip: () => <ProvenanceChip kind="heuristic" method="anchored signature matches per day" />,
+    detail: () => <FailureSeriesPanel />,
+  },
+  {
+    id: "signature-table",
+    side: "ops",
+    title: "Failure signatures",
+    source: "/ops/failures",
+    size: "half",
+    detail: () => <SignatureTablePanel />,
+    widget: () => <SignatureTableWidget />,
+  },
+  {
+    id: "env-heatmap",
+    side: "ops",
+    title: "Errors per 100 tool calls, client × failure class",
+    source: "/ops/environments",
+    size: "half",
+    chip: () => (
+      <ProvenanceChip
+        kind="heuristic"
+        method="counting signature matches normalized by call volume"
+      />
+    ),
+    detail: () => <EnvHeatmapPanel />,
+  },
+  {
+    id: "telemetry-integrity",
+    side: "ops",
+    title: "Telemetry integrity — observability of the observability",
+    source: "/ops/environments",
+    size: "half",
+    detail: () => <IntegrityStripPanel />,
   },
   {
     id: "activity-strips",
     side: "ops",
-    title: "Daily activity",
+    title: "Who was active when",
     source: "/ops/rhythm",
     size: "half",
-    render: () => <ActivityStripsWidget />,
+    chip: () => <GapCapParam />,
+    detail: () => <ActivityStripsPanel />,
+    widget: () => <ActivityStripsPanel compact />,
+  },
+  {
+    id: "bout-profile",
+    side: "ops",
+    title: "Bout profile — one-sitting workers vs fragmented attention",
+    source: "/ops/rhythm",
+    size: "half",
+    chip: () => (
+      <>
+        <ProvenanceChip
+          kind="heuristic"
+          method="bouts segmented at the stated gap cap on the auditor's merged timeline"
+        />{" "}
+        <GapCapParam />
+      </>
+    ),
+    detail: () => <BoutProfilePanel />,
+  },
+  {
+    id: "span-scatter",
+    side: "ops",
+    title: "Wall span vs engaged time — why wall spans are never summed",
+    source: "/ops/rhythm",
+    size: "half",
+    chip: () => (
+      <>
+        <ProvenanceChip kind="heuristic" method="engaged = capped-gap span" /> <GapCapParam />
+      </>
+    ),
+    detail: () => <SpanScatterPanel />,
+  },
+  {
+    id: "quick-restarts",
+    side: "ops",
+    title: "Quick restarts — workflow granularity",
+    source: "/ops/rhythm",
+    size: "half",
+    chip: () => <QuickRestartParam />,
+    detail: () => <QuickRestartsPanel />,
+    widget: () => <QuickRestartsPanel limit={8} />,
   },
   {
     id: "stat-failure-events",
@@ -178,7 +253,7 @@ export const WIDGETS: WidgetDef[] = [
     title: "Failure events",
     source: "/ops/failures",
     size: "stat",
-    render: () => (
+    detail: () => (
       <StatWidget
         pick={(s) => count(s.failure_events)}
         label="failure events in window"
@@ -192,7 +267,7 @@ export const WIDGETS: WidgetDef[] = [
     title: "Active clients",
     source: "/ops/environments",
     size: "stat",
-    render: () => (
+    detail: () => (
       <StatWidget
         pick={(s) => count(s.active_clients)}
         label="clients active in window"
@@ -206,7 +281,7 @@ export const WIDGETS: WidgetDef[] = [
     title: "Active auditors",
     source: "/ops/rhythm",
     size: "stat",
-    render: () => (
+    detail: () => (
       <StatWidget
         pick={(s) => count(s.active_auditors)}
         label="auditors active in window"
@@ -214,21 +289,133 @@ export const WIDGETS: WidgetDef[] = [
       />
     ),
   },
+  // --------------------------------------------------------------- product
   {
     id: "job-share",
     side: "product",
-    title: "Job-type share",
+    title: "What work is this used for?",
     source: "/product/usage",
     size: "half",
-    render: () => <JobShareWidget />,
+    chip: () => <ProvenanceChip kind="model" method="J3 job-type classification (session grain)" />,
+    detail: () => <JobSharePanel />,
+    widget: () => <JobSharePanel compact />,
+  },
+  {
+    id: "lob-timeline",
+    side: "product",
+    title: "Lines of business over time — turns per day by client",
+    source: "/product/usage",
+    size: "full",
+    detail: () => <LobTimelinePanel />,
+  },
+  {
+    id: "auditor-grid",
+    side: "product",
+    title: "Auditor × client load — deliberately unranked",
+    source: "/product/usage",
+    size: "half",
+    detail: () => <AuditorClientGridPanel />,
+  },
+  {
+    id: "family-adoption",
+    side: "product",
+    title: "Capability adoption — who uses which tool surface, and is it growing?",
+    source: "/product/usage",
+    size: "half",
+    detail: () => <FamilyAdoptionPanel />,
   },
   {
     id: "outcome-bars",
     side: "product",
-    title: "Outcomes per job type",
+    title: "Do tasks finish?",
     source: "/product/outcomes",
     size: "full",
-    render: () => <OutcomeBarsWidget />,
+    chip: () => (
+      <ProvenanceChip
+        kind="model"
+        method="J3 session outcome; undetermined is a first-class bucket"
+      />
+    ),
+    detail: () => <OutcomeBarsPanel />,
+  },
+  {
+    id: "interaction-strip",
+    side: "product",
+    title: "What does a completed task cost in human interactions?",
+    source: "/product/outcomes",
+    size: "full",
+    chip: () => (
+      <ProvenanceChip
+        kind="heuristic"
+        method="turns with a non-empty human-authored segment (marker-flag definition)"
+      />
+    ),
+    detail: () => <InteractionStripPanel />,
+  },
+  {
+    id: "friction-table",
+    side: "product",
+    title: "Where is the wrestling?",
+    source: "/product/outcomes",
+    size: "full",
+    detail: () => <FrictionTablePanel />,
+    widget: () => <FrictionTablePanel limit={5} />,
+  },
+  {
+    id: "gap-ledger",
+    side: "product",
+    title: "Capability-gap ledger (the ranked feature backlog)",
+    source: "/product/outcomes",
+    size: "full",
+    chip: () => (
+      <ProvenanceChip
+        kind="heuristic"
+        method="structural workaround shapes; J4 supplies names only"
+      />
+    ),
+    detail: () => <GapLedgerPanel />,
+  },
+  {
+    id: "repeat-chains",
+    side: "product",
+    title: "Byte-identical re-invocations — repeat chains per turn",
+    source: "/product/agent",
+    size: "half",
+    detail: () => <RepeatChainsPanel />,
+    widget: () => <RepeatChainsPanel limit={5} />,
+  },
+  {
+    id: "grind-table",
+    side: "product",
+    title: "Long same-tool runs per turn",
+    source: "/product/agent",
+    size: "half",
+    chip: () => <GrindThresholdParam />,
+    detail: () => <GrindTablePanel />,
+    widget: () => <GrindTablePanel limit={5} />,
+  },
+  {
+    id: "correction-feed",
+    side: "product",
+    title: "Correction feed — where the user re-steered",
+    source: "/product/agent",
+    size: "half",
+    chip: () => (
+      <ProvenanceChip
+        kind="model"
+        method="J2 correction classification over flagged candidate turns"
+      />
+    ),
+    detail: () => <CorrectionFeedPanel />,
+    widget: () => <CorrectionFeedPanel limit={3} />,
+  },
+  {
+    id: "family-shapes",
+    side: "product",
+    title: "What happens after a failure, by tool family — structural only",
+    source: "/product/agent",
+    size: "half",
+    detail: () => <FamilyShapesPanel />,
   },
   {
     id: "stat-turns",
@@ -236,7 +423,7 @@ export const WIDGETS: WidgetDef[] = [
     title: "Turns",
     source: "/product/usage",
     size: "stat",
-    render: () => (
+    detail: () => (
       <StatWidget
         pick={(s) => count(s.turns)}
         label="turns in window"
@@ -250,7 +437,7 @@ export const WIDGETS: WidgetDef[] = [
     title: "Determined sessions",
     source: "/product/outcomes",
     size: "stat",
-    render: () => (
+    detail: () => (
       <StatWidget
         pick={(s) => `${count(s.determined)} of ${count(s.contained)}`}
         label="contained sessions determined"
@@ -264,7 +451,7 @@ export const WIDGETS: WidgetDef[] = [
     title: "Auth overhead",
     source: "/product/outcomes",
     size: "stat",
-    render: () => <AuthOverheadWidget />,
+    detail: () => <AuthOverheadWidget />,
   },
   {
     id: "stat-chain-turns",
@@ -272,7 +459,7 @@ export const WIDGETS: WidgetDef[] = [
     title: "Identical-input chains",
     source: "/product/agent",
     size: "stat",
-    render: () => (
+    detail: () => (
       <StatWidget
         pick={(s) => count(s.chain_turns)}
         label="turns with identical-input chains"

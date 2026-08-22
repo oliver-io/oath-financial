@@ -1248,3 +1248,29 @@ Decision: remove the findings presentation from the app entirely (hub keeps only
 two room cards); ref/findings.parquet stays in the serving contract as structured
 output; ETL untouched. RUNNING.md, CLAUDE.md BRIEF, and FINDINGS.md updated; app
 track directed to record ui.md revision 3 and strip the components.
+
+## 32. Panel system (detail + widget views) and findings-presentation removal
+
+- **Every construct is now a panel** (user directive): the registry
+  (`components/dashboard/widgets.tsx`) defines 25 panels — one shared title, source
+  page, size class, chips, a DETAIL view rendered on its page via `<PanelSection>`
+  (anchored, pinnable), and an optional WIDGET view for the dashboard (a summary —
+  top-5 truncations for the signature/friction/repeat/grind tables, limited correction
+  feed, compact strips — or the detail itself where a construct can't be summarized).
+  Dashboard tile titles link to `source#panel-<id>`; the anchor re-scrolls as panels
+  above settle (capture-state-aware). Detail renderers were extracted from the pages
+  into self-fetching components (`components/ops/panels.tsx`,
+  `components/product/panels.tsx`); pages are now thin compositions of PanelSections
+  plus page-level chrome (Agent toggle, window-rule captions, excluded list, ghosts).
+  Previously unpinnable constructs (bout profile, span scatter, heatmap, integrity,
+  LOB timeline, auditor grid, adoption, agent tables, quick restarts) are all pinnable.
+  The pinnability-invariant suite now covers all 25 panels (54/54 app tests).
+- **Findings presentation removed** (orchestrator directive, ui.md revision 3 recorded):
+  no finding cards anywhere — FindingCards deleted, boards are pinned tiles only, the
+  hub keeps its two room cards + deliberately-not-built caption. `ref/findings` stays
+  in the serving contract and fixtures as machine-readable output with no UI surface.
+- Verified in-browser: bout profile pins from /ops/rhythm and renders on the ops board
+  beside the compact strips and stat tiles; tile-title click-through lands the anchored
+  detail in view; unified titles ("When is it failing, and what kind? →" on the tile =
+  the page section heading). Gates: tsc clean, biome clean, 54/54 tests. Uncommitted —
+  orchestrator sweeps.

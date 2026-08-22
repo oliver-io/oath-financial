@@ -95,6 +95,17 @@ category-card grid) is preserved in git history; the finding cards and headline 
 live in their rooms instead. `ref/findings` remains an ETL output; the hub does not
 render it.
 
+### Findings presentation (revision 3 — user decision 2026-08-22: removed from the app)
+The in-app findings presentation is **removed entirely** — no finding cards anywhere,
+including the room dashboards. The README's "what you found" is a written deliverable
+divined from our own use of the tool (`FINDINGS.md`), not an app feature: rule-templated
+cards blur authorship and over-claim (synthetic prose with no producer behind it). The
+data plane is unaffected — `ref/findings` stays in the serving contract as
+machine-readable structured output; it simply has no UI surface. Room dashboards are
+pinnable widget boards only (every construct is a panel with a detail view on its page
+and a widget view pinnable to its room's board; the tile title links back to the
+anchored detail).
+
 ### `/ops` Failures & incidents
 - **Failure time series** (stacked bar, x=day, y=error events, color=signature_class,
   ≤7 classes): "when and what kind?" **Incident bands** = shaded date regions; clicking

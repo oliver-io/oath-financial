@@ -1,12 +1,10 @@
-// The room dashboard: the room's findings (fixed) above a tiled board of
-// pinned widgets. Widgets are pinned FROM their natural pages via the 📌
-// control each construct carries (no picker here — the board only unpins);
-// tiles size to their content in a wrapping flex row and link back to the
-// focused report. Pin state is per-viewer (localStorage).
+// The room dashboard: a tiled board of pinned panels in their WIDGET view.
+// Panels are pinned from their pages (📌 on each construct); the board only
+// unpins. Tile titles link to the anchored detail view on the source page.
+// Pin state is per-viewer (localStorage).
 
 import { Link, useLocation } from "react-router";
 import { type Side, usePins } from "../../state/pins.ts";
-import { FindingCards } from "./FindingCards.tsx";
 import { widgetById } from "./widgets.tsx";
 
 const sideColor = (side: Side): string =>
@@ -23,7 +21,6 @@ export function WidgetBoard({ side }: { side: Side }) {
   const location = useLocation();
   return (
     <div>
-      <FindingCards audience={side} />
       {pins.length === 0 && (
         <div className="rounded border border-dashed border-hairline bg-paper p-8 text-center text-sm text-ink-3">
           Nothing pinned yet. Open any {side === "ops" ? "Ops" : "Product"} page and use a
@@ -33,7 +30,7 @@ export function WidgetBoard({ side }: { side: Side }) {
       <div className="flex flex-wrap items-stretch gap-4">
         {pins.map((id) => {
           const w = widgetById(id);
-          if (!w) return null; // a stale pin from an older widget set
+          if (!w) return null; // a stale pin from an older panel set
           return (
             <section
               key={w.id}
@@ -41,10 +38,14 @@ export function WidgetBoard({ side }: { side: Side }) {
             >
               <div className="mb-2 flex items-center justify-between gap-2">
                 <Link
-                  to={{ pathname: w.source, search: location.search }}
+                  to={{
+                    pathname: w.source,
+                    search: location.search,
+                    hash: `#panel-${w.id}`,
+                  }}
                   className="inline-block border-b-2 pb-0.5 text-xs font-medium text-ink hover:text-ink-2"
                   style={{ borderColor: sideColor(side) }}
-                  title={`open the full report at ${w.source}`}
+                  title={`open the detail view at ${w.source}`}
                 >
                   {w.title} →
                 </Link>
@@ -57,7 +58,7 @@ export function WidgetBoard({ side }: { side: Side }) {
                   ✕
                 </button>
               </div>
-              {w.render()}
+              {(w.widget ?? w.detail)()}
             </section>
           );
         })}
