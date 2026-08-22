@@ -924,3 +924,28 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   serving (strengthens manifest-chain traceability; contracts zod ignores unknown
   fields). No doc/test change. Commits are owned by the orchestration session; ETL
   track does not commit/push.
+
+## 25. App track A6-nav — navigation revision + dashboard landing (user directive)
+
+- **Navigation shell** per the new ui.md §3 subsection: horizontal navbar (Dashboard ·
+  Ops · Product); room sub-pages render as horizontal tabs inside the room (Ops:
+  Failures · Environments · Rhythm; Product: Usage · Outcomes · Agent), active tab
+  underlined in the room identity color, active room entry tinted with its soft token.
+  The shared filter bar sits below the navbar and persists across tab switches — tabs
+  are the existing routes and the URL codec is unchanged (search params carried through
+  every nav/tab link). The provenance legend moved into the navbar's right edge.
+- **`/` is now a dashboard**, three zones: (1) the ranked finding cards (unchanged);
+  (2) compact top-level visuals — failure time series with incident bands (band click
+  now always lands on /ops with the panel open), job-type share, daily-activity strip —
+  each the same component as its room version (FailureTimeSeries shared as-is;
+  JobShareBar and ActivityStrips extracted from their pages into shared components with
+  a `compact` prop), title click-through to the owning tab with filters preserved;
+  (3) a category-card grid — one card per sub-page with room-colored top accent, the
+  page's named question, a live summary stat from one windowed query
+  (`qDashboardStats`), whole card as the link — with the two ghost cards (cost,
+  latency) in the same grid and a caption stating which stats use event membership vs
+  containment (the outcomes card counts whole-contained sessions).
+- Verified: app typecheck clean, biome clean, 25/25 app tests (render smoke covers the
+  revised shell since routes are unchanged), screenshot pass over dashboard (top +
+  category grid) and a tabbed room. Visual double-check via ui-visual-review skipped:
+  no GEMINI_API_KEY in this environment.
