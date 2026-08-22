@@ -785,3 +785,103 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   in the pipeline manifest). /ops/environments will show the contract-supported
   integrity signals (resumed fragments, missing turns) and this is flagged rather than
   a column invented in contracts/.
+
+## 27. Infra track — I0 scaffold complete, deploy scripts pre-built (login-gated)
+
+- `infra/` workspace landed per plan §5: own `package.json` (Pulumi + AWS SDK deps,
+  outside etl/app budgets), `Pulumi.yaml` (nodejs runtime, bun packagemanager),
+  `index.ts` implementing exactly the §1 table — private versioned bucket + PAB, OAC,
+  distribution (CachingOptimized default; CachingDisabled behaviors for
+  `runs/latest.json` and `index.html`; SPA custom-error fallback; HTTPS redirect;
+  PriceClass_100), bucket policy scoped to the distribution ARN, and a least-privilege
+  deploy **policy only** (Put/Delete/List + CreateInvalidation) — no users or keys
+  created, the operator attaches it. Outputs: bucketName, distributionId/Domain,
+  deployPolicyArn, siteUrl. `domain`/reserved `authMode` values error explicitly.
+- Local file backend live: `pulumi login file://…/infra/.pulumi` (gitignored), empty
+  passphrase provider documented in `infra/README.md` (config holds no secrets;
+  hardening path noted). `dev` + `prod` stacks initialized with the §5 config schema.
+- I2 scripts pre-built ahead of the stack: `infra/scripts/deploy-data.ts` (manifest
+  cross-check → immutable upload → remote count verify → swap `latest.json` last →
+  invalidate only that path; parity-item-6 no-op/refuse on existing run id; `--prune`
+  gated), `deploy-app.ts` (vite build; excludes `dist/runs/**` — the data plane
+  belongs to deploy:data; `index.html` last; invalidates only `/index.html`),
+  `parity-check.ts` (checklist §4 items 1–5 automated, item 6 noted as a
+  deploy-script property), `serve-local.ts` (prod-shaped Bun server: same header
+  table, real 404 under /runs/). Root wiring additive: `infra` workspace +
+  `deploy:data` / `deploy:app` / `parity` / `serve:prod-local` scripts;
+  `.gitignore` + biome `noConsole` override extended (mirrors etl/lib/log.ts).
+- Verification: `tsc -p infra` and `biome check infra` clean. `pulumi preview` on dev
+  executes the program (1 to create) and stops **only** at "Failed to refresh cached
+  SSO credentials" — the intended login boundary; preview-clean to be re-evidenced at
+  I1 after `aws login`. Toolchain note: Pulumi's vendored ts-node breaks on the
+  repo's TypeScript 7 preview; fixed per plan §5 ("don't fight the toolchain") with
+  local `ts-node` + TS5 devDeps inside `infra/` only.
+- **Spec conflict reported (plan §1 vs parity item 5)**: CloudFront custom-error
+  responses are distribution-wide, so a missing object under `/runs/` returns the SPA
+  shell, not a real 404 — item 5 will pass locally and fail deployed. The
+  no-Lambda-class fix is a ~10-line viewer-request CloudFront Function, which the
+  deliberately-not-built list forbids without user sign-off. Built per §1 as written;
+  awaiting a decision (accept deviation vs sanction the function).
+- Next (blocked on `aws login` + account/region confirmation): I1 `pulumi up` +
+  hello artifact + idempotency proof, then I2 parity evidence and the RUNNING.md
+  Deploy section.
+
+## 28. ETL M1 — stages s0–s2 implemented (implementation phase begun)
+
+- User green-lit implementation; orchestrated per milestone with independent
+  verification (this section = M1).
+- Built: generic Stage executor in `cli.ts` (pre-gates → drop-and-rebuild schema →
+  prepare hook → SQL files → post-gates → manifest entry; manifest finalized in
+  `finally`; exit 2 on gate failure); `SET VARIABLE` + UTC session setup keeps `.sql`
+  files static; `compileSignatures`/`matchSignatures` in JS RegExp (patterns need
+  lookahead guards RE2 lacks); s0 zod spot-check gate; s1 referential + fork gates;
+  s2 `prepare()` with the two sanctioned TS row passes (signature matching →
+  `_sig_matches`, marker/typed-prefix scan → `_turn_marks`); real SQL for all seven
+  s0–s2 files (`clean.observations` gained `output_text`, `obs_index`).
+- Rule files bumped sig-v1/thr-v1: `askuserquestion-exit-1` fixed to `\(exit 1\)`
+  (readiness item — old wording never occurs) + new curated `tool_scope`;
+  `portal-auth-403` gained `(?![,.]\d)` amount guards (peer-flagged risk; the
+  amount-collision golden case pins the alternation); `agent-generic-error` scoped to
+  Agent incl. JSON-list form; `platform-limit` routed to assistant-output markers via
+  new `target` field; thresholds added verbatim marker templates (113/115/98 hits ==
+  derivations.md), correction-candidate params (80 chars/120s → 94 candidates vs the
+  doc's ~92), `fork_lockstep_threshold_s`.
+- **Fork gate redefined (judgment call, documented in thresholds.yaml)**: the naive
+  range+window overlap predicate fires 40× on real data (concurrent same-auditor
+  sessions are real); redefined as duplicated-stream lockstep (non-demo sessions
+  sharing ≥2 turn numbers, each within 600s) — fires on the synthetic fixture, zero on
+  the real dataset (demo-user scripted bursts excluded per `is_demo_traffic`).
+- Real-data drift note: `post_failure_shape` distribution 484/67/49 vs derivations.md's
+  provisional 514/179/77 — expected from first-match-only + tool scoping.
+- Verified by orchestrator: `bun test ./test` **57 pass / 51 fail** (was 31/77; all
+  remaining reds are s3/s4/s5 `Unimplemented` scope), `tsc --noEmit` and biome clean;
+  real-dataset `etl run --no-enrich` completes s0→s2 (8,845 raw rows; 6,556 tool
+  events, 763 turns, 116 sessions) and stops typed at s4. No test files modified.
+
+## 24. App track A0–A5 COMPLETE — stopping for review
+
+- Tail routes landed: **/ops/environments** (client × class heatmap, per-100-calls
+  normalization, slate sequential ramp, dotted small-n cells at the ⚙ threshold, cell
+  click → /ops filtered; telemetry-integrity strip limited to contract-supported
+  signals with the manifest-side ones footnoted), **/ops/rhythm** (activity strips with
+  hatched demo cells, bout profiles, log-log wall-vs-engaged scatter with dot→session,
+  quick-restart strip with the not-a-continuation caption; gap cap as ⚙ on every
+  construct), **/product/usage** (job share + concentration callout, stacked-bars LOB
+  timeline with the bars-not-area footnote, unranked auditor × client dot grid with the
+  confounding footnote, capability-adoption strip with per-family sparklines),
+  **/product/agent** (repeat-chain and long-run tables with neutral wording and ⚙
+  threshold, correction feed with previous-assistant-tail popovers and degraded caption,
+  post-failure shape by family).
+- A5 crossover polish: findings "open →" URLs verified to land with filters pre-set;
+  `?gap=` highlights the ledger row; incident → product and friction → ops chips walk
+  end-to-end (findings → room → session viewer verified by driving headless Edge).
+- **Gate status**: A0 ✓ A1 ✓ A2 ✓ A3 ✓ A4 ✓ A5 ✓. app+root typecheck clean, biome
+  clean repo-wide, `bun run test:app` 25/25 (render smoke over every route incl. worst
+  fixtures + degraded run, URL codec round-trip, contract conformance), `vite build`
+  succeeds. Visual double-check via ui-visual-review skipped: no GEMINI_API_KEY in this
+  environment; primary verification was screenshot eyeballing of every page (incl.
+  empty-window, degraded, deeplink states).
+- Remaining out-of-loop (per handoff): the M2 flip (point loader base URL at ETL
+  output) and A6 enriched-mode pass — both depend on the ETL track.
+- test:etl currently reports failures — those are the ETL track's own red/green suite
+  (unimplemented stages), not app-track breakage.
