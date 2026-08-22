@@ -34,3 +34,7 @@ I started with a rough sketch of my own architecture, built that into a spec.  A
 - Infra agent deploying around 4:15.
 - Hey, site's up at 4:23 serving the fake data.  Yet to run the entire LLM enrichment pipeline for the real ETL.
 - Queue up a smoke test a few runs of the LLM output, and if all looks good, produce the real dataset & redeploy.
+- Adjust prompting and LLM strategies, make better use of Zod, Claude doesn't know the OpenAI API all that well.
+- 5:00.  Start the run against all our sessions with GPT-5.6-luna.  
+- Refactor UI, dashboards, widgets, visual presentation as that runs.
+- Walk to store; watch loops from phone.
