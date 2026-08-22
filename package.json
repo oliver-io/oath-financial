@@ -5,7 +5,8 @@
   "type": "module",
   "workspaces": [
     "contracts",
-    "app"
+    "app",
+    "infra"
   ],
   "scripts": {
     "etl": "bun etl/cli.ts",
@@ -14,7 +15,11 @@
     "fixtures:rebuild": "bun test/fixtures/rebuild.ts",
     "lint": "bunx biome check .",
     "test:etl": "bun test test/",
-    "test:app": "bun test app/test/"
+    "test:app": "bun test app/test/",
+    "deploy:data": "bun infra/scripts/deploy-data.ts",
+    "deploy:app": "bun infra/scripts/deploy-app.ts",
+    "parity": "bun infra/scripts/parity-check.ts",
+    "serve:prod-local": "bun infra/scripts/serve-local.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "1.5.5-r.4",
