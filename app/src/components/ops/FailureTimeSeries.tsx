@@ -4,7 +4,7 @@
 
 import { SignatureClassSchema } from "@trace-insights/contracts";
 import { useMemo } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import {
   Bar,
   BarChart,
@@ -49,7 +49,6 @@ export function FailureTimeSeries({
   filters: FilterState;
 }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const classes = SignatureClassSchema.options.filter((c) =>
     points.some((p) => p.signature_class === c),
   );
@@ -105,8 +104,10 @@ export function FailureTimeSeries({
               stroke="var(--color-failure)"
               strokeOpacity={0.25}
               onClick={() =>
+                // incident panels live on /ops; the compact dashboard render
+                // click-through lands there too
                 navigate({
-                  pathname: location.pathname,
+                  pathname: "/ops",
                   search: filtersToSearch({ ...filters, incident: i.incident_id }),
                 })
               }

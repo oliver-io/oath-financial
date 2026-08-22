@@ -492,4 +492,35 @@ export function qPostFailureByFamily(w: TimeWindow, f: FilterState): string {
     GROUP BY 1 HAVING (shape_a + shape_b + shape_c) > 0 ORDER BY (shape_a + shape_b + shape_c) DESC`;
 }
 
+// ---------------------------------------------------------------- / dashboard
+
+export const DashboardStatsSchema = z.object({
+  failure_events: z.number(),
+  active_clients: z.number(),
+  active_auditors: z.number(),
+  turns: z.number(),
+  determined: z.number(),
+  contained: z.number(),
+  chain_turns: z.number(),
+});
+/** One live summary stat per category card (ui.md §3 "/ Dashboard" zone 3).
+ * Event-grain stats use event membership; the outcomes stat uses containment
+ * — each card's caption states which. */
+export function qDashboardStats(w: TimeWindow, f: FilterState): string {
+  const ev = eventMembership(w);
+  const dims = dimensionPredicate(f);
+  const agent = f.includeAgent ? "1 = 1" : "is_agent_tool = false";
+  return `SELECT
+    (SELECT count(*)::INT FROM tool_events
+      WHERE ${ev} AND ${dims} AND failure_verdict IN ('rule', 'model_added') AND ${agent}) AS failure_events,
+    (SELECT count(DISTINCT client)::INT FROM tool_events WHERE ${ev} AND ${dims}) AS active_clients,
+    (SELECT count(DISTINCT auditor)::INT FROM turns WHERE ${ev} AND ${dims}) AS active_auditors,
+    (SELECT count(*)::INT FROM turns WHERE ${ev} AND ${dims}) AS turns,
+    (SELECT count(*)::INT FROM sessions
+      WHERE ${sessionContainment(w)} AND ${dims} AND outcome IN ('completed', 'abandoned')) AS determined,
+    (SELECT count(*)::INT FROM sessions WHERE ${sessionContainment(w)} AND ${dims}) AS contained,
+    (SELECT count(*)::INT FROM turns
+      WHERE ${ev} AND ${dims} AND identical_input_chain_count > 0) AS chain_turns`;
+}
+
 export { eventMembership, sessionContainment, type TimeWindow };

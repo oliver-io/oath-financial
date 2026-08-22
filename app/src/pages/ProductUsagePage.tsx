@@ -2,9 +2,8 @@
 // (ui.md §3). Mixed grain: job-type share is session-grain (containment),
 // turns/day timeline is event-grain — both rules captioned.
 
-import { JobTypeSchema, ToolFamilySchema } from "@trace-insights/contracts";
+import { ToolFamilySchema } from "@trace-insights/contracts";
 import { useMemo } from "react";
-import { Link } from "react-router";
 import {
   Bar,
   BarChart,
@@ -15,6 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { JobShareBar } from "../components/product/JobShareBar.tsx";
 import { ErrorState, ProvenanceChip, Skeleton } from "../components/shared/honesty.tsx";
 import { Sparkline } from "../components/shared/microviz.tsx";
 import { clientColor, toolFamilyColor } from "../components/shared/series.ts";
@@ -31,8 +31,7 @@ import {
   qJobShare,
   qTurnsByClientDay,
 } from "../data/queries.ts";
-import { count, dayLabel, pct } from "../fmt.ts";
-import { filtersToSearch } from "../state/urlState.ts";
+import { count, dayLabel } from "../fmt.ts";
 import { ContainmentCaption, EventSemanticsCaption, PageTitle, Section } from "./PageScaffold.tsx";
 
 export function ProductUsagePage() {
@@ -48,9 +47,9 @@ export function ProductUsagePage() {
     [dims.rows],
   );
 
-  const totalSessions = (jobShare.rows ?? []).reduce((a, r) => a + r.n, 0);
-  const top3 = (jobShare.rows ?? []).slice(0, 3).reduce((a, r) => a + r.n, 0);
-  const maxShare = Math.max(1, ...(jobShare.rows ?? []).map((r) => r.n));
+  const _totalSessions = (jobShare.rows ?? []).reduce((a, r) => a + r.n, 0);
+  const _top3 = (jobShare.rows ?? []).slice(0, 3).reduce((a, r) => a + r.n, 0);
+  const _maxShare = Math.max(1, ...(jobShare.rows ?? []).map((r) => r.n));
 
   const timelineData = useMemo(() => {
     const byDay = new Map<string, Record<string, number | string>>();
@@ -114,45 +113,7 @@ export function ProductUsagePage() {
       >
         {jobShare.error && <ErrorState message={jobShare.error} />}
         {jobShare.loading && <Skeleton />}
-        {jobShare.rows && (
-          <div>
-            <p className="mb-2 text-xs text-ink-2">
-              Top 3 job types ={" "}
-              <span className="font-medium tabular">
-                {totalSessions > 0 ? pct(top3 / totalSessions) : "—"}
-              </span>{" "}
-              of {count(totalSessions)} contained sessions.
-            </p>
-            {(jobShare.rows ?? []).map((r) => {
-              const job = r.job_type ?? "(not classified)";
-              return (
-                <div key={job} className="mb-1 flex items-center gap-2 text-xs">
-                  <span className="w-40 text-right text-ink-2">{job}</span>
-                  <Link
-                    to={{
-                      pathname: "/product/outcomes",
-                      search: filtersToSearch({
-                        ...filters,
-                        jobTypes:
-                          r.job_type && JobTypeSchema.options.includes(r.job_type as never)
-                            ? [r.job_type as never]
-                            : [],
-                      }),
-                    }}
-                    className="block h-3.5 rounded-r-sm"
-                    style={{
-                      width: `${(r.n / maxShare) * 55}%`,
-                      background: r.job_type ? "var(--color-product)" : "var(--color-grid)",
-                      minWidth: 3,
-                    }}
-                    title={`${job}: ${count(r.n)} sessions — click for outcomes`}
-                  />
-                  <span className="tabular text-ink-3">{count(r.n)}</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {jobShare.rows && <JobShareBar rows={jobShare.rows} />}
         <ContainmentCaption />
       </Section>
 

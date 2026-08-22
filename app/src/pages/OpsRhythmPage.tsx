@@ -4,6 +4,7 @@
 
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
+import { ActivityStrips, daysIn } from "../components/ops/ActivityStrips.tsx";
 import {
   ErrorState,
   ProvenanceChip,
@@ -21,19 +22,8 @@ import {
   SessionSpanSchema,
   TimelineRowQ,
 } from "../data/queries.ts";
-import { count, dayLabel, duration } from "../fmt.ts";
+import { dayLabel, duration } from "../fmt.ts";
 import { EventSemanticsCaption, PageTitle, Section } from "./PageScaffold.tsx";
-
-function daysIn(fromDay: string, toDay: string): string[] {
-  const out: string[] = [];
-  let t = Date.parse(`${fromDay}T00:00:00Z`);
-  const end = Date.parse(`${toDay}T00:00:00Z`);
-  while (t <= end) {
-    out.push(new Date(t).toISOString().slice(0, 10));
-    t += 86400000;
-  }
-  return out;
-}
 
 function GapCapParam() {
   const { manifest } = useData();
@@ -56,16 +46,16 @@ export function OpsRhythmPage() {
   const spans = useRows(SessionSpanSchema, qSessionSpans(win, filters), null);
   const restarts = useRows(QuickRestartSchema, qQuickRestarts(win, filters), null);
 
-  const days = useMemo(() => daysIn(win.fromDay, win.toDay), [win]);
-  const auditors = useMemo(
+  const _days = useMemo(() => daysIn(win.fromDay, win.toDay), [win]);
+  const _auditors = useMemo(
     () => [...new Set((daily.rows ?? []).map((r) => r.auditor))].sort(),
     [daily.rows],
   );
-  const byKey = useMemo(
+  const _byKey = useMemo(
     () => new Map((daily.rows ?? []).map((r) => [`${r.auditor}|${r.day}`, r])),
     [daily.rows],
   );
-  const maxTurns = Math.max(1, ...(daily.rows ?? []).map((r) => r.turns));
+  const _maxTurns = Math.max(1, ...(daily.rows ?? []).map((r) => r.turns));
 
   const boutProfile = useMemo(() => {
     const per = new Map<string, { bouts: number[]; spans: number[] }>();
@@ -87,7 +77,7 @@ export function OpsRhythmPage() {
     }));
   }, [timeline.rows]);
 
-  const CELL = 14;
+  const _CELL = 14;
   const maxSpan = Math.max(1, ...(spans.rows ?? []).map((s) => s.wall_span_s));
   const maxEngaged = Math.max(1, ...(spans.rows ?? []).map((s) => s.capped_gap_span_s));
   const logx = (v: number, max: number, W: number) => (Math.log10(1 + v) / Math.log10(1 + max)) * W;
@@ -103,73 +93,7 @@ export function OpsRhythmPage() {
       <Section title="Who was active when" chip={<GapCapParam />}>
         {daily.error && <ErrorState message={daily.error} />}
         {daily.loading && <Skeleton progress={daily.fetchProgress} />}
-        {daily.rows && (
-          <svg
-            width={120 + days.length * (CELL + 1)}
-            height={auditors.length * (CELL + 2) + 26}
-            className="max-w-full"
-          >
-            <title>activity strips: turns per auditor per day</title>
-            {auditors.map((a, i) => (
-              <g key={a}>
-                <text
-                  x={114}
-                  y={i * (CELL + 2) + CELL - 2}
-                  textAnchor="end"
-                  fontSize={10}
-                  fill="var(--color-ink-2)"
-                >
-                  {a}
-                </text>
-                {days.map((d, j) => {
-                  const r = byKey.get(`${a}|${d}`);
-                  const turns = r?.turns ?? 0;
-                  const hasDemo = (r?.demo_turns ?? 0) > 0 && filters.includeDemo;
-                  const alpha = turns === 0 ? 0 : 0.2 + 0.8 * (turns / maxTurns);
-                  return (
-                    <g key={d}>
-                      <rect
-                        x={120 + j * (CELL + 1)}
-                        y={i * (CELL + 2)}
-                        width={CELL}
-                        height={CELL}
-                        rx={2}
-                        fill={turns === 0 ? "var(--color-grid)" : "var(--color-ops)"}
-                        fillOpacity={turns === 0 ? 1 : alpha}
-                      >
-                        <title>{`${a} · ${dayLabel(d)}: ${count(turns)} turns${hasDemo ? ` (${r?.demo_turns} demo)` : ""}`}</title>
-                      </rect>
-                      {hasDemo && (
-                        <rect
-                          x={120 + j * (CELL + 1)}
-                          y={i * (CELL + 2)}
-                          width={CELL}
-                          height={CELL}
-                          rx={2}
-                          fill="url(#hatch-demo)"
-                        />
-                      )}
-                    </g>
-                  );
-                })}
-              </g>
-            ))}
-            {days.map(
-              (d, j) =>
-                j % 7 === 0 && (
-                  <text
-                    key={d}
-                    x={120 + j * (CELL + 1)}
-                    y={auditors.length * (CELL + 2) + 14}
-                    fontSize={9}
-                    fill="var(--color-ink-3)"
-                  >
-                    {dayLabel(d)}
-                  </text>
-                ),
-            )}
-          </svg>
-        )}
+        {daily.rows && <ActivityStrips rows={daily.rows} win={win} />}
         <EventSemanticsCaption />
       </Section>
 
