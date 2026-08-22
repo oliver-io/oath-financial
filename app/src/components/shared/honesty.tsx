@@ -3,7 +3,16 @@
 // styling — constructs cannot deviate because they never restyle these.
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { trackCapture } from "../../data/captureState.ts";
+
+/** Reports a mounted honesty state into the capture-state contract. */
+function useCaptureKind(kind: "error" | "empty"): void {
+  useEffect(() => {
+    trackCapture(kind, 1);
+    return () => trackCapture(kind, -1);
+  }, [kind]);
+}
 
 const CHIP: Record<string, { letter: string; color: string; label: string }> = {
   heuristic: { letter: "H", color: "var(--color-chip-heuristic)", label: "heuristic" },
@@ -133,6 +142,7 @@ export function HatchDefs() {
 
 /** First-class empty state (infrastructure.md "presents as REAL"). */
 export function EmptyState({ children }: { children: ReactNode }) {
+  useCaptureKind("empty");
   return (
     <div className="rounded border border-hairline bg-paper p-6 text-sm text-ink-3">{children}</div>
   );
@@ -140,6 +150,7 @@ export function EmptyState({ children }: { children: ReactNode }) {
 
 /** Per-construct error state with retry — never a blank page (app.md §4). */
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  useCaptureKind("error");
   return (
     <div className="rounded border border-hairline bg-failure-soft p-4 text-sm text-ink-2">
       <span className="font-medium text-failure">Couldn't load this view.</span> {message}

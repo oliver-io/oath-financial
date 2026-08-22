@@ -10,6 +10,7 @@ import {
   type ServeManifest,
   ServeManifestSchema,
 } from "@trace-insights/contracts";
+import { setWindowEmptyCaptureState } from "./captureState.ts";
 import type { DbRuntime } from "./runtime.ts";
 
 /** Path-relative base per infrastructure.md §2 — the M2 flip is this one value
@@ -108,6 +109,7 @@ export class DataStore {
   ): Promise<void> {
     const key = `${fromDay}..${toDay}`;
     const needed = this.partitionsForWindow(fromDay, toDay);
+    setWindowEmptyCaptureState(needed.length === 0);
     const toFetch = needed.filter((p) => !this.registered.has(p.path));
     let done = 0;
     onProgress?.(0, toFetch.length);

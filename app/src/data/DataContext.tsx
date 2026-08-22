@@ -15,6 +15,7 @@ import {
 import { useLocation } from "react-router";
 import type { z } from "zod";
 import { DEFAULT_FILTERS, type FilterState, parseFilters } from "../state/urlState.ts";
+import { setBootCaptureState, trackCapture } from "./captureState.ts";
 import { DataStore, type DegradedContext } from "./loader.ts";
 import type { DbRuntime } from "./runtime.ts";
 import { fullRange, type TimeWindow } from "./window.ts";
@@ -53,6 +54,7 @@ export function DataProvider({
     if (started.current) return;
     started.current = true;
     const phase = (bootPhase: string) => setState((s) => ({ ...s, bootPhase }));
+    setBootCaptureState("booting");
     (async () => {
       const runId = new URLSearchParams(window.location.search).get("run") ?? undefined;
       phase("starting query engine");
@@ -65,7 +67,9 @@ export function DataProvider({
         error: null,
         bootPhase: "ready",
       });
+      setBootCaptureState("ready");
     })().catch((err: unknown) => {
+      setBootCaptureState("failed");
       setState({
         api: null,
         error: err instanceof Error ? err.message : String(err),
@@ -127,6 +131,14 @@ export function useRows<S extends z.ZodType>(
   useEffect(() => {
     if (!api || sql === null) return;
     let alive = true;
+    let settled = false;
+    trackCapture("loading", 1);
+    const settle = () => {
+      if (!settled) {
+        settled = true;
+        trackCapture("loading", -1);
+      }
+    };
     setState((s) => ({ ...s, loading: true, error: null }));
     const onProgress = (done: number, total: number) => {
       if (alive && total > 0) setState((s) => ({ ...s, fetchProgress: { done, total } }));
@@ -139,6 +151,7 @@ export function useRows<S extends z.ZodType>(
         if (!alive) return;
         const rows = raw.map((r) => schema.parse(r) as z.infer<S>);
         setState({ rows, error: null, loading: false, fetchProgress: null });
+        settle();
       })
       .catch((err: unknown) => {
         if (!alive) return;
@@ -148,9 +161,11 @@ export function useRows<S extends z.ZodType>(
           loading: false,
           fetchProgress: null,
         });
+        settle();
       });
     return () => {
       alive = false;
+      settle();
     };
   }, [api, key]);
   return state;
