@@ -1214,3 +1214,25 @@ emitting it as a job. Directives relayed to ETL and app tracks.
 - Prompt versions: j2-v4, j3-v5 (packet/schema changes are model-visible). Suite
   107/0, tsc/biome clean. contracts/src/enums.ts still carries portal_auth (app-track
   owned; superset enum validates trimmed values — flagged to orchestration).
+
+## 31. portal_auth removed from job taxonomy + auth-overhead crossover + widget invariant
+
+- Per orchestrator directive (711d3f2): `portal_auth` removed from JobTypeSchema in
+  contracts; fixture generator's job mixes redistribute the former portal-auth sessions
+  across real document work (doc_location/tie_out/doc_receipt_check/doc_inventory)
+  while keeping their portal-auth-403 failure signatures — auth stays an ops-side
+  failure entity, never "work this is used for". Fixture parquet regenerated
+  (52 partitions/run).
+- **Auth-overhead stat** (the suggested product-side surface, done as a stat-slot
+  widget rather than a new construct): distinct sessions touched by counting
+  portal-auth-403 failures in the window (event semantics, captioned), with the
+  ↗ portal-auth-403-in-Ops crossover chip per ui.md §4. Natural home: the outcomes
+  page's friction section (pin there); pinnable to the product board.
+- **Widget/page invariant** (user directive): every registry widget must be pinnable
+  from its source page — PinControl now carries data-pin-id and names its widget
+  ("pin \"Auth overhead\""), and a new smoke test mounts each widget's source page and
+  asserts its pin control renders (11 invariant tests). Dashboards can no longer show
+  a widget with no sub-page home (findings remain a fixed board section by design).
+- Verified in-browser: job-share no longer lists portal_auth (tie_out now tops the
+  mix); pinning Auth overhead from outcomes lands the tile with its crossover chip.
+  Gates: tsc clean, biome clean, 38/38 app tests. Not committed — orchestrator sweeps.
