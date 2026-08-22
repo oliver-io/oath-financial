@@ -88,6 +88,16 @@ export const buildJ2Packet: PacketBuilder = (row) => {
       trace_id: str(row.trace_id),
       session_id: str(row.session_id),
       turn_number: row.turn_number ?? null,
+      // Session-position facts: the model's view has no future — these say
+      // explicitly when nothing precedes / nothing follows this turn in the
+      // data (a null prev_assistant_tail on a first turn means "none exists",
+      // not "text missing"; a final turn's aftermath is unknowable, not absent).
+      position: {
+        is_first_turn: row.is_first_turn ?? null,
+        is_final_turn: row.is_final_turn ?? null,
+        session_turn_count: row.session_turn_count ?? null,
+        session_resumed_fragment: row.session_resumed_fragment ?? false,
+      },
       gap_before_s: row.gap_before_s ?? null,
       markers: {
         has_task_notification: row.has_task_notification ?? false,
@@ -120,7 +130,17 @@ interface TurnDigest {
  * friction/failure mark, note the elision count; still over budget → an
  * explicit packet_overflow skip, never truncation-by-silence. */
 export const buildJ3Packet: PacketBuilder = (row) => {
-  const turns = Array.isArray(row.turns) ? (row.turns as TurnDigest[]) : [];
+  const rawTurns = Array.isArray(row.turns) ? (row.turns as TurnDigest[]) : [];
+  // Mark session boundaries on the digests BEFORE elision (elision keeps the
+  // head and tail, so the marked digests always survive): the model must know
+  // which digest is the final exchange — nothing follows it in the data — and
+  // which is the first OBSERVED turn (the true session start unless
+  // resumed_fragment says the head was lost by telemetry).
+  const turns = rawTurns.map((t, i) => ({
+    ...t,
+    ...(i === 0 ? { is_first_observed_turn: true } : {}),
+    ...(i === rawTurns.length - 1 ? { is_final_turn: true } : {}),
+  }));
   const { elisionKeepHead: head, elisionKeepTail: tail } = TRUNCATION;
   let kept = turns;
   let elided = 0;

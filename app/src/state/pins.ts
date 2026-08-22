@@ -8,8 +8,8 @@ import { useCallback, useState } from "react";
 export type Side = "ops" | "product";
 
 export const DEFAULT_PINS: Record<Side, string[]> = {
-  ops: ["ops-findings", "failure-series", "activity-strips", "stat-failure-events"],
-  product: ["product-findings", "job-share", "stat-turns", "stat-determined"],
+  ops: ["failure-series", "activity-strips", "stat-failure-events"],
+  product: ["job-share", "stat-turns", "stat-determined"],
 };
 
 const key = (side: Side): string => `trace-insights:pins:${side}`;

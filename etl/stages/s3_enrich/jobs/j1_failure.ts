@@ -41,7 +41,7 @@ export const j1Failure: JobSpec = {
   buildPacket: buildJ1Packet,
   outputSchema: J1OutputSchema,
   promptTemplate: PROMPT,
-  promptVersion: "j1-v1",
+  promptVersion: "j1-v2",
   modelTier: "fast",
   writerSqlFile: "s3_j1_writer",
   outputTable: "enrich.j1_verdicts",

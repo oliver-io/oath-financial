@@ -45,6 +45,7 @@ export function ProductOutcomesPage() {
         side="product"
         title="Outcomes"
         question="Do tasks finish, what do they cost in human interactions, where is the wrestling?"
+        pinStat={{ id: "stat-determined", side: "product" }}
       />
       <ContainmentCaption />
       <div className="mt-3">
@@ -53,6 +54,7 @@ export function ProductOutcomesPage() {
 
       <Section
         title="Do tasks finish?"
+        pin={{ id: "outcome-bars", side: "product" }}
         chip={
           <ProvenanceChip
             kind="model"

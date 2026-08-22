@@ -10,6 +10,14 @@ SELECT
   t.trace_id,
   t.session_id,
   t.turn_number,
+  -- Session-position facts (structural): the packet must tell the model when a
+  -- turn is the session's first observed / final exchange — the classifier has
+  -- no future beyond the row it is given, so "nothing follows" is a fact only
+  -- the selector's whole-session view can assert.
+  t.turn_number = MIN(t.turn_number) OVER (PARTITION BY t.session_id) AS is_first_turn,
+  t.turn_number = MAX(t.turn_number) OVER (PARTITION BY t.session_id) AS is_final_turn,
+  COUNT(*) OVER (PARTITION BY t.session_id) AS session_turn_count,
+  s.resumed_fragment AS session_resumed_fragment,
   t.gap_before_s,
   t.has_task_notification,
   t.has_skill_body,
@@ -28,6 +36,7 @@ SELECT
   COALESCE(te.matched_patterns_json, '[]') AS matched_patterns_json
 FROM derive.turns t
 JOIN clean.turns ct USING (trace_id)
+JOIN derive.sessions s ON s.session_id = t.session_id
 LEFT JOIN (
   SELECT
     trace_id,

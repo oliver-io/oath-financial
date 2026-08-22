@@ -53,7 +53,7 @@ export function IndexPage() {
   const location = useLocation();
   const search = location.search;
   return (
-    <div className="mx-auto mt-[10vh] mb-auto w-full max-w-5xl">
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center py-10">
       <h1 className="text-2xl font-semibold text-ink">Trace Insights</h1>
       <p className="mt-2 mb-8 text-base text-ink-3">
         Observability for auditor agent sessions — one dataset, two rooms.
@@ -64,24 +64,35 @@ export function IndexPage() {
           return (
             <div
               key={room.side}
-              className="rounded border border-hairline bg-surface"
+              className="flex flex-col rounded border border-hairline bg-surface"
               style={{ borderTop: `3px solid ${color}` }}
             >
               <Link to={{ pathname: room.to, search }} className="block p-6 hover:bg-paper">
-                <div className="text-lg font-semibold" style={{ color }}>
-                  {room.title} →
+                <div className="flex items-baseline justify-between gap-3">
+                  <div className="text-lg font-semibold" style={{ color }}>
+                    {room.title}
+                  </div>
+                  <span
+                    className="shrink-0 rounded-full border px-2.5 py-0.5 text-[10px] font-medium tracking-wide uppercase"
+                    style={{ color, borderColor: color }}
+                  >
+                    dashboard →
+                  </span>
                 </div>
                 <p className="mt-1.5 text-sm text-ink-3">{room.lead}</p>
               </Link>
-              <div className="border-t border-hairline px-6 py-3">
+              <div className="flex flex-1 flex-col divide-y divide-hairline border-t border-hairline bg-paper">
                 {room.pages.map((p) => (
                   <Link
                     key={p.to}
                     to={{ pathname: p.to, search }}
-                    className="block py-2.5 text-sm text-ink-2 hover:text-ink"
+                    className="group flex flex-1 items-center justify-between gap-3 px-6 py-5 text-sm text-ink-2 hover:bg-surface hover:text-ink"
                   >
-                    <span className="font-medium text-ink">{p.label}</span>
-                    <span className="ml-2 text-[11px] text-ink-3">{p.q}</span>
+                    <span className="flex flex-col">
+                      <span className="text-sm font-medium text-ink">{p.label}</span>
+                      <span className="mt-0.5 text-xs text-ink-3">{p.q}</span>
+                    </span>
+                    <span className="text-ink-3 group-hover:text-ink">›</span>
                   </Link>
                 ))}
               </div>

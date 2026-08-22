@@ -14,16 +14,19 @@ import type { JobSpec, RecordOutcome } from "../runner.ts";
 const PROMPT = `You classify ONE audit session of an AI coding agent from its digest: per-turn
 one-liners (typed prefix, tool families, signature matches, friction labels), integrity flags,
 final-turn facts and the closing assistant text.
-Output: job_type — the line of business of the work (doc_receipt_check | doc_location |
-doc_inventory | tie_out | portal_auth | extraction_supervision | drafting | capability_probe |
-other) with an optional job_type_secondary; outcome — completed | abandoned | undetermined
-("undetermined" is a real judgment: you read it and no marker distinguishes a platform kill
-from abandonment); outcome_evidence — one sentence plus pointer turn numbers; ended_mid_work —
-whether the final turn stops inside unfinished work (judge from the final-turn facts, the
-platform-limit marker, and the closing text — tool-heavy finals often END complete).
+Session boundaries are marked on the digests and are authoritative: the digest with
+is_final_turn=true is the session's LAST exchange — no turn follows anywhere in the data, so
+judge the ending from it (what happened afterwards is unknowable, not implied); the digest with
+is_first_observed_turn=true is the earliest turn telemetry captured — the true session start
+unless resumed_fragment is true (then the real beginning was lost, not absent).
+Each output field's meaning and its decision rules are given in that field's schema
+description — follow them exactly; outcome and ended_mid_work are SEPARATE judgments that must
+respect the coherence rule stated on ended_mid_work (a session that closes with delivered work
+or a user sign-off did not end mid-work, even if open items remain).
 If resumed_fragment is true the session head is missing: judge from the tail only and prefer
 "undetermined" for job_type when the tail alone cannot say; NEVER infer what missing turns
-contained. verdict "insufficient" + insufficient_reason only when the digest is unreadable.`;
+contained. verdict "insufficient" + insufficient_reason only when the digest is unreadable —
+a readable-but-ambiguous session is outcome "undetermined", not insufficient.`;
 
 function toRow(record: Record<string, unknown>, outcome: RecordOutcome): Record<string, unknown> {
   const output = outcome.kind === "error" ? {} : outcome.output;
@@ -46,7 +49,7 @@ export const j3Session: JobSpec = {
   buildPacket: buildJ3Packet,
   outputSchema: J3OutputSchema,
   promptTemplate: PROMPT,
-  promptVersion: "j3-v1",
+  promptVersion: "j3-v3",
   modelTier: "strong",
   writerSqlFile: "s3_j3_writer",
   outputTable: "enrich.j3_verdicts",

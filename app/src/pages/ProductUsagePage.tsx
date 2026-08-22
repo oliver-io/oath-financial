@@ -47,10 +47,6 @@ export function ProductUsagePage() {
     [dims.rows],
   );
 
-  const _totalSessions = (jobShare.rows ?? []).reduce((a, r) => a + r.n, 0);
-  const _top3 = (jobShare.rows ?? []).slice(0, 3).reduce((a, r) => a + r.n, 0);
-  const _maxShare = Math.max(1, ...(jobShare.rows ?? []).map((r) => r.n));
-
   const timelineData = useMemo(() => {
     const byDay = new Map<string, Record<string, number | string>>();
     for (const r of clientDays.rows ?? []) {
@@ -105,11 +101,13 @@ export function ProductUsagePage() {
         side="product"
         title="Usage"
         question="Who uses this, for what work, where is it concentrated?"
+        pinStat={{ id: "stat-turns", side: "product" }}
       />
 
       <Section
         title="What work is this used for?"
         chip={<ProvenanceChip kind="model" method="J3 job-type classification (session grain)" />}
+        pin={{ id: "job-share", side: "product" }}
       >
         {jobShare.error && <ErrorState message={jobShare.error} />}
         {jobShare.loading && <Skeleton />}

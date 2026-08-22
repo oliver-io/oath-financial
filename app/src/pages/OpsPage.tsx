@@ -48,6 +48,7 @@ export function OpsPage() {
         side="ops"
         title="Failures & incidents"
         question="What is breaking, how badly, one-off or systemic?"
+        pinStat={{ id: "stat-failure-events", side: "ops" }}
       />
       <div className="mb-4 flex items-center gap-3 text-xs text-ink-2">
         <label
@@ -71,6 +72,7 @@ export function OpsPage() {
       <Section
         title="When is it failing, and what kind?"
         chip={<ProvenanceChip kind="heuristic" method="anchored signature matches per day" />}
+        pin={{ id: "failure-series", side: "ops" }}
       >
         {series.error && <ErrorState message={series.error} />}
         {series.loading && <Skeleton progress={series.fetchProgress} />}

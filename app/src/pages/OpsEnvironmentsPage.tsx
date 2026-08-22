@@ -52,7 +52,12 @@ export function OpsEnvironmentsPage() {
 
   return (
     <div>
-      <PageTitle side="ops" title="Environments" question="Which client box is unhealthy?" />
+      <PageTitle
+        side="ops"
+        title="Environments"
+        question="Which client box is unhealthy?"
+        pinStat={{ id: "stat-active-clients", side: "ops" }}
+      />
       <Section
         title="Errors per 100 tool calls, client × failure class"
         chip={

@@ -1102,3 +1102,80 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   sees a contract-less document pre-boot (its first-poll refusal, found while testing).
 - Gates: app tsc clean, biome clean, 27/27 app tests (route list updated for
   /ops/failures and /product). Verified by screenshot: top bar + rail + ops dashboard.
+
+## 29. Room dashboards become pinnable widget boards (user directive)
+
+- The room dashboards no longer carry a title/question header or a fixed layout —
+  each is a **tiled board of pinned widgets** composed from the room's sub-pages,
+  which keep their focused reports. Tile headers link back to the source page
+  (room-color underline); every tile has an unpin ✕; a ⊕ add-widget picker lists the
+  room's unpinned widgets.
+- **Widget registry** (`components/dashboard/widgets.tsx`): self-contained renderers
+  that fetch through the same queries.ts entries as the full pages (semantics cannot
+  fork) — ops: findings, failure time series, daily activity, three stat tiles;
+  product: findings, job-type share, outcomes-per-job-type, three stat tiles. Wide
+  widgets span two grid columns.
+- **Pinning from the pages**: Section gained an optional pin prop — a 📌 toggle on the
+  constructs that exist as widgets (failure series, activity strips, job share,
+  outcome bars). Pin state is a per-viewer convenience, so it lives in localStorage
+  (try/catch-wrapped, per-room keys, sensible defaults when unset) — the URL remains
+  the only store for shareable view state.
+- Verified in-browser: pinning from /product/outcomes adds the tile to /product
+  (persists across loads), unpin/picker work, defaults render for a fresh viewer.
+  Gates: tsc clean, biome clean, 27/27 app tests.
+
+## 32. Enrichment prompt/schema hardening after the 10-call sanity pass
+
+- Capped sanity run (`etl enrich --job J3 --limit 10`, new --limit flag capping the
+  SELECTED set so the exactly-one-row invariant holds) surfaced one incoherent row:
+  outcome=completed + ended_mid_work=true on a session ending in a user thank-you.
+  Root cause: the zod output schemas carried NO field descriptions — the structured-
+  output JSON Schema was bare types — and the prompt defined ended_mid_work vaguely.
+- Fix: every field of every J1-J5 output schema now carries a .describe() annotation
+  stating purpose + value interpretation (z.toJSONSchema forwards these into
+  response_format); ended_mid_work gained an explicit definition + coherence rule
+  vs outcome; J3 prompt defers field semantics to the schema. All five prompt
+  versions bumped to v2 (schema descriptions are model-visible → cache-poisoning
+  rule; the header in enrichment.ts now states this).
+- Re-run of the same 10 sessions on j3-v2: the offending row now completed/false with
+  evidence citing the user acknowledgement; all 10 rows coherent (completed→false,
+  abandoned→true, undetermined→true with mid-task evidence); one session improved
+  other→capability_probe. 10 judged / 0 abstained / 0 error; suite still 108/0,
+  tsc/biome clean. Cost envelope confirmed: J1 57 + J2 116 batched + J3 116 + J4 ~3 +
+  J5 250 ≈ 540 calls, well under llm.md's 1,500.
+
+## 30. Widget boards: content-fitted tiles + inverted pin control (user directive)
+
+- **Sizing**: the board is now a wrapping flex row; widgets declare a size class —
+  `stat` (packs several per row, capped width), `half` (~26rem basis, grows), `full`
+  (whole row) — so small tiles like Turns no longer occupy half the board.
+- **Inverted control**: the ⊕ add-widget picker is gone. Every widget is pinned from
+  its natural page: constructs keep their Section 📌 toggle, and each sub-page's
+  quick-stat widget pins from a 📌 next to the page title (its natural home). The
+  board only unpins (✕ per tile). Findings have no sub-page home, so they are a fixed
+  section at the top of each room board rather than a widget; default pins are now
+  the room's headline visual(s) plus one stat.
+- Verified in-browser: default product board packs job-share + two stat tiles on one
+  row below findings; pin controls on /product/usage correctly show pinned state;
+  no picker remains. Gates: tsc clean, biome clean, 27/27 app tests.
+
+## 44. portal_auth removed from the job taxonomy (2026-08-22, user-driven data dig)
+
+The user challenged the fixture dashboard's "What work is this used for?" chart showing
+`portal_auth` as the dominant job type. A raw-trace investigation confirmed their
+hypothesis and refuted the orchestrator's first framing ("auth-only sessions exist"):
+
+- The `/audit-auth` skill fires 115× but always bare — never with a user request.
+- Every session containing it (incl. all four 1-turn "auth-opening" sessions) performs
+  substantive document work; **no session has authentication as its deliverable**.
+- `check-auth` reports `valid` 252× while portal calls in the same turns still 403 —
+  the status check is an untrustworthy instrument (new found-trap in FINDINGS.md).
+- The fallback is structural: every browser `navigate` in the dataset targets
+  `portal.example.com/documents`, followed by form-input grinding — the browser-grind
+  capability gap's cause — or abandonment ("I can't continue" ×14).
+
+Decision (user-approved): portal auth resembles an infra-alignment tool call, not a
+source of work. Removed `portal_auth` from J3's `job_type` enum (llm.md,
+derivations.md); auth is represented as ops failure signatures + J2 friction cause +
+a product-side overhead/interruption metric, and the fixture generator must stop
+emitting it as a job. Directives relayed to ETL and app tracks.

@@ -36,7 +36,10 @@ independently generated (never join them); 299/307 Agent-tool outputs are one fa
 template (poisons naive error rates); bare `403`/`404` regexes match invented dollar
 amounts; the demo *user* and the tealstone demo *client* are different sets; telemetry
 drops turns (one session starts at turn 22); a platform spend-limit marker exists in
-assistant text but does not reliably mark session death.
+assistant text but does not reliably mark session death; `check-auth` reports `valid`
+252× while portal calls in the same turns still return 403/no-token — the auth status
+check is an untrustworthy instrument, so "portal auth" is infra friction to attribute,
+never a category of work (we removed it from the job taxonomy on this evidence).
 
 ## What we'd build next
 

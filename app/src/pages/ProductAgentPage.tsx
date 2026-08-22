@@ -89,6 +89,7 @@ export function ProductAgentPage() {
         side="product"
         title="Agent behavior"
         question="Where does the agent thrash, retry, or get corrected?"
+        pinStat={{ id: "stat-chain-turns", side: "product" }}
       />
       <EventSemanticsCaption />
 

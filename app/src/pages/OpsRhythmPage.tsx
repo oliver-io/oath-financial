@@ -88,9 +88,14 @@ export function OpsRhythmPage() {
         side="ops"
         title="Working rhythm"
         question="How does work actually flow, per auditor and engagement?"
+        pinStat={{ id: "stat-active-auditors", side: "ops" }}
       />
 
-      <Section title="Who was active when" chip={<GapCapParam />}>
+      <Section
+        title="Who was active when"
+        chip={<GapCapParam />}
+        pin={{ id: "activity-strips", side: "ops" }}
+      >
         {daily.error && <ErrorState message={daily.error} />}
         {daily.loading && <Skeleton progress={daily.fetchProgress} />}
         {daily.rows && <ActivityStrips rows={daily.rows} win={win} />}

@@ -55,7 +55,7 @@ export const j4Gaps: JobSpec = {
   buildPacket: buildJ4Packet,
   outputSchema: J4OutputSchema,
   promptTemplate: PROMPT,
-  promptVersion: "j4-v1",
+  promptVersion: "j4-v2",
   modelTier: "strong",
   writerSqlFile: "s3_j4_writer",
   outputTable: "enrich.j4_gaps",

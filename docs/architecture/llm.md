@@ -121,7 +121,7 @@ full assistant tail of the last turn.
 
 ```json
 {
-  "job_type": "doc_receipt_check | doc_location | doc_inventory | tie_out | portal_auth | extraction_supervision | drafting | capability_probe | other",
+  "job_type": "doc_receipt_check | doc_location | doc_inventory | tie_out | extraction_supervision | drafting | capability_probe | other",
   "job_type_secondary": "… | null",
   "outcome": "completed | abandoned | undetermined",
   "outcome_evidence": "one sentence + pointer turn numbers",
@@ -130,6 +130,15 @@ full assistant tail of the last turn.
   "insufficient_reason": null
 }
 ```
+
+`portal_auth` was removed from the `job_type` enum after inspection of the raw traces
+(2026-08-22): the `/audit-auth` skill fires 115 times but always bare (no user request
+attached), every session containing it also performs substantive document work, and no
+session in the dataset has authentication as its deliverable. Portal auth is
+infrastructure alignment — a failure/overhead phenomenon (ops signatures
+`portal-auth-403`/no-token, J2 `friction_cause: system_failure`, and the auth→browser-
+grind fallback), never a line of business. The prompt must instruct: classify such
+sessions by their document work; auth activity is noise for this field.
 
 Note `undetermined` is a *judgment* ("I read it and can't tell — no marker distinguishes
 kill from abandonment"), distinct from `insufficient` ("I couldn't read it").

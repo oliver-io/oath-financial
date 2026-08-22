@@ -5,12 +5,6 @@
 // entries the full pages use, so semantics cannot fork.
 
 import type { ReactNode } from "react";
-import { FindingCards } from "./FindingCards.tsx";
-import { ActivityStrips } from "../ops/ActivityStrips.tsx";
-import { FailureTimeSeries } from "../ops/FailureTimeSeries.tsx";
-import { JobShareBar } from "../product/JobShareBar.tsx";
-import { OutcomeBars } from "../product/OutcomeBars.tsx";
-import { Skeleton } from "../shared/honesty.tsx";
 import { useFilters, useRows, useWindow } from "../../data/DataContext.tsx";
 import {
   AuditorDaySchema,
@@ -28,6 +22,11 @@ import {
 } from "../../data/queries.ts";
 import { count } from "../../fmt.ts";
 import type { Side } from "../../state/pins.ts";
+import { ActivityStrips } from "../ops/ActivityStrips.tsx";
+import { FailureTimeSeries } from "../ops/FailureTimeSeries.tsx";
+import { JobShareBar } from "../product/JobShareBar.tsx";
+import { OutcomeBars } from "../product/OutcomeBars.tsx";
+import { Skeleton } from "../shared/honesty.tsx";
 
 export interface WidgetDef {
   id: string;
@@ -35,8 +34,9 @@ export interface WidgetDef {
   title: string;
   /** The sub-page carrying the focused report; the tile header links here. */
   source: string;
-  /** Grid columns the tile spans (of 2). */
-  span: 1 | 2;
+  /** Content-fitted flex sizing: stat tiles pack several per row, half
+   * widgets pair up, full widgets take the whole row. */
+  size: "stat" | "half" | "full";
   render: () => ReactNode;
 }
 
@@ -50,7 +50,12 @@ function FailureSeriesWidget() {
   if (series.loading || incidents.loading) return <Skeleton progress={series.fetchProgress} />;
   if (!series.rows || !incidents.rows) return null;
   return (
-    <FailureTimeSeries points={series.rows} incidents={incidents.rows} win={win} filters={filters} />
+    <FailureTimeSeries
+      points={series.rows}
+      incidents={incidents.rows}
+      win={win}
+      filters={filters}
+    />
   );
 }
 
@@ -114,19 +119,11 @@ function StatWidget({
 
 export const WIDGETS: WidgetDef[] = [
   {
-    id: "ops-findings",
-    side: "ops",
-    title: "Findings",
-    source: "/ops",
-    span: 2,
-    render: () => <FindingCards audience="ops" />,
-  },
-  {
     id: "failure-series",
     side: "ops",
     title: "Failures over time",
     source: "/ops/failures",
-    span: 2,
+    size: "full",
     render: () => <FailureSeriesWidget />,
   },
   {
@@ -134,7 +131,7 @@ export const WIDGETS: WidgetDef[] = [
     side: "ops",
     title: "Daily activity",
     source: "/ops/rhythm",
-    span: 1,
+    size: "half",
     render: () => <ActivityStripsWidget />,
   },
   {
@@ -142,7 +139,7 @@ export const WIDGETS: WidgetDef[] = [
     side: "ops",
     title: "Failure events",
     source: "/ops/failures",
-    span: 1,
+    size: "stat",
     render: () => (
       <StatWidget
         pick={(s) => count(s.failure_events)}
@@ -156,7 +153,7 @@ export const WIDGETS: WidgetDef[] = [
     side: "ops",
     title: "Active clients",
     source: "/ops/environments",
-    span: 1,
+    size: "stat",
     render: () => (
       <StatWidget
         pick={(s) => count(s.active_clients)}
@@ -170,7 +167,7 @@ export const WIDGETS: WidgetDef[] = [
     side: "ops",
     title: "Active auditors",
     source: "/ops/rhythm",
-    span: 1,
+    size: "stat",
     render: () => (
       <StatWidget
         pick={(s) => count(s.active_auditors)}
@@ -180,19 +177,11 @@ export const WIDGETS: WidgetDef[] = [
     ),
   },
   {
-    id: "product-findings",
-    side: "product",
-    title: "Findings",
-    source: "/product",
-    span: 2,
-    render: () => <FindingCards audience="product" />,
-  },
-  {
     id: "job-share",
     side: "product",
     title: "Job-type share",
     source: "/product/usage",
-    span: 1,
+    size: "half",
     render: () => <JobShareWidget />,
   },
   {
@@ -200,7 +189,7 @@ export const WIDGETS: WidgetDef[] = [
     side: "product",
     title: "Outcomes per job type",
     source: "/product/outcomes",
-    span: 2,
+    size: "full",
     render: () => <OutcomeBarsWidget />,
   },
   {
@@ -208,7 +197,7 @@ export const WIDGETS: WidgetDef[] = [
     side: "product",
     title: "Turns",
     source: "/product/usage",
-    span: 1,
+    size: "stat",
     render: () => (
       <StatWidget
         pick={(s) => count(s.turns)}
@@ -222,7 +211,7 @@ export const WIDGETS: WidgetDef[] = [
     side: "product",
     title: "Determined sessions",
     source: "/product/outcomes",
-    span: 1,
+    size: "stat",
     render: () => (
       <StatWidget
         pick={(s) => `${count(s.determined)} of ${count(s.contained)}`}
@@ -236,7 +225,7 @@ export const WIDGETS: WidgetDef[] = [
     side: "product",
     title: "Identical-input chains",
     source: "/product/agent",
-    span: 1,
+    size: "stat",
     render: () => (
       <StatWidget
         pick={(s) => count(s.chain_turns)}
@@ -248,5 +237,4 @@ export const WIDGETS: WidgetDef[] = [
 ];
 
 export const widgetsFor = (side: Side): WidgetDef[] => WIDGETS.filter((w) => w.side === side);
-export const widgetById = (id: string): WidgetDef | undefined =>
-  WIDGETS.find((w) => w.id === id);
+export const widgetById = (id: string): WidgetDef | undefined => WIDGETS.find((w) => w.id === id);

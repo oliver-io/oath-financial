@@ -23,7 +23,14 @@ JOIN (
     CAST(to_json(list(struct_pack(
       turn_number := t.turn_number,
       gap_before_s := t.gap_before_s,
-      typed_prefix := substr(ct.user_content, 1, 200),
+      -- The HUMAN-AUTHORED portion only (empty when the whole message is
+      -- harness-injected — the markers below say what was injected); showing
+      -- raw user_content head here would present skill bodies as typed text.
+      typed_prefix := substr(ct.user_content, 1, LEAST(t.typed_prefix_chars, 200)),
+      has_task_notification := t.has_task_notification,
+      has_skill_body := t.has_skill_body,
+      has_extract_paste := t.has_extract_paste,
+      platform_limit_marker := t.platform_limit_marker,
       assistant_tail := right(ct.assistant_content, 500),
       tool_families := COALESCE(te.families, []),
       matched_patterns := COALESCE(te.patterns, []),

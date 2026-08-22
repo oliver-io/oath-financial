@@ -41,7 +41,7 @@ export const j5Audit: JobSpec = {
   buildPacket: buildJ5Packet,
   outputSchema: J5OutputSchema,
   promptTemplate: PROMPT,
-  promptVersion: "j5-v1",
+  promptVersion: "j5-v2",
   modelTier: "fast",
   writerSqlFile: "s3_j5_writer",
   outputTable: "enrich.j5_audit",

@@ -1,72 +1,43 @@
-// The room dashboard: a tiled board of pinned widgets (user directive). Tiles
-// are pinned from the sub-pages (or via the picker here) and each tile links
-// back to its focused report. Pin state is per-viewer (localStorage).
+// The room dashboard: the room's findings (fixed) above a tiled board of
+// pinned widgets. Widgets are pinned FROM their natural pages via the 📌
+// control each construct carries (no picker here — the board only unpins);
+// tiles size to their content in a wrapping flex row and link back to the
+// focused report. Pin state is per-viewer (localStorage).
 
-import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import { type Side, usePins } from "../../state/pins.ts";
-import { widgetById, widgetsFor } from "./widgets.tsx";
+import { FindingCards } from "./FindingCards.tsx";
+import { widgetById } from "./widgets.tsx";
 
 const sideColor = (side: Side): string =>
   side === "ops" ? "var(--color-ops)" : "var(--color-product)";
 
+const SIZE_CLASS: Record<"stat" | "half" | "full", string> = {
+  stat: "grow basis-52 max-w-sm",
+  half: "grow basis-[26rem]",
+  full: "basis-full",
+};
+
 export function WidgetBoard({ side }: { side: Side }) {
-  const { pins, pin, unpin } = usePins(side);
-  const [pickerOpen, setPickerOpen] = useState(false);
+  const { pins, unpin } = usePins(side);
   const location = useLocation();
-  const available = widgetsFor(side).filter((w) => !pins.includes(w.id));
   return (
     <div>
-      <div className="mb-3 flex items-center justify-end gap-2">
-        <div className="relative">
-          <button
-            type="button"
-            className="cursor-pointer rounded border border-hairline bg-surface px-2 py-1 text-xs text-ink-2 hover:border-ink-3"
-            onClick={() => setPickerOpen((v) => !v)}
-          >
-            ⊕ add widget
-          </button>
-          {pickerOpen && (
-            <div className="absolute right-0 top-8 z-20 w-64 rounded border border-hairline bg-surface p-1.5 shadow-md">
-              {available.length === 0 && (
-                <div className="px-2 py-1.5 text-xs text-ink-3">
-                  Everything pinnable is already on the board.
-                </div>
-              )}
-              {available.map((w) => (
-                <button
-                  key={w.id}
-                  type="button"
-                  className="block w-full cursor-pointer rounded px-2 py-1.5 text-left text-xs text-ink-2 hover:bg-paper"
-                  onClick={() => {
-                    pin(w.id);
-                    setPickerOpen(false);
-                  }}
-                >
-                  <span className="font-medium text-ink">{w.title}</span>
-                  <span className="ml-1.5 text-[10px] text-ink-3">from {w.source}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+      <FindingCards audience={side} />
       {pins.length === 0 && (
         <div className="rounded border border-dashed border-hairline bg-paper p-8 text-center text-sm text-ink-3">
-          Nothing pinned. Use ⊕ add widget, or pin a construct from any{" "}
-          {side === "ops" ? "Ops" : "Product"} page with its 📌 control.
+          Nothing pinned yet. Open any {side === "ops" ? "Ops" : "Product"} page and use a
+          construct's 📌 control to pin it here.
         </div>
       )}
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <div className="flex flex-wrap items-stretch gap-4">
         {pins.map((id) => {
           const w = widgetById(id);
           if (!w) return null; // a stale pin from an older widget set
           return (
             <section
               key={w.id}
-              className={`min-w-0 rounded border border-hairline bg-surface p-3 ${
-                w.span === 2 ? "xl:col-span-2" : ""
-              }`}
+              className={`min-w-0 rounded border border-hairline bg-surface p-3 ${SIZE_CLASS[w.size]}`}
             >
               <div className="mb-2 flex items-center justify-between gap-2">
                 <Link

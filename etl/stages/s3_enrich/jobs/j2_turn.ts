@@ -20,7 +20,12 @@ agent_behavior | user_request | none); linked_signature_pattern — ONLY a signa
 listed in that turn's matched_signature_patterns, else null; is_correction — true only when the
 user is re-steering the agent (judge only turns flagged is_correction_candidate; plain new asks
 are not corrections); verdict "ok", or "insufficient" with insufficient_reason when the turn
-cannot be read. One sentence of evidence.`;
+cannot be read. One sentence of evidence.
+Each packet's "position" block is authoritative about the session boundary: is_first_turn=true
+means NOTHING precedes this turn (prev_assistant_tail is null because none exists — unless
+session_resumed_fragment is true, in which case earlier turns were lost by telemetry, not
+absent); is_final_turn=true means this is the session's LAST exchange — no turn follows
+anywhere in the data, so what happened afterwards is unknowable, not implied.`;
 
 function toRow(record: Record<string, unknown>, outcome: RecordOutcome): Record<string, unknown> {
   const output = outcome.kind === "error" ? {} : outcome.output;
@@ -60,7 +65,7 @@ export const j2Turn: JobSpec = {
   buildPacket: buildJ2Packet,
   outputSchema: J2OutputSchema,
   promptTemplate: PROMPT,
-  promptVersion: "j2-v1",
+  promptVersion: "j2-v4",
   modelTier: "strong",
   writerSqlFile: "s3_j2_writer",
   outputTable: "enrich.j2_verdicts",
