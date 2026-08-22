@@ -1,4 +1,6 @@
-// OpenAI wrapper: structured-output call, backoff, repair retry.
+// OpenAI wrapper: one structured-output call per complete(). Backoff, the
+// repair retry, and all retry policy live in the RUNNER — this module only
+// translates SDK errors into the typed seam errors the runner keys off.
 // Contract: docs/plans/etl.md §2 client.ts; docs/plans/etl_testing.md §4–§5.
 // This is the ONE module that talks to the openai SDK, and the sanctioned test
 // seam: tests inject a scripted LlmClient here — the real runner, validation,
@@ -10,7 +12,7 @@
 
 import OpenAI from "openai";
 import type { EnrichmentEnv } from "../../context.ts";
-import { MissingCredentialsError, Unimplemented } from "../../lib/errors.ts";
+import { MissingCredentialsError } from "../../lib/errors.ts";
 
 /** One structured-output request: prompt + JSON Schema derived from the job's
  * zod schema. The client returns the raw text; parsing/validation is the
@@ -72,11 +74,27 @@ export class OpenAiClient implements LlmClient {
     });
   }
 
-  /** Dispatches one structured-output call with exponential backoff on 429/5xx
-   * (bounded retries; timeout retried once). Repair retries live in the runner. */
-  complete(_request: LlmRequest): Promise<LlmResponse> {
-    void this.sdk; // dispatch through the SDK is stage-3 work
-    throw new Unimplemented("OpenAiClient.complete", "docs/architecture/etl.md Stage 3");
+  /** Dispatches ONE structured-output call. Retry/backoff/repair policy is the
+   * runner's; this only maps SDK failures to the typed seam errors. */
+  async complete(request: LlmRequest): Promise<LlmResponse> {
+    try {
+      const completion = await this.sdk.chat.completions.create({
+        model: request.model,
+        messages: [{ role: "user", content: request.prompt }],
+        response_format: {
+          type: "json_schema",
+          json_schema: { name: `${request.job}_output`, schema: request.responseJsonSchema },
+        },
+      });
+      return { text: completion.choices[0]?.message?.content ?? "" };
+    } catch (err) {
+      if (err instanceof OpenAI.APIConnectionTimeoutError) throw new LlmTimeoutError();
+      if (err instanceof OpenAI.APIError && typeof err.status === "number") {
+        const status = err.status;
+        if (status === 429 || status >= 500) throw new LlmHttpError(status);
+      }
+      throw err;
+    }
   }
 }
 
