@@ -4,11 +4,11 @@
 
 import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useFilters, useRows, useWindow } from "../data/DataContext.tsx";
 import { FailureTimeSeries } from "../components/ops/FailureTimeSeries.tsx";
 import { IncidentPanel } from "../components/ops/IncidentPanel.tsx";
 import { SignatureTable } from "../components/ops/SignatureTable.tsx";
 import { ErrorState, ProvenanceChip, Skeleton } from "../components/shared/honesty.tsx";
+import { useFilters, useRows, useWindow } from "../data/DataContext.tsx";
 import {
   FailureSeriesPointSchema,
   FailureSignatureRowQ,
@@ -83,8 +83,8 @@ export function OpsPage() {
           />
         )}
         <p className="mt-1 text-[10px] text-ink-3">
-          Shaded bands are detected incidents (rate excursions); click a band for blast radius
-          and the product-side crossover.
+          Shaded bands are detected incidents (rate excursions); click a band for blast radius and
+          the product-side crossover.
         </p>
         <EventSemanticsCaption />
       </Section>

@@ -6,11 +6,11 @@
 import { parseIntArray, parseTargetParams } from "@trace-insights/contracts";
 import { Link } from "react-router";
 import { z } from "zod";
-import { GhostCard, ProvenanceChip, Skeleton, ErrorState } from "../components/shared/honesty.tsx";
+import { ErrorState, GhostCard, ProvenanceChip, Skeleton } from "../components/shared/honesty.tsx";
 import { Sparkline } from "../components/shared/microviz.tsx";
 import { useData, useFilters, useRows } from "../data/DataContext.tsx";
 import { count } from "../fmt.ts";
-import { DEFAULT_FILTERS, filtersToSearch, type FilterState } from "../state/urlState.ts";
+import { DEFAULT_FILTERS, type FilterState, filtersToSearch } from "../state/urlState.ts";
 import { PageTitle } from "./PageScaffold.tsx";
 
 const FindingRowQ = z.object({
@@ -37,11 +37,7 @@ function targetLink(f: Finding, base: FilterState): string {
   if (typeof p.signature === "string" && p.signature) filters.signature = p.signature;
   if (typeof p.gap === "string" && p.gap) filters.gap = p.gap;
   const path =
-    p.side === "ops"
-      ? "/ops"
-      : p.page === "usage"
-        ? "/product/usage"
-        : "/product/outcomes";
+    p.side === "ops" ? "/ops" : p.page === "usage" ? "/product/usage" : "/product/outcomes";
   return `${path}${filtersToSearch(filters)}`;
 }
 
@@ -90,7 +86,9 @@ export function FindingsPage() {
               <div className="min-w-0">
                 <div className="mb-1 flex items-center gap-2">
                   <AudienceTag audience={f.audience} />
-                  {kind && <ProvenanceChip kind={kind} method="threshold rule over derived tables" />}
+                  {kind && (
+                    <ProvenanceChip kind={kind} method="threshold rule over derived tables" />
+                  )}
                 </div>
                 <p className="text-sm text-ink">{f.title}</p>
               </div>
@@ -99,7 +97,9 @@ export function FindingsPage() {
                   <Sparkline values={spark} width={90} height={30} />
                 ) : f.metric_value !== null ? (
                   <div className="text-right">
-                    <div className="text-lg font-semibold tabular text-ink">{count(f.metric_value)}</div>
+                    <div className="text-lg font-semibold tabular text-ink">
+                      {count(f.metric_value)}
+                    </div>
                     <div className="text-[10px] text-ink-3">{f.metric_label}</div>
                   </div>
                 ) : null}
@@ -116,8 +116,8 @@ export function FindingsPage() {
       </div>
       {degraded.any && (
         <p className="mt-3 text-xs text-ink-3">
-          Enrichment did not run for this publish — only rule-only findings are shown; cards
-          that need model-classified fields will appear on an enriched run.
+          Enrichment did not run for this publish — only rule-only findings are shown; cards that
+          need model-classified fields will appear on an enriched run.
         </p>
       )}
       <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">

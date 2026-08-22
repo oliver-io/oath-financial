@@ -6,7 +6,6 @@
 // the rule id that fired), affected-session links.
 
 import type { FailureSignatureRow } from "@trace-insights/contracts";
-import { parseIntArray } from "@trace-insights/contracts";
 import { Fragment, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import type { z } from "zod";
@@ -20,11 +19,11 @@ import {
   SessionLinkSchema,
   type SignatureAggSchema,
 } from "../../data/queries.ts";
-import { count, dayLabel, pct, tsLabel } from "../../fmt.ts";
+import { count, pct, tsLabel } from "../../fmt.ts";
+import { filtersToSearch } from "../../state/urlState.ts";
 import { ProvenanceChip } from "../shared/honesty.tsx";
 import { MicroBar3, RateBar, Sparkline } from "../shared/microviz.tsx";
 import { signatureClassColor } from "../shared/series.ts";
-import { filtersToSearch } from "../../state/urlState.ts";
 
 type Agg = z.infer<typeof SignatureAggSchema>;
 
@@ -137,16 +136,25 @@ export function SignatureTable({
             <th className="py-1.5 pr-2 font-medium">signature</th>
             {groupBy !== "none" && <th className="py-1.5 pr-2 font-medium">{groupBy}</th>}
             <th className="py-1.5 pr-2 font-medium">class</th>
-            <th className="py-1.5 pr-2 text-right font-medium" title="heuristic count of matches in window">
+            <th
+              className="py-1.5 pr-2 text-right font-medium"
+              title="heuristic count of matches in window"
+            >
               events
             </th>
             <th className="py-1.5 pr-2 text-right font-medium">sessions</th>
             <th className="py-1.5 pr-2 text-right font-medium">auditors</th>
             <th className="py-1.5 pr-2 font-medium">first / last seen</th>
-            <th className="py-1.5 pr-2 font-medium" title="share of occurrences in a session's final turn — a co-occurrence rate, not a kill claim">
+            <th
+              className="py-1.5 pr-2 font-medium"
+              title="share of occurrences in a session's final turn — a co-occurrence rate, not a kill claim"
+            >
               terminal
             </th>
-            <th className="py-1.5 font-medium" title="structural post-failure shape: same-tool-clean-later / other-calls-after / turn-ends-on-failure">
+            <th
+              className="py-1.5 font-medium"
+              title="structural post-failure shape: same-tool-clean-later / other-calls-after / turn-ends-on-failure"
+            >
               post-failure shape
             </th>
           </tr>
@@ -170,19 +178,28 @@ export function SignatureTable({
                     </span>{" "}
                     <ProvenanceChip kind="heuristic" method="anchored signature match" />
                     {ref?.counts_as_failure === "uncertain" && (
-                      <span className="ml-1 text-[10px] text-ink-3" title="curated: a match may not be a failure; gray-zone events adjudicated by J1 where enrichment ran">
+                      <span
+                        className="ml-1 text-[10px] text-ink-3"
+                        title="curated: a match may not be a failure; gray-zone events adjudicated by J1 where enrichment ran"
+                      >
                         uncertain-class
                       </span>
                     )}
-                    {ref?.j5_false_positive_rate !== null && ref?.j5_false_positive_rate !== undefined && (
-                      <span className="ml-1 text-[10px] text-ink-3" title="J5 audit estimate of this rule's error bars">
-                        ±{pct(ref.j5_false_positive_rate)} FP{" "}
-                        <ProvenanceChip kind="model" method="J5 heuristic audit sample" />
-                      </span>
-                    )}
+                    {ref?.j5_false_positive_rate !== null &&
+                      ref?.j5_false_positive_rate !== undefined && (
+                        <span
+                          className="ml-1 text-[10px] text-ink-3"
+                          title="J5 audit estimate of this rule's error bars"
+                        >
+                          ±{pct(ref.j5_false_positive_rate)} FP{" "}
+                          <ProvenanceChip kind="model" method="J5 heuristic audit sample" />
+                        </span>
+                      )}
                   </td>
                   {groupBy !== "none" && <td className="py-2 pr-2">{a.group_value}</td>}
-                  <td className="py-2 pr-2">{ref ? <ClassChip cls={ref.signature_class} /> : "—"}</td>
+                  <td className="py-2 pr-2">
+                    {ref ? <ClassChip cls={ref.signature_class} /> : "—"}
+                  </td>
                   <td className="py-2 pr-2 text-right">{count(a.events)}</td>
                   <td className="py-2 pr-2 text-right font-medium">{count(a.sessions)}</td>
                   <td className="py-2 pr-2 text-right">{count(a.auditors)}</td>
@@ -192,9 +209,10 @@ export function SignatureTable({
                   </td>
                   <td className="py-2 pr-2">
                     {ref?.terminal_rate !== null && ref?.terminal_rate !== undefined ? (
-                      <span title={`${pct(ref.terminal_rate)} of occurrences in a final turn (full dataset)`}>
-                        <RateBar value={ref.terminal_rate} />{" "}
-                        <ProvenanceChip kind="heuristic" />
+                      <span
+                        title={`${pct(ref.terminal_rate)} of occurrences in a final turn (full dataset)`}
+                      >
+                        <RateBar value={ref.terminal_rate} /> <ProvenanceChip kind="heuristic" />
                       </span>
                     ) : (
                       "—"

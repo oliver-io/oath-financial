@@ -55,12 +55,21 @@ export function OpsEnvironmentsPage() {
       <PageTitle side="ops" title="Environments" question="Which client box is unhealthy?" />
       <Section
         title="Errors per 100 tool calls, client × failure class"
-        chip={<ProvenanceChip kind="heuristic" method="counting signature matches normalized by call volume" />}
+        chip={
+          <ProvenanceChip
+            kind="heuristic"
+            method="counting signature matches normalized by call volume"
+          />
+        }
       >
         {cells.error && <ErrorState message={cells.error} />}
         {cells.loading && <Skeleton progress={cells.fetchProgress} />}
         {cells.rows && clients.length > 0 && (
-          <svg width={230 + classes.length * (CELL + 2)} height={clients.length * (CELL + 2) + 90} className="max-w-full">
+          <svg
+            width={230 + classes.length * (CELL + 2)}
+            height={clients.length * (CELL + 2) + 90}
+            className="max-w-full"
+          >
             <title>client × signature-class error-rate heatmap</title>
             {classes.map((cls, j) => (
               <text
@@ -79,8 +88,17 @@ export function OpsEnvironmentsPage() {
               const small = total < smallN;
               return (
                 <g key={client}>
-                  <text x={164} y={i * (CELL + 2) + CELL / 2 + 4} textAnchor="end" fontSize={11} fill="var(--color-ink-2)">
-                    {client} <tspan fill="var(--color-ink-3)" fontSize={9}>({count(total)} calls)</tspan>
+                  <text
+                    x={164}
+                    y={i * (CELL + 2) + CELL / 2 + 4}
+                    textAnchor="end"
+                    fontSize={11}
+                    fill="var(--color-ink-2)"
+                  >
+                    {client}{" "}
+                    <tspan fill="var(--color-ink-3)" fontSize={9}>
+                      ({count(total)} calls)
+                    </tspan>
                   </text>
                   {classes.map((cls, j) => {
                     const r = rate.get(`${client}|${cls}`) ?? 0;
@@ -120,8 +138,8 @@ export function OpsEnvironmentsPage() {
           </svg>
         )}
         <p className="mt-1 text-[10px] text-ink-3">
-          One-hue slate ramp, darker = higher rate. Dotted cells have under {smallN} calls in
-          the window (small-n warning). Cell click opens /ops filtered to the client.
+          One-hue slate ramp, darker = higher rate. Dotted cells have under {smallN} calls in the
+          window (small-n warning). Cell click opens /ops filtered to the client.
         </p>
         <EventSemanticsCaption />
       </Section>
@@ -144,9 +162,9 @@ export function OpsEnvironmentsPage() {
           </div>
         )}
         <p className="mt-2 text-[10px] text-ink-3">
-          Ingest-side integrity (generation rows missing usage, referential gates, fork
-          checks) is recorded in the pipeline run manifest, which is not part of the serving
-          plane — see the run stamp in the footer.
+          Ingest-side integrity (generation rows missing usage, referential gates, fork checks) is
+          recorded in the pipeline run manifest, which is not part of the serving plane — see the
+          run stamp in the footer.
         </p>
       </Section>
     </div>

@@ -8,7 +8,7 @@ import { parseIntArray } from "@trace-insights/contracts";
 import { useState } from "react";
 import { Link } from "react-router";
 import type { z } from "zod";
-import { useData } from "../../data/DataContext.tsx";
+import { useData, useFilters } from "../../data/DataContext.tsx";
 import type { CapabilityGapRowQ } from "../../data/queries.ts";
 import { count } from "../../fmt.ts";
 import { ProvenanceChip } from "../shared/honesty.tsx";
@@ -30,7 +30,10 @@ function EvidencePopover({ gap }: { gap: Gap }) {
       {open && (
         <span className="absolute left-0 top-5 z-30 block w-72 rounded border border-hairline bg-surface p-2 text-[11px] text-ink-2 shadow-md">
           <span className="font-medium">{gap.evidence_pattern}</span>{" "}
-          <ProvenanceChip kind="heuristic" method="structural shape computed in the derive stage; enrichment only names and groups" />
+          <ProvenanceChip
+            kind="heuristic"
+            method="structural shape computed in the derive stage; enrichment only names and groups"
+          />
           {gap.description && <span className="mt-1 block">{gap.description}</span>}
         </span>
       )}
@@ -38,14 +41,9 @@ function EvidencePopover({ gap }: { gap: Gap }) {
   );
 }
 
-export function GapLedger({
-  gaps,
-  exemplars,
-}: {
-  gaps: Gap[];
-  exemplars: Map<string, string[]>;
-}) {
+export function GapLedger({ gaps, exemplars }: { gaps: Gap[]; exemplars: Map<string, string[]> }) {
   const { degraded } = useData();
+  const filters = useFilters();
   return (
     <table className="w-full border-collapse text-xs tabular">
       <thead>
@@ -53,7 +51,10 @@ export function GapLedger({
           <th className="py-1.5 pr-2 font-medium">capability gap</th>
           <th className="py-1.5 pr-2 text-right font-medium">sessions</th>
           <th className="py-1.5 pr-2 text-right font-medium">auditors</th>
-          <th className="py-1.5 pr-2 text-right font-medium" title="turns spent inside the workaround — the backlog ranking key">
+          <th
+            className="py-1.5 pr-2 text-right font-medium"
+            title="turns spent inside the workaround — the backlog ranking key"
+          >
             interaction cost
           </th>
           <th className="py-1.5 pr-2 font-medium">sessions/day</th>
@@ -62,14 +63,24 @@ export function GapLedger({
       </thead>
       <tbody>
         {gaps.map((g) => (
-          <tr key={g.gap_id} className="border-b border-hairline hover:bg-paper">
+          <tr
+            key={g.gap_id}
+            className="border-b border-hairline hover:bg-paper"
+            style={
+              filters.gap === g.gap_id ? { background: "var(--color-product-soft)" } : undefined
+            }
+          >
             <td className="py-2 pr-2">
               {g.display_name ? (
                 <span className="font-medium text-ink">
-                  {g.display_name} <ProvenanceChip kind="model" method="J4 naming; counts are deterministic" />
+                  {g.display_name}{" "}
+                  <ProvenanceChip kind="model" method="J4 naming; counts are deterministic" />
                 </span>
               ) : (
-                <span className="font-mono text-[11px] text-ink-2" title={degraded.j4 ? "name unavailable — enrichment not run" : undefined}>
+                <span
+                  className="font-mono text-[11px] text-ink-2"
+                  title={degraded.j4 ? "name unavailable — enrichment not run" : undefined}
+                >
                   {g.gap_id}
                 </span>
               )}
@@ -79,7 +90,9 @@ export function GapLedger({
             </td>
             <td className="py-2 pr-2 text-right">{count(g.session_count)}</td>
             <td className="py-2 pr-2 text-right">{count(g.auditor_count)}</td>
-            <td className="py-2 pr-2 text-right font-medium">{count(g.interaction_cost_estimate)}</td>
+            <td className="py-2 pr-2 text-right font-medium">
+              {count(g.interaction_cost_estimate)}
+            </td>
             <td className="py-2 pr-2">
               <Sparkline values={parseIntArray(g.daily_series)} />
             </td>

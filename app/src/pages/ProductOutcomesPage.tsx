@@ -34,7 +34,8 @@ export function ProductOutcomesPage() {
   const exemplarRows = useRows(GapExemplarSchema, qGapExemplars(), null);
   const exemplars = useMemo(() => {
     const m = new Map<string, string[]>();
-    for (const e of exemplarRows.rows ?? []) m.set(e.gap_id, [...(m.get(e.gap_id) ?? []), e.session_id]);
+    for (const e of exemplarRows.rows ?? [])
+      m.set(e.gap_id, [...(m.get(e.gap_id) ?? []), e.session_id]);
     return m;
   }, [exemplarRows.rows]);
 
@@ -52,7 +53,12 @@ export function ProductOutcomesPage() {
 
       <Section
         title="Do tasks finish?"
-        chip={<ProvenanceChip kind="model" method="J3 session outcome; undetermined is a first-class bucket" />}
+        chip={
+          <ProvenanceChip
+            kind="model"
+            method="J3 session outcome; undetermined is a first-class bucket"
+          />
+        }
       >
         {outcomes.error && <ErrorState message={outcomes.error} />}
         {outcomes.loading && <Skeleton />}
@@ -61,7 +67,12 @@ export function ProductOutcomesPage() {
 
       <Section
         title="What does a completed task cost in human interactions?"
-        chip={<ProvenanceChip kind="heuristic" method="turns with a non-empty human-authored segment (marker-flag definition)" />}
+        chip={
+          <ProvenanceChip
+            kind="heuristic"
+            method="turns with a non-empty human-authored segment (marker-flag definition)"
+          />
+        }
       >
         {dots.loading && <Skeleton />}
         {dots.rows && <InteractionStrip dots={dots.rows} />}
@@ -75,13 +86,18 @@ export function ProductOutcomesPage() {
 
       <Section
         title="Capability-gap ledger (the ranked feature backlog)"
-        chip={<ProvenanceChip kind="heuristic" method="structural workaround shapes; J4 supplies names only" />}
+        chip={
+          <ProvenanceChip
+            kind="heuristic"
+            method="structural workaround shapes; J4 supplies names only"
+          />
+        }
       >
         {gaps.loading && <Skeleton />}
         {gaps.rows && <GapLedger gaps={gaps.rows} exemplars={exemplars} />}
         <p className="mt-1 text-[10px] text-ink-3">
-          Gap aggregates are computed over the full dataset (reference plane); the window does
-          not re-slice them.
+          Gap aggregates are computed over the full dataset (reference plane); the window does not
+          re-slice them.
         </p>
       </Section>
 

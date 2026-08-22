@@ -9,8 +9,8 @@ import type { z } from "zod";
 import { useData, useFilters } from "../../data/DataContext.tsx";
 import type { IncidentRowQ } from "../../data/queries.ts";
 import { approx, count, tsLabel } from "../../fmt.ts";
-import { ProvenanceChip } from "../shared/honesty.tsx";
 import { DEFAULT_FILTERS, filtersToSearch } from "../../state/urlState.ts";
+import { ProvenanceChip } from "../shared/honesty.tsx";
 
 type Incident = z.infer<typeof IncidentRowQ>;
 
@@ -27,7 +27,10 @@ export function IncidentPanel({
   const { degraded } = useData();
   const sigs = parseStringArray(incident.signature_ids);
   const close = () =>
-    navigate({ pathname: location.pathname, search: filtersToSearch({ ...filters, incident: null }) });
+    navigate({
+      pathname: location.pathname,
+      search: filtersToSearch({ ...filters, incident: null }),
+    });
   const span = { fromDay: incident.start_ts.slice(0, 10), toDay: incident.end_ts.slice(0, 10) };
   return (
     <aside className="fixed right-0 top-0 z-40 h-full w-96 overflow-y-auto border-l border-hairline bg-surface p-4 shadow-lg">
@@ -101,8 +104,8 @@ export function IncidentPanel({
         see the work this cost →
       </Link>
       <p className="mt-2 text-[10px] text-ink-3">
-        Opens the product side with the window set to the incident span; whole-session
-        containment and its excluded-count caption apply there.
+        Opens the product side with the window set to the incident span; whole-session containment
+        and its excluded-count caption apply there.
       </p>
     </aside>
   );

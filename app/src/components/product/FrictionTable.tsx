@@ -10,9 +10,9 @@ import { useFilters, useRows } from "../../data/DataContext.tsx";
 import type { FrictionRowSchema } from "../../data/queries.ts";
 import { FailureSignatureRowQ, qFailureSignatures } from "../../data/queries.ts";
 import { approxPct } from "../../fmt.ts";
+import { DEFAULT_FILTERS, filtersToSearch } from "../../state/urlState.ts";
 import { ProvenanceChip } from "../shared/honesty.tsx";
 import { RateBar } from "../shared/microviz.tsx";
-import { DEFAULT_FILTERS, filtersToSearch } from "../../state/urlState.ts";
 
 type Row = z.infer<typeof FrictionRowSchema>;
 
@@ -26,7 +26,8 @@ function CausePopover({ row }: { row: Row }) {
         className="cursor-pointer rounded-sm border border-hairline px-1 py-0.5 text-[10px] text-ink-2"
         onClick={() => setOpen((v) => !v)}
       >
-        {row.dominant_friction_cause} <ProvenanceChip kind="model" method="J2 turn classification rollup" />
+        {row.dominant_friction_cause}{" "}
+        <ProvenanceChip kind="model" method="J2 turn classification rollup" />
       </button>
       {open && (
         <span className="absolute left-0 top-6 z-30 block w-64 rounded border border-hairline bg-surface p-2 text-[11px] text-ink-2 shadow-md">
@@ -67,7 +68,10 @@ export function FrictionTable({ rows }: { rows: Row[] }) {
         {rows.map((r) => (
           <tr key={r.session_id} className="border-b border-hairline hover:bg-paper">
             <td className="py-1.5 pr-2">
-              <Link to={`/session/${r.session_id}`} className="font-mono text-[11px] underline decoration-dotted">
+              <Link
+                to={`/session/${r.session_id}`}
+                className="font-mono text-[11px] underline decoration-dotted"
+              >
                 {r.session_id}
               </Link>
               <span className="ml-1 text-[10px] text-ink-3">{r.auditor}</span>

@@ -4,15 +4,20 @@
 
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
-import { ErrorState, ProvenanceChip, Skeleton, StatedParam } from "../components/shared/honesty.tsx";
+import {
+  ErrorState,
+  ProvenanceChip,
+  Skeleton,
+  StatedParam,
+} from "../components/shared/honesty.tsx";
 import { useData, useFilters, useRows, useWindow } from "../data/DataContext.tsx";
 import {
   AuditorDaySchema,
+  QuickRestartSchema,
   qAuditorDaily,
   qAuditorTimeline,
   qQuickRestarts,
   qSessionSpans,
-  QuickRestartSchema,
   SessionSpanSchema,
   TimelineRowQ,
 } from "../data/queries.ts";
@@ -85,8 +90,7 @@ export function OpsRhythmPage() {
   const CELL = 14;
   const maxSpan = Math.max(1, ...(spans.rows ?? []).map((s) => s.wall_span_s));
   const maxEngaged = Math.max(1, ...(spans.rows ?? []).map((s) => s.capped_gap_span_s));
-  const logx = (v: number, max: number, W: number) =>
-    (Math.log10(1 + v) / Math.log10(1 + max)) * W;
+  const logx = (v: number, max: number, W: number) => (Math.log10(1 + v) / Math.log10(1 + max)) * W;
 
   return (
     <div>
@@ -100,11 +104,21 @@ export function OpsRhythmPage() {
         {daily.error && <ErrorState message={daily.error} />}
         {daily.loading && <Skeleton progress={daily.fetchProgress} />}
         {daily.rows && (
-          <svg width={120 + days.length * (CELL + 1)} height={auditors.length * (CELL + 2) + 26} className="max-w-full">
+          <svg
+            width={120 + days.length * (CELL + 1)}
+            height={auditors.length * (CELL + 2) + 26}
+            className="max-w-full"
+          >
             <title>activity strips: turns per auditor per day</title>
             {auditors.map((a, i) => (
               <g key={a}>
-                <text x={114} y={i * (CELL + 2) + CELL - 2} textAnchor="end" fontSize={10} fill="var(--color-ink-2)">
+                <text
+                  x={114}
+                  y={i * (CELL + 2) + CELL - 2}
+                  textAnchor="end"
+                  fontSize={10}
+                  fill="var(--color-ink-2)"
+                >
                   {a}
                 </text>
                 {days.map((d, j) => {
@@ -126,7 +140,14 @@ export function OpsRhythmPage() {
                         <title>{`${a} · ${dayLabel(d)}: ${count(turns)} turns${hasDemo ? ` (${r?.demo_turns} demo)` : ""}`}</title>
                       </rect>
                       {hasDemo && (
-                        <rect x={120 + j * (CELL + 1)} y={i * (CELL + 2)} width={CELL} height={CELL} rx={2} fill="url(#hatch-demo)" />
+                        <rect
+                          x={120 + j * (CELL + 1)}
+                          y={i * (CELL + 2)}
+                          width={CELL}
+                          height={CELL}
+                          rx={2}
+                          fill="url(#hatch-demo)"
+                        />
                       )}
                     </g>
                   );
@@ -136,7 +157,13 @@ export function OpsRhythmPage() {
             {days.map(
               (d, j) =>
                 j % 7 === 0 && (
-                  <text key={d} x={120 + j * (CELL + 1)} y={auditors.length * (CELL + 2) + 14} fontSize={9} fill="var(--color-ink-3)">
+                  <text
+                    key={d}
+                    x={120 + j * (CELL + 1)}
+                    y={auditors.length * (CELL + 2) + 14}
+                    fontSize={9}
+                    fill="var(--color-ink-3)"
+                  >
                     {dayLabel(d)}
                   </text>
                 ),
@@ -150,7 +177,11 @@ export function OpsRhythmPage() {
         title="Bout profile — one-sitting workers vs fragmented attention"
         chip={
           <>
-            <ProvenanceChip kind="heuristic" method="bouts segmented at the stated gap cap on the auditor's merged timeline" /> <GapCapParam />
+            <ProvenanceChip
+              kind="heuristic"
+              method="bouts segmented at the stated gap cap on the auditor's merged timeline"
+            />{" "}
+            <GapCapParam />
           </>
         }
       >
@@ -160,12 +191,22 @@ export function OpsRhythmPage() {
               <div className="text-[11px] font-medium text-ink">{b.auditor}</div>
               <div className="mt-1 flex items-end justify-center gap-2">
                 <div>
-                  <div className="mx-auto w-4 rounded-t bg-ops" style={{ height: Math.max(4, b.boutsPerDay * 14) }} />
-                  <div className="mt-0.5 text-[9px] text-ink-3">{b.boutsPerDay.toFixed(1)} bouts/day</div>
+                  <div
+                    className="mx-auto w-4 rounded-t bg-ops"
+                    style={{ height: Math.max(4, b.boutsPerDay * 14) }}
+                  />
+                  <div className="mt-0.5 text-[9px] text-ink-3">
+                    {b.boutsPerDay.toFixed(1)} bouts/day
+                  </div>
                 </div>
                 <div>
-                  <div className="mx-auto w-4 rounded-t bg-ops/50" style={{ height: Math.max(4, Math.min(56, b.medianBoutSpan / 120)) }} />
-                  <div className="mt-0.5 text-[9px] text-ink-3">{duration(b.medianBoutSpan, true)} median bout</div>
+                  <div
+                    className="mx-auto w-4 rounded-t bg-ops/50"
+                    style={{ height: Math.max(4, Math.min(56, b.medianBoutSpan / 120)) }}
+                  />
+                  <div className="mt-0.5 text-[9px] text-ink-3">
+                    {duration(b.medianBoutSpan, true)} median bout
+                  </div>
                 </div>
               </div>
             </div>
@@ -189,10 +230,17 @@ export function OpsRhythmPage() {
             <text x={300} y={232} textAnchor="middle" fontSize={10} fill="var(--color-ink-3)">
               wall span (log) → max {duration(maxSpan)}
             </text>
-            <text x={14} y={110} fontSize={10} fill="var(--color-ink-3)" transform="rotate(-90, 14, 110)">
+            <text
+              x={14}
+              y={110}
+              fontSize={10}
+              fill="var(--color-ink-3)"
+              transform="rotate(-90, 14, 110)"
+            >
               engaged (log)
             </text>
             {(spans.rows ?? []).map((s) => (
+              // biome-ignore lint/a11y/noStaticElementInteractions: SVG dot acts as a drill-down link
               <circle
                 key={s.session_id}
                 cx={60 + logx(s.wall_span_s, maxSpan, 480)}
@@ -209,9 +257,9 @@ export function OpsRhythmPage() {
           </svg>
         )}
         <p className="mt-1 text-[10px] text-ink-3">
-          Dots far below the diagonal are long-lived sessions with little attention (the
-          "27-day session was 3 hours of engagement" correction). Wall spans include days of
-          absence and are never summed as effort. Sessions overlapping the window are shown.
+          Dots far below the diagonal are long-lived sessions with little attention (the "27-day
+          session was 3 hours of engagement" correction). Wall spans include days of absence and are
+          never summed as effort. Sessions overlapping the window are shown.
         </p>
       </Section>
 

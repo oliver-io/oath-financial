@@ -31,6 +31,7 @@ export function InteractionStrip({ dots }: { dots: Dot[] }) {
             {dots
               .filter((d) => (d.job_type ?? "(not classified)") === job)
               .map((d) => (
+                // biome-ignore lint/a11y/noStaticElementInteractions: SVG dot acts as a drill-down link
                 <circle
                   key={d.session_id}
                   cx={150 + (d.interaction_cost / max) * W}
@@ -49,7 +50,13 @@ export function InteractionStrip({ dots }: { dots: Dot[] }) {
           </g>
         );
       })}
-      <text x={150 + W} y={jobs.length * ROW_H + 14} textAnchor="end" fontSize={10} fill="var(--color-ink-3)">
+      <text
+        x={150 + W}
+        y={jobs.length * ROW_H + 14}
+        textAnchor="end"
+        fontSize={10}
+        fill="var(--color-ink-3)"
+      >
         max {count(max)} human-authored turns
       </text>
     </svg>

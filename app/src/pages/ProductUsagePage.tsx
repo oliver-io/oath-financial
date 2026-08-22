@@ -67,11 +67,17 @@ export function ProductUsagePage() {
 
   const auditors = [...new Set((grid.rows ?? []).map((g) => g.auditor))].sort();
   const gridClients = [...new Set((grid.rows ?? []).map((g) => g.client))].sort();
-  const gridMap = new Map((grid.rows ?? []).map((g) => [`${g.auditor}|${g.client}`, g.active_days]));
+  const gridMap = new Map(
+    (grid.rows ?? []).map((g) => [`${g.auditor}|${g.client}`, g.active_days]),
+  );
 
   const familyRows = useMemo(() => {
-    const per = new Map<string, { auditors: Set<number>; series: Map<string, number>; audCount: number }>();
-    for (const fam of ToolFamilySchema.options) per.set(fam, { auditors: new Set(), series: new Map(), audCount: 0 });
+    const per = new Map<
+      string,
+      { auditors: Set<number>; series: Map<string, number>; audCount: number }
+    >();
+    for (const fam of ToolFamilySchema.options)
+      per.set(fam, { auditors: new Set(), series: new Map(), audCount: 0 });
     const audPerFam = new Map<string, number>();
     for (const r of familyDaily.rows ?? []) {
       const p = per.get(r.tool_family);
@@ -111,7 +117,10 @@ export function ProductUsagePage() {
         {jobShare.rows && (
           <div>
             <p className="mb-2 text-xs text-ink-2">
-              Top 3 job types = <span className="font-medium tabular">{totalSessions > 0 ? pct(top3 / totalSessions) : "—"}</span>{" "}
+              Top 3 job types ={" "}
+              <span className="font-medium tabular">
+                {totalSessions > 0 ? pct(top3 / totalSessions) : "—"}
+              </span>{" "}
               of {count(totalSessions)} contained sessions.
             </p>
             {(jobShare.rows ?? []).map((r) => {
@@ -124,7 +133,10 @@ export function ProductUsagePage() {
                       pathname: "/product/outcomes",
                       search: filtersToSearch({
                         ...filters,
-                        jobTypes: r.job_type && JobTypeSchema.options.includes(r.job_type as never) ? [r.job_type as never] : [],
+                        jobTypes:
+                          r.job_type && JobTypeSchema.options.includes(r.job_type as never)
+                            ? [r.job_type as never]
+                            : [],
                       }),
                     }}
                     className="block h-3.5 rounded-r-sm"
@@ -149,14 +161,39 @@ export function ProductUsagePage() {
         {clientDays.rows && (
           <div className="h-52 w-full">
             <ResponsiveContainer>
-              <BarChart data={timelineData} margin={{ top: 4, right: 8, bottom: 0, left: -18 }} barCategoryGap={2}>
+              <BarChart
+                data={timelineData}
+                margin={{ top: 4, right: 8, bottom: 0, left: -18 }}
+                barCategoryGap={2}
+              >
                 <CartesianGrid stroke="var(--color-grid)" vertical={false} />
-                <XAxis dataKey="day" tickFormatter={(d) => dayLabel(String(d))} tick={{ fontSize: 10, fill: "var(--color-ink-3)" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "var(--color-ink-3)" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip cursor={{ fill: "var(--color-grid)" }} labelFormatter={(d) => dayLabel(String(d))} contentStyle={{ fontSize: 11, border: "1px solid var(--color-hairline)" }} />
+                <XAxis
+                  dataKey="day"
+                  tickFormatter={(d) => dayLabel(String(d))}
+                  tick={{ fontSize: 10, fill: "var(--color-ink-3)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: "var(--color-ink-3)" }}
+                  axisLine={false}
+                  tickLine={false}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  cursor={{ fill: "var(--color-grid)" }}
+                  labelFormatter={(d) => dayLabel(String(d))}
+                  contentStyle={{ fontSize: 11, border: "1px solid var(--color-hairline)" }}
+                />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 {activeClients.map((c) => (
-                  <Bar key={c} dataKey={c} stackId="c" fill={clientColor(c, clientOrder)} maxBarSize={18} />
+                  <Bar
+                    key={c}
+                    dataKey={c}
+                    stackId="c"
+                    fill={clientColor(c, clientOrder)}
+                    maxBarSize={18}
+                  />
                 ))}
               </BarChart>
             </ResponsiveContainer>
@@ -171,23 +208,47 @@ export function ProductUsagePage() {
 
       <Section title="Auditor × client load — deliberately unranked">
         {grid.rows && (
-          <svg width={140 + gridClients.length * 60} height={auditors.length * 26 + 30} className="max-w-full">
+          <svg
+            width={140 + gridClients.length * 60}
+            height={auditors.length * 26 + 30}
+            className="max-w-full"
+          >
             <title>auditor × client dot grid, dot size = active days</title>
             {gridClients.map((c, j) => (
-              <text key={c} x={140 + j * 60 + 20} y={12} textAnchor="middle" fontSize={10} fill="var(--color-ink-3)">
+              <text
+                key={c}
+                x={140 + j * 60 + 20}
+                y={12}
+                textAnchor="middle"
+                fontSize={10}
+                fill="var(--color-ink-3)"
+              >
                 {c}
               </text>
             ))}
             {auditors.map((a, i) => (
               <g key={a}>
-                <text x={134} y={26 + i * 26 + 4} textAnchor="end" fontSize={11} fill="var(--color-ink-2)">
+                <text
+                  x={134}
+                  y={26 + i * 26 + 4}
+                  textAnchor="end"
+                  fontSize={11}
+                  fill="var(--color-ink-2)"
+                >
                   {a}
                 </text>
                 {gridClients.map((c, j) => {
                   const days = gridMap.get(`${a}|${c}`) ?? 0;
                   if (days === 0) return null;
                   return (
-                    <circle key={c} cx={140 + j * 60 + 20} cy={26 + i * 26} r={3 + Math.min(9, days)} fill="var(--color-product)" fillOpacity={0.45}>
+                    <circle
+                      key={c}
+                      cx={140 + j * 60 + 20}
+                      cy={26 + i * 26}
+                      r={3 + Math.min(9, days)}
+                      fill="var(--color-product)"
+                      fillOpacity={0.45}
+                    >
                       <title>{`${a} × ${c}: active ${count(days)} day(s)`}</title>
                     </circle>
                   );
@@ -198,8 +259,8 @@ export function ProductUsagePage() {
         )}
         <p className="mt-1 text-[10px] text-ink-3">
           Dot size = active days, not turns; no totals column. Auditors barely overlap across
-          clients, so cross-auditor comparisons are confounded by engagement — this grid shows
-          load, never skill.
+          clients, so cross-auditor comparisons are confounded by engagement — this grid shows load,
+          never skill.
         </p>
         <EventSemanticsCaption />
       </Section>
@@ -211,7 +272,10 @@ export function ProductUsagePage() {
             {familyRows.map((r) => (
               <tr key={r.family} className="border-b border-hairline">
                 <td className="py-1.5 pr-2">
-                  <span className="mr-1 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: toolFamilyColor(r.family) }} />
+                  <span
+                    className="mr-1 inline-block h-2.5 w-2.5 rounded-sm align-middle"
+                    style={{ background: toolFamilyColor(r.family) }}
+                  />
                   {r.family}
                 </td>
                 <td className="py-1.5 pr-2 text-right">
@@ -226,8 +290,8 @@ export function ProductUsagePage() {
           </tbody>
         </table>
         <p className="mt-1 text-[10px] text-ink-3">
-          Single-adopter rows are capability outliers (e.g. browser automation); a flat or
-          dying sparkline distinguishes an abandoned surface from a growing workaround.
+          Single-adopter rows are capability outliers (e.g. browser automation); a flat or dying
+          sparkline distinguishes an abandoned surface from a growing workaround.
         </p>
         <EventSemanticsCaption />
       </Section>

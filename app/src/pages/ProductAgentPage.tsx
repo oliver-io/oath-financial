@@ -4,7 +4,12 @@
 
 import { useState } from "react";
 import { Link } from "react-router";
-import { ErrorState, ProvenanceChip, Skeleton, StatedParam } from "../components/shared/honesty.tsx";
+import {
+  ErrorState,
+  ProvenanceChip,
+  Skeleton,
+  StatedParam,
+} from "../components/shared/honesty.tsx";
 import { MicroBar3 } from "../components/shared/microviz.tsx";
 import { toolFamilyColor } from "../components/shared/series.ts";
 import { useData, useFilters, useRows, useWindow } from "../data/DataContext.tsx";
@@ -23,7 +28,10 @@ import { EventSemanticsCaption, PageTitle, Section } from "./PageScaffold.tsx";
 
 function SessionLink({ sessionId, turn }: { sessionId: string; turn: number }) {
   return (
-    <Link to={`/session/${sessionId}`} className="font-mono text-[11px] underline decoration-dotted">
+    <Link
+      to={`/session/${sessionId}`}
+      className="font-mono text-[11px] underline decoration-dotted"
+    >
       {sessionId}
       <span className="text-ink-3">#{turn}</span>
     </Link>
@@ -33,7 +41,13 @@ function SessionLink({ sessionId, turn }: { sessionId: string; turn: number }) {
 function CorrectionItem({
   row,
 }: {
-  row: { session_id: string; turn_number: number; day: string; user_text_head: string; prev_assistant_tail: string | null };
+  row: {
+    session_id: string;
+    turn_number: number;
+    day: string;
+    user_text_head: string;
+    prev_assistant_tail: string | null;
+  };
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -41,7 +55,11 @@ function CorrectionItem({
       <div className="mb-1 flex items-center gap-2 text-[11px] text-ink-3">
         <SessionLink sessionId={row.session_id} turn={row.turn_number} />
         <span>{dayLabel(row.day)}</span>
-        <button type="button" className="cursor-pointer underline decoration-dotted" onClick={() => setOpen((v) => !v)}>
+        <button
+          type="button"
+          className="cursor-pointer underline decoration-dotted"
+          onClick={() => setOpen((v) => !v)}
+        >
           {open ? "hide" : "show"} previous assistant tail
         </button>
       </div>
@@ -89,7 +107,10 @@ export function ProductAgentPage() {
             </thead>
             <tbody>
               {chains.rows.map((r) => (
-                <tr key={`${r.session_id}|${r.turn_number}`} className="border-b border-hairline hover:bg-paper">
+                <tr
+                  key={`${r.session_id}|${r.turn_number}`}
+                  className="border-b border-hairline hover:bg-paper"
+                >
                   <td className="py-1.5 pr-2">
                     <SessionLink sessionId={r.session_id} turn={r.turn_number} />
                   </td>
@@ -101,11 +122,13 @@ export function ProductAgentPage() {
             </tbody>
           </table>
         ) : (
-          !chains.loading && <p className="text-sm text-ink-3">No identical-input chains in this window.</p>
+          !chains.loading && (
+            <p className="text-sm text-ink-3">No identical-input chains in this window.</p>
+          )
         )}
         <p className="mt-1 text-[10px] text-ink-3">
-          Identical re-invocation is the fact; whether it is a retry is interpretation
-          (polling loops repeat inputs legitimately) — no judgment column without enrichment.
+          Identical re-invocation is the fact; whether it is a retry is interpretation (polling
+          loops repeat inputs legitimately) — no judgment column without enrichment.
         </p>
       </Section>
 
@@ -131,14 +154,20 @@ export function ProductAgentPage() {
             </thead>
             <tbody>
               {grinds.rows.map((r) => (
-                <tr key={`${r.session_id}|${r.turn_number}`} className="border-b border-hairline hover:bg-paper">
+                <tr
+                  key={`${r.session_id}|${r.turn_number}`}
+                  className="border-b border-hairline hover:bg-paper"
+                >
                   <td className="py-1.5 pr-2">
                     <SessionLink sessionId={r.session_id} turn={r.turn_number} />
                   </td>
                   <td className="py-1.5 pr-2">
                     {r.dominant_family && (
                       <>
-                        <span className="mr-1 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: toolFamilyColor(r.dominant_family) }} />
+                        <span
+                          className="mr-1 inline-block h-2.5 w-2.5 rounded-sm align-middle"
+                          style={{ background: toolFamilyColor(r.dominant_family) }}
+                        />
                         {r.dominant_family}
                         {r.dominant_family === "browser" && (
                           <Link
@@ -158,13 +187,20 @@ export function ProductAgentPage() {
             </tbody>
           </table>
         ) : (
-          !grinds.loading && <p className="text-sm text-ink-3">No runs at or above the threshold in this window.</p>
+          !grinds.loading && (
+            <p className="text-sm text-ink-3">No runs at or above the threshold in this window.</p>
+          )
         )}
       </Section>
 
       <Section
         title="Correction feed — where the user re-steered"
-        chip={<ProvenanceChip kind="model" method="J2 correction classification over flagged candidate turns" />}
+        chip={
+          <ProvenanceChip
+            kind="model"
+            method="J2 correction classification over flagged candidate turns"
+          />
+        }
       >
         {degraded.j2 && (
           <p className="mb-2 text-xs text-ink-3">
@@ -191,7 +227,9 @@ export function ProductAgentPage() {
             <div key={r.tool_family} className="mb-1 flex items-center gap-2 text-xs">
               <span className="w-24 text-right text-ink-2">{r.tool_family}</span>
               <MicroBar3 a={r.shape_a} b={r.shape_b} c={r.shape_c} width={200} />
-              <span className="tabular text-[10px] text-ink-3">{count(r.shape_a + r.shape_b + r.shape_c)}</span>
+              <span className="tabular text-[10px] text-ink-3">
+                {count(r.shape_a + r.shape_b + r.shape_c)}
+              </span>
             </div>
           ))}
         </div>

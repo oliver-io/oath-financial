@@ -18,8 +18,8 @@ export function ExcludedSessionsList() {
     <div className="mb-6 rounded border border-hairline bg-paper p-3">
       <div className="mb-2 flex items-center justify-between text-xs">
         <span className="font-medium text-ink">
-          Sessions overlapping this window but not fully contained (excluded from
-          session-grain counts)
+          Sessions overlapping this window but not fully contained (excluded from session-grain
+          counts)
         </span>
         <button
           type="button"
@@ -39,7 +39,10 @@ export function ExcludedSessionsList() {
           {(rows.rows ?? []).map((r) => (
             <tr key={r.session_id} className="border-b border-hairline last:border-b-0">
               <td className="py-1 pr-2">
-                <Link to={`/session/${r.session_id}`} className="font-mono text-[11px] underline decoration-dotted">
+                <Link
+                  to={`/session/${r.session_id}`}
+                  className="font-mono text-[11px] underline decoration-dotted"
+                >
                   {r.session_id}
                 </Link>
               </td>

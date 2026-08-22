@@ -5,14 +5,14 @@
 // The view leads with "N of M determined"; its headline number is
 // completion-rate-among-determined.
 
+import type { JobType } from "@trace-insights/contracts";
 import { Link } from "react-router";
 import type { z } from "zod";
 import { useData, useFilters } from "../../data/DataContext.tsx";
 import type { OutcomeCountSchema } from "../../data/queries.ts";
 import { count, pct } from "../../fmt.ts";
-import { CaptionBar, ProvenanceChip } from "../shared/honesty.tsx";
 import { filtersToSearch } from "../../state/urlState.ts";
-import type { JobType } from "@trace-insights/contracts";
+import { CaptionBar, ProvenanceChip } from "../shared/honesty.tsx";
 
 type Row = z.infer<typeof OutcomeCountSchema>;
 
@@ -20,7 +20,12 @@ const SLICES = [
   { key: "completed", label: "completed", fill: "var(--color-series-4)", hatch: false },
   { key: "abandoned", label: "abandoned", fill: "var(--color-series-7)", hatch: false },
   { key: "undetermined", label: "undetermined", fill: "url(#hatch-undetermined)", hatch: true },
-  { key: "unclassified", label: "unclassified (abstained/error)", fill: "var(--color-unclassified)", hatch: false },
+  {
+    key: "unclassified",
+    label: "unclassified (abstained/error)",
+    fill: "var(--color-unclassified)",
+    hatch: false,
+  },
   { key: "__null", label: "not classified (job not run)", fill: "var(--color-grid)", hatch: false },
 ] as const;
 
@@ -46,13 +51,20 @@ export function OutcomeBars({ rows }: { rows: Row[] }) {
       if (oc === "completed") completedN += n;
     }
   }
-  for (const s of SLICES) totals.set(s.key, rows.filter((r) => (r.outcome ?? "__null") === s.key).reduce((a, r) => a + r.n, 0));
+  for (const s of SLICES)
+    totals.set(
+      s.key,
+      rows.filter((r) => (r.outcome ?? "__null") === s.key).reduce((a, r) => a + r.n, 0),
+    );
   const jobs = [...byJob.keys()].sort(
     (a, b) =>
       [...(byJob.get(b)?.values() ?? [])].reduce((x, y) => x + y, 0) -
       [...(byJob.get(a)?.values() ?? [])].reduce((x, y) => x + y, 0),
   );
-  const maxTotal = Math.max(1, ...jobs.map((j) => [...(byJob.get(j)?.values() ?? [])].reduce((a, b) => a + b, 0)));
+  const maxTotal = Math.max(
+    1,
+    ...jobs.map((j) => [...(byJob.get(j)?.values() ?? [])].reduce((a, b) => a + b, 0)),
+  );
   const W = 420;
   const ROW_H = 24;
 
@@ -67,7 +79,10 @@ export function OutcomeBars({ rows }: { rows: Row[] }) {
           <span className="font-medium text-ink tabular">
             {determined > 0 ? pct(completedN / determined) : "—"}
           </span>{" "}
-          <ProvenanceChip kind="model" method="J3 outcome classification over determined sessions" />
+          <ProvenanceChip
+            kind="model"
+            method="J3 outcome classification over determined sessions"
+          />
         </span>
         {degraded.j3 && <span>enrichment not run — outcomes unavailable this run</span>}
       </CaptionBar>
@@ -97,7 +112,13 @@ export function OutcomeBars({ rows }: { rows: Row[] }) {
                 x += w;
                 return rect;
               })}
-              <text x={x + 4} y={y + 11} fontSize={10} fill="var(--color-ink-3)" className="tabular">
+              <text
+                x={x + 4}
+                y={y + 11}
+                fontSize={10}
+                fill="var(--color-ink-3)"
+                className="tabular"
+              >
                 {count(jobTotal)}
               </text>
             </g>
@@ -107,7 +128,7 @@ export function OutcomeBars({ rows }: { rows: Row[] }) {
       <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-ink-2">
         {SLICES.map((s) => (
           <span key={s.key} className="flex items-center gap-1">
-            <svg width={12} height={12}>
+            <svg width={12} height={12} role="img" aria-label={s.label}>
               <rect width={12} height={12} rx={2} fill={s.fill} />
             </svg>
             {s.label} <span className="tabular text-ink-3">({count(totals.get(s.key) ?? 0)})</span>
