@@ -2,4 +2,5 @@ config:
   aws:region: us-east-1
   trace-insights-infra:authMode: none
   trace-insights-infra:prune: "false"
+  trace-insights-infra:domain: oath.oliver-io.online
 encryptionsalt: v1:VzCCZ7fOkzQ=:v1:yJdsPWDUzeCbU/W0:6nOzVDY7Dx78JaTEPlcw/8lrnh4UXw==

@@ -107,7 +107,11 @@ const distribution = new aws.cloudfront.Distribution("site-cdn", {
   restrictions: { geoRestriction: { restrictionType: "none" } },
   aliases: domain ? [domain] : undefined,
   viewerCertificate: certificateArn
-    ? { acmCertificateArn: certificateArn, sslSupportMethod: "sni-only", minimumProtocolVersion: "TLSv1.2_2021" }
+    ? {
+        acmCertificateArn: certificateArn,
+        sslSupportMethod: "sni-only",
+        minimumProtocolVersion: "TLSv1.2_2021",
+      }
     : { cloudfrontDefaultCertificate: true },
 });
 
