@@ -1,0 +1,354 @@
+{
+  "run_id": "fixture-run-degraded",
+  "published_at": "2026-04-03T00:00:00.000Z",
+  "date_coverage": {
+    "start_day": "2026-03-05",
+    "end_day": "2026-04-02"
+  },
+  "partitions": [
+    {
+      "table": "turns",
+      "day": "2026-03-05",
+      "path": "facts/turns/day=2026-03-05.parquet",
+      "rows": 20
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-06",
+      "path": "facts/turns/day=2026-03-06.parquet",
+      "rows": 3
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-07",
+      "path": "facts/turns/day=2026-03-07.parquet",
+      "rows": 31
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-09",
+      "path": "facts/turns/day=2026-03-09.parquet",
+      "rows": 3
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-10",
+      "path": "facts/turns/day=2026-03-10.parquet",
+      "rows": 32
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-11",
+      "path": "facts/turns/day=2026-03-11.parquet",
+      "rows": 14
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-12",
+      "path": "facts/turns/day=2026-03-12.parquet",
+      "rows": 52
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-13",
+      "path": "facts/turns/day=2026-03-13.parquet",
+      "rows": 11
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-14",
+      "path": "facts/turns/day=2026-03-14.parquet",
+      "rows": 18
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-15",
+      "path": "facts/turns/day=2026-03-15.parquet",
+      "rows": 45
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-16",
+      "path": "facts/turns/day=2026-03-16.parquet",
+      "rows": 29
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-18",
+      "path": "facts/turns/day=2026-03-18.parquet",
+      "rows": 34
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-19",
+      "path": "facts/turns/day=2026-03-19.parquet",
+      "rows": 54
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-20",
+      "path": "facts/turns/day=2026-03-20.parquet",
+      "rows": 13
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-21",
+      "path": "facts/turns/day=2026-03-21.parquet",
+      "rows": 13
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-22",
+      "path": "facts/turns/day=2026-03-22.parquet",
+      "rows": 20
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-23",
+      "path": "facts/turns/day=2026-03-23.parquet",
+      "rows": 31
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-25",
+      "path": "facts/turns/day=2026-03-25.parquet",
+      "rows": 34
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-26",
+      "path": "facts/turns/day=2026-03-26.parquet",
+      "rows": 22
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-27",
+      "path": "facts/turns/day=2026-03-27.parquet",
+      "rows": 15
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-28",
+      "path": "facts/turns/day=2026-03-28.parquet",
+      "rows": 12
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-29",
+      "path": "facts/turns/day=2026-03-29.parquet",
+      "rows": 29
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-30",
+      "path": "facts/turns/day=2026-03-30.parquet",
+      "rows": 55
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-31",
+      "path": "facts/turns/day=2026-03-31.parquet",
+      "rows": 48
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-05",
+      "path": "facts/tool_events/day=2026-03-05.parquet",
+      "rows": 97
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-06",
+      "path": "facts/tool_events/day=2026-03-06.parquet",
+      "rows": 11
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-07",
+      "path": "facts/tool_events/day=2026-03-07.parquet",
+      "rows": 139
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-09",
+      "path": "facts/tool_events/day=2026-03-09.parquet",
+      "rows": 10
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-10",
+      "path": "facts/tool_events/day=2026-03-10.parquet",
+      "rows": 142
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-11",
+      "path": "facts/tool_events/day=2026-03-11.parquet",
+      "rows": 61
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-12",
+      "path": "facts/tool_events/day=2026-03-12.parquet",
+      "rows": 239
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-13",
+      "path": "facts/tool_events/day=2026-03-13.parquet",
+      "rows": 56
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-14",
+      "path": "facts/tool_events/day=2026-03-14.parquet",
+      "rows": 89
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-15",
+      "path": "facts/tool_events/day=2026-03-15.parquet",
+      "rows": 182
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-16",
+      "path": "facts/tool_events/day=2026-03-16.parquet",
+      "rows": 155
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-18",
+      "path": "facts/tool_events/day=2026-03-18.parquet",
+      "rows": 174
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-19",
+      "path": "facts/tool_events/day=2026-03-19.parquet",
+      "rows": 395
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-20",
+      "path": "facts/tool_events/day=2026-03-20.parquet",
+      "rows": 51
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-21",
+      "path": "facts/tool_events/day=2026-03-21.parquet",
+      "rows": 48
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-22",
+      "path": "facts/tool_events/day=2026-03-22.parquet",
+      "rows": 89
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-23",
+      "path": "facts/tool_events/day=2026-03-23.parquet",
+      "rows": 180
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-25",
+      "path": "facts/tool_events/day=2026-03-25.parquet",
+      "rows": 202
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-26",
+      "path": "facts/tool_events/day=2026-03-26.parquet",
+      "rows": 106
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-27",
+      "path": "facts/tool_events/day=2026-03-27.parquet",
+      "rows": 66
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-28",
+      "path": "facts/tool_events/day=2026-03-28.parquet",
+      "rows": 64
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-29",
+      "path": "facts/tool_events/day=2026-03-29.parquet",
+      "rows": 138
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-30",
+      "path": "facts/tool_events/day=2026-03-30.parquet",
+      "rows": 303
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-31",
+      "path": "facts/tool_events/day=2026-03-31.parquet",
+      "rows": 209
+    }
+  ],
+  "ref": [
+    {
+      "table": "sessions",
+      "path": "ref/sessions.parquet",
+      "rows": 64
+    },
+    {
+      "table": "failure_signatures",
+      "path": "ref/failure_signatures.parquet",
+      "rows": 8
+    },
+    {
+      "table": "incidents",
+      "path": "ref/incidents.parquet",
+      "rows": 1
+    },
+    {
+      "table": "capability_gaps",
+      "path": "ref/capability_gaps.parquet",
+      "rows": 3
+    },
+    {
+      "table": "gap_sessions",
+      "path": "ref/gap_sessions.parquet",
+      "rows": 81
+    },
+    {
+      "table": "findings",
+      "path": "ref/findings.parquet",
+      "rows": 2
+    },
+    {
+      "table": "auditor_timeline",
+      "path": "ref/auditor_timeline.parquet",
+      "rows": 57
+    },
+    {
+      "table": "dims",
+      "path": "ref/dims.parquet",
+      "rows": 40
+    }
+  ],
+  "enrichment": {},
+  "rule_versions": {
+    "signatures": "sig-v0",
+    "thresholds": "thr-v0",
+    "findings": "fnd-v0"
+  },
+  "stated_params": {
+    "gap_cap_s": 1800,
+    "quick_restart_window_s": 3600,
+    "matched_snippet_radius_chars": 300,
+    "incident_excursion_multiplier": 4,
+    "small_n_call_threshold": 200,
+    "grind_run_threshold": 10
+  }
+}
