@@ -21,6 +21,14 @@ incident_excursion_multiplier: 4
 # bursts that lockstep by construction (derivations.md §3 is_demo_traffic —
 # "excludable everywhere"). Fires zero times on the real dataset, as required.
 fork_lockstep_threshold_s: 600
+# UI stated-params (contracts StatedParamsSchema requires these in the
+# published manifest — cross-track seam review 2026-08-22).
+# Heatmap dotted-cell cutoff: cells computed from fewer calls than this render
+# as small-n. Provisional.
+small_n_call_threshold: 5
+# /product/agent grind table cutoff: a same-tool run at or above this length
+# is listed. Provisional (max_same_tool_run p99 territory).
+grind_run_threshold: 20
 # J5 heuristic-audit sampling (docs/architecture/llm.md J5) — seeded so
 # re-runs are comparable.
 j5:

@@ -31,3 +31,27 @@ findings:
       signature: cli-command-not-found
     provenance: heuristic
     requires_enrichment: false
+# Curated capability-gap clusters (derivations.md §7) — gap_id is the stable
+# public deeplink key; detectors are deterministic (stage 4 over derive.*).
+# shell-pdf-pipeline is deliberately ABSENT: detecting it needs tool INPUT
+# text, which derive does not carry yet (known limitation, revisit at M4).
+capability_gaps:
+  - gap_id: browser-grind
+    evidence_pattern: browser_call_concentration
+    min_calls: 15
+    min_share: 0.4
+    notes: >-
+      CLI-fails->browser-grind workaround: sessions whose tool traffic is
+      dominated by browser calls. Thresholds provisional.
+  - gap_id: extract-paste-ferry
+    evidence_pattern: extract_paste_turns
+    min_calls: 1
+    notes: >-
+      Clipboard-ferried extracts: sessions with extract-paste marker turns
+      (derivations.md 2 has_extract_paste).
+  - gap_id: subagent-orchestration
+    evidence_pattern: subagent_orchestration
+    min_calls: 3
+    notes: >-
+      Hand-built background pipelines / orchestration scaffolding: sessions
+      leaning on subagent-family calls. Threshold provisional.

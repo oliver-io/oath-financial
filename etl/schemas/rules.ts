@@ -4,20 +4,21 @@
 // come from docs/architecture/derivations.md §5 (signature_class) and §1
 // (tool_family).
 
+import {
+  ProvenanceClassSchema,
+  SignatureClassSchema,
+  ToolFamilySchema,
+} from "@trace-insights/contracts";
 import { z } from "zod";
 
-// -- signatures.yaml ---------------------------------------------------------
+// Enum authorities live in contracts/ (M2 adoption — cross-track seam item 5):
+// SignatureClassSchema, ToolFamilySchema, ProvenanceClassSchema are imported
+// and re-exported; local duplicates were deleted. CountsAsFailureSchema stays
+// local: the RULE-file form is a boolean union (true|false|"uncertain");
+// stage 5 maps it to the published string enum (contracts CountsAsFailureSchema).
+export { ProvenanceClassSchema, SignatureClassSchema, ToolFamilySchema };
 
-/** derivations.md §5 signature_class enum (curated). */
-export const SignatureClassSchema = z.enum([
-  "auth_token",
-  "provisioning_config",
-  "missing_resource",
-  "platform_tool_fault",
-  "agent_code_crash",
-  "subagent_failure",
-  "platform_limit",
-]);
+// -- signatures.yaml ---------------------------------------------------------
 
 /** Per-signature failure semantics: true | false | uncertain
  * (uncertain routes the match to J1 gray-zone adjudication). */
@@ -50,18 +51,6 @@ export const SignaturesFileSchema = z.object({
 
 // -- tool_families.yaml ------------------------------------------------------
 
-/** derivations.md §1 tool_family rollup enum. */
-export const ToolFamilySchema = z.enum([
-  "shell",
-  "file",
-  "browser",
-  "docstore",
-  "subagent",
-  "task",
-  "search",
-  "other",
-]);
-
 export const ToolFamiliesFileSchema = z.object({
   version: z.string(),
   /** tool_name → family, covering all 69 tools in the dataset. */
@@ -82,6 +71,10 @@ export const ThresholdsFileSchema = z.object({
   incident_excursion_multiplier: z.number().positive(),
   /** Fork gate lockstep window (stage 1) — see thresholds.yaml notes. */
   fork_lockstep_threshold_s: z.number().positive(),
+  /** UI stated params (contracts StatedParamsSchema): heatmap small-n cutoff. */
+  small_n_call_threshold: z.number().int().positive(),
+  /** UI stated params: grind-table same-tool-run cutoff. */
+  grind_run_threshold: z.number().int().positive(),
   j5: z.object({
     unmatched_sample_n: z.number().int().positive(), // N=150 per llm.md
     matched_sample_m: z.number().int().positive(), // M=100 per llm.md
@@ -105,8 +98,6 @@ export const ThresholdsFileSchema = z.object({
 
 // -- findings.yaml -----------------------------------------------------------
 
-export const ProvenanceClassSchema = z.enum(["structural", "heuristic", "curated", "model"]);
-
 export const FindingRuleSchema = z.object({
   finding_id: z.string().regex(/^[a-z0-9-]+$/),
   audience: z.enum(["ops", "product"]),
@@ -121,9 +112,30 @@ export const FindingRuleSchema = z.object({
   requires_enrichment: z.boolean(),
 });
 
+/** Curated capability-gap cluster definition (derivations.md §7): gap_id is
+ * the STABLE PUBLIC KEY — never model-generated, never per-run. The evidence
+ * pattern names the deterministic stage-2/4 detector; params are its
+ * thresholds. J4 only names/describes gaps, never defines or counts them. */
+export const CapabilityGapRuleSchema = z.object({
+  gap_id: z.string().regex(/^[a-z0-9-]+$/),
+  evidence_pattern: z.enum([
+    "browser_call_concentration",
+    "extract_paste_turns",
+    "subagent_orchestration",
+  ]),
+  /** Minimum matching calls/turns for a session to belong to the cluster. */
+  min_calls: z.number().int().positive(),
+  /** For call-concentration patterns: minimum share of the session's calls. */
+  min_share: z.number().min(0).max(1).nullable().default(null),
+  notes: z.string().default(""),
+});
+
 export const FindingsFileSchema = z.object({
   version: z.string(),
   findings: z.array(FindingRuleSchema),
+  /** Curated product-side taxonomy (this file hosts the product-side curated
+   * rules; the four-rule-file layout is fixed by docs/plans/etl.md §2). */
+  capability_gaps: z.array(CapabilityGapRuleSchema).default([]),
 });
 
 // -- combined ----------------------------------------------------------------

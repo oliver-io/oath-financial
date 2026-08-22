@@ -1,4 +1,13 @@
--- Output: ref/gap_sessions.parquet — capability_gap ↔ session exemplar
---   bridge (gap_id, session_id, exemplar_rank) for evidence deeplinks.
--- Contract: docs/architecture/etl.md Stage 5 reference plane.
--- UNIMPLEMENTED
+-- Output: publish.ref_gap_sessions → ref/gap_sessions.parquet —
+--   capability_gap ↔ session bridge for evidence deeplinks.
+-- Columns (contracts GapSessionRowSchema): gap_id, session_id, is_exemplar
+--   (J4 exemplar links, ⊆ the deterministic membership; FALSE until J4 runs).
+-- Contract: docs/architecture/etl.md Stage 5 reference plane; contracts/src/rows.ts.
+CREATE TABLE publish.ref_gap_sessions AS
+SELECT
+  gs.gap_id,
+  gs.session_id,
+  COALESCE(list_contains(
+    CAST(j4.exemplar_session_ids AS VARCHAR[]), gs.session_id), FALSE) AS is_exemplar
+FROM agg.gap_sessions gs
+LEFT JOIN enrich.j4_gaps j4 USING (gap_id);

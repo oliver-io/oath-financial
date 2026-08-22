@@ -27,6 +27,10 @@ export interface Stage {
    * installs rule temp tables and the sanctioned TS row passes (signature
    * regex application, marker flags — docs/plans/etl.md §2 exceptions). */
   prepare?(ctx: RunContext): Promise<void>;
+  /** Optional TS hook run after SQL files + post-gates: stage 5's Parquet
+   * export, manifest embedding, and latest.json pointer swap (write
+   * everything → fsync → swap LAST; docs/architecture/etl.md Stage 5). */
+  finalize?(ctx: RunContext): Promise<void>;
   /** Row-count report for the manifest, keyed by table name. */
   rowCounts(ctx: RunContext): Promise<Record<string, number>>;
 }

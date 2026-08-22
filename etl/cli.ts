@@ -60,6 +60,8 @@ async function installSessionVariables(ctx: RunContext): Promise<void> {
     `SET VARIABLE j5_seed = ${thr.j5.seed}`,
     `SET VARIABLE cc_max_typed_chars = ${thr.correction_candidate.max_typed_chars}`,
     `SET VARIABLE cc_max_gap_s = ${thr.correction_candidate.max_gap_s}`,
+    `SET VARIABLE signatures_version = ${sqlString(ctx.rules.signatures.version)}`,
+    `SET VARIABLE enrichment_ran = ${ctx.enrichment !== null}`,
   ];
   for (const s of statements) await exec(ctx.db, s);
 }
@@ -91,6 +93,7 @@ async function executeStage(ctx: RunContext, stage: Stage): Promise<void> {
       gates.push(result);
       if (!result.passed) throw new GateFailure(gate.name, result.detail ?? "");
     }
+    await stage.finalize?.(ctx);
     rowCounts = await stage.rowCounts(ctx);
     record();
     ctx.log.info(stage.name, "stage_complete", {

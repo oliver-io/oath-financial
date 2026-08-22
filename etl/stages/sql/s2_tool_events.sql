@@ -6,7 +6,10 @@
 --   (true|false|uncertain as VARCHAR, curated join), match_index,
 --   post_failure_shape (same_tool_clean_later | other_calls_after |
 --   turn_ends_on_failure | NULL), repeat_of (byte-identical earlier input in
---   same turn), is_agent_tool, j1_candidate (gray-zone selector:
+--   same turn), matched_snippet (± radius chars from thresholds.yaml around
+--   the match — the fact serving's evidence popovers publish; computed here
+--   because output text does not leave stage 1), is_agent_tool,
+--   j1_candidate (gray-zone selector:
 --   counts_as_failure = uncertain), j5_sample_bucket
 --   (unmatched|matched|NULL — seeded deterministic samples, seed from
 --   thresholds.yaml via getvariable, sizes N/M likewise).
@@ -31,6 +34,11 @@ WITH ev AS (
     m.pattern_id AS matched_signature_id,
     m.counts_as_failure,
     m.match_index,
+    CASE WHEN m.pattern_id IS NOT NULL THEN substr(
+      o.output_text,
+      GREATEST(1, m.match_index + 1 - CAST(getvariable('matched_snippet_radius_chars') AS INTEGER)),
+      2 * CAST(getvariable('matched_snippet_radius_chars') AS INTEGER)
+    ) END AS matched_snippet,
     (COALESCE(f.family, 'other') = 'subagent') AS is_agent_tool
   FROM clean.observations o
   JOIN clean.turns t ON t.trace_id = o.trace_id
@@ -80,6 +88,7 @@ SELECT
   matched_signature_id,
   counts_as_failure,
   match_index,
+  matched_snippet,
   CASE
     WHEN matched_signature_id IS NULL THEN NULL
     WHEN COALESCE(same_tool_clean_after, 0) > 0 THEN 'same_tool_clean_later'
