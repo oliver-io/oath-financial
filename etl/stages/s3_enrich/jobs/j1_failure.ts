@@ -12,11 +12,17 @@ import type { JobSpec, RecordOutcome } from "../runner.ts";
 const PROMPT = `You adjudicate ONE ambiguous tool-call outcome from an AI-agent audit session.
 The rule table matched a failure signature but is unsure whether it counts as a real failure
 (e.g. "exit 1" on an interactive tool is plausibly the user declining, not an error).
-Judge from the packet only: the output snippet, the call's position, what the agent did next,
-and the assistant's closing text. Never infer beyond the packet.
-Verdicts: "failure" (a genuine tool/system failure as experienced), "non_failure" (benign —
-user declined, informational message, immediately recovered), or "insufficient" (you cannot
-read enough to judge; set insufficient_reason to "unreadable_context" or "other" and reason to null).
+Judge from the packet only: the output snippet, the call's position (seq_index of
+turn_tool_count calls), what the agent did next, and the assistant's closing text. Never infer
+beyond the packet. following_tools lists up to the two calls made AFTER this one in the same
+turn; is_last_call_in_turn=true means the turn ENDED on this call — an empty following_tools
+list is that fact, not missing data (what happened afterwards is unknowable, not implied).
+Verdicts: "failure" (a genuine tool/system failure as experienced — including one the agent
+worked around by doing the work another way), "non_failure" (benign — user declined,
+informational message, or the SAME operation visibly succeeded on immediate retry), or
+"insufficient" (you cannot read enough to judge; set insufficient_reason to
+"unreadable_context" or "other" and reason to null). The agent continuing with OTHER tools
+after the error is evidence the session survived, NOT that this call was benign.
 Cite one sentence of packet evidence.`;
 
 function toRow(record: Record<string, unknown>, outcome: RecordOutcome): Record<string, unknown> {
@@ -41,7 +47,7 @@ export const j1Failure: JobSpec = {
   buildPacket: buildJ1Packet,
   outputSchema: J1OutputSchema,
   promptTemplate: PROMPT,
-  promptVersion: "j1-v2",
+  promptVersion: "j1-v5",
   modelTier: "fast",
   writerSqlFile: "s3_j1_writer",
   outputTable: "enrich.j1_verdicts",

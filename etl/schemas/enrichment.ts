@@ -43,14 +43,20 @@ export const J1OutputSchema = z.object({
     .describe(
       "WHY you reached the verdict. For non_failure pick user_declined / recovered_immediately / " +
         "benign_message; for failure use genuine_failure; use other only when none fits. " +
-        "Must be null when verdict is insufficient.",
+        "recovered_immediately means the SAME operation visibly succeeded right after (a retry of " +
+        "this call worked) — the agent merely CONTINUING with other tools or finishing the turn is " +
+        "NOT recovery: an operation that failed and was worked around is verdict=failure / " +
+        "genuine_failure. Must be null when verdict is insufficient.",
     ),
   insufficient_reason: insufficientReasonField,
   confidence: z
     .enum(["high", "low"])
     .describe(
-      'Your confidence in the verdict. "high": the packet clearly supports it. "low": judged, ' +
-        "but the evidence is thin or ambiguous — downstream aggregation surfaces this split.",
+      'Your confidence in the verdict. "high" ONLY when discriminating context beyond the matched ' +
+        "error text itself supports it (what the agent did next, a visible retry, the closing " +
+        'text, a user response). "low" when the verdict rests mostly on the error/template text ' +
+        "alone — a bare generic error with no corroborating context is a low-confidence judgment. " +
+        "Downstream aggregation surfaces this split; low is an honest, expected answer.",
     ),
   evidence: z
     .string()

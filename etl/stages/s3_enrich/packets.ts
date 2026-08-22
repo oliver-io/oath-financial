@@ -68,6 +68,8 @@ export const buildJ1Packet: PacketBuilder = (row) => {
       output_snippet:
         str(row.matched_snippet) ?? output.slice(0, TRUNCATION.toolOutputSnippetChars),
       seq_index: row.seq_index ?? null,
+      turn_tool_count: row.turn_tool_count ?? null,
+      is_last_call_in_turn: row.is_last_call_in_turn ?? null,
       following_tools: row.following_tools ?? [],
       assistant_tail: (str(row.assistant_tail) ?? "").slice(-TRUNCATION.assistantTailChars),
     },

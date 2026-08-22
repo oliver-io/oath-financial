@@ -13,6 +13,11 @@ SELECT
   c.tool_name,
   c.matched_signature_id,
   c.seq_index,
+  -- Position facts: seq_index alone is uninterpretable without the turn's
+  -- total, and an empty following_tools must mean "the turn ENDED on this
+  -- call" (a fact only this whole-turn view can assert), never "unknown".
+  c.turn_tool_count,
+  c.is_last_call_in_turn,
   c.matched_snippet,
   substr(o.output_text, 1, 600) AS output_text,
   c.following_tools_json,
@@ -20,6 +25,8 @@ SELECT
 FROM (
   SELECT
     e.*,
+    COUNT(*) OVER (PARTITION BY e.trace_id) AS turn_tool_count,
+    e.seq_index = MAX(e.seq_index) OVER (PARTITION BY e.trace_id) AS is_last_call_in_turn,
     CAST(to_json(list_filter(
       [
         struct_pack(tool_name := LEAD(e.tool_name, 1) OVER w,
