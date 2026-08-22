@@ -71,12 +71,30 @@ crossover link is shareable.
 
 ## 3. Construct inventory
 
-### `/` Findings
-- **Finding cards** (≤8, ranked by actionability): one-sentence claim ("Portal auth
+### Navigation shell (revision — user directive)
+- **Horizontal navbar with tabbed sub-categories**: the two rooms are top-level nav
+  entries whose sub-pages render as horizontal tabs within the room — Ops:
+  `Failures · Environments · Rhythm`; Product: `Usage · Outcomes · Agent`. The room
+  identity color underlines the active tab set; the shared filter bar sits below the
+  navbar and persists across tab switches (URL state unchanged in shape — tabs are the
+  existing routes).
+
+### `/` Dashboard (revision — user directive: findings + top visuals + category cards)
+The landing page is a **dashboard**, three zones top to bottom:
+1. **Finding cards** (≤8, ranked by actionability): one-sentence claim ("Portal auth
   failures spiked 10× Mar 29–31, touching 63 sessions and all 7 auditors"), audience tag
   (OPS/PRODUCT), one supporting number or 30px sparkline, provenance chip, and an
   **"open →"** button landing on the relevant page *with filters pre-set*
   (e.g. `/ops?signature=portal-auth-403&range=03-28..04-01`).
+2. **Top-level visuals** — the two or three most useful whole-dataset charts, compact:
+  the failure time series with incident bands (ops headline), the job-type share bar
+  (product headline), and the daily-activity strip. Each is the same component as its
+  room's full version, rendered compact and click-through to its tab.
+3. **Category cards** — one card per sub-category (Failures, Environments, Rhythm,
+  Usage, Outcomes, Agent), nicely arranged in a grid: room-colored accent, the page's
+  named question as the description ("Do tasks finish, and what do they cost in human
+  interactions?"), one live summary stat, and the whole card is the link. Ghost cards
+  (cost, latency) sit in the same grid, greyed with their one-line explanations.
 - Cards are generated from **threshold rules over the derived tables** (top signature by
   session-spread, top capability gap by cost, job-concentration, outcome anomalies) — not
   hand-written prose, so they survive new data (resolved — §7: rules, emitted by the
