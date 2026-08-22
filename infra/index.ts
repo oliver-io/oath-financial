@@ -12,10 +12,11 @@ const authMode = cfg.get("authMode") ?? "none"; // none | unlisted; sso reserved
 if (authMode !== "none" && authMode !== "unlisted") {
   throw new Error(`authMode '${authMode}' is reserved and not implemented (plan §6)`);
 }
-if (cfg.get("domain")) {
-  // ACM + Route53 are config-gated and not yet built (plan §1, optional row).
-  throw new Error("domain config set, but ACM/Route53 support is not implemented yet");
-}
+// Optional custom domain (plan §1): when `domain` is set (e.g.
+// oath.oliver-io.online), an ACM cert is DNS-validated against the parent
+// hosted zone and alias records point at the distribution. Cert must live in
+// us-east-1 (CloudFront requirement) — the stack region already is.
+const domain = cfg.get("domain");
 
 // AWS-managed cache policies: headers travel with the objects; CloudFront just
 // respects or ignores them per path class (plan §1 table).
@@ -50,6 +51,32 @@ const behaviorBase = {
   compress: true,
 };
 
+// —— custom-domain resources (only when `domain` config is set) ——
+let certificateArn: pulumi.Output<string> | undefined;
+let zoneId: pulumi.Output<string> | undefined;
+if (domain) {
+  const parent = domain.split(".").slice(1).join(".");
+  const zone = aws.route53.getZoneOutput({ name: parent, privateZone: false });
+  zoneId = zone.zoneId;
+  const cert = new aws.acm.Certificate("site-cert", {
+    domainName: domain,
+    validationMethod: "DNS",
+  });
+  const validationRecord = new aws.route53.Record("site-cert-validation", {
+    zoneId: zone.zoneId,
+    name: cert.domainValidationOptions[0].resourceRecordName,
+    type: cert.domainValidationOptions[0].resourceRecordType,
+    records: [cert.domainValidationOptions[0].resourceRecordValue],
+    ttl: 300,
+    allowOverwrite: true,
+  });
+  const validation = new aws.acm.CertificateValidation("site-cert-validated", {
+    certificateArn: cert.arn,
+    validationRecordFqdns: [validationRecord.fqdn],
+  });
+  certificateArn = validation.certificateArn;
+}
+
 const distribution = new aws.cloudfront.Distribution("site-cdn", {
   enabled: true,
   comment: "trace-insights static serving (SPA + runs/ data plane)",
@@ -78,8 +105,28 @@ const distribution = new aws.cloudfront.Distribution("site-cdn", {
     { errorCode: 404, responseCode: 200, responsePagePath: "/index.html" },
   ],
   restrictions: { geoRestriction: { restrictionType: "none" } },
-  viewerCertificate: { cloudfrontDefaultCertificate: true },
+  aliases: domain ? [domain] : undefined,
+  viewerCertificate: certificateArn
+    ? { acmCertificateArn: certificateArn, sslSupportMethod: "sni-only", minimumProtocolVersion: "TLSv1.2_2021" }
+    : { cloudfrontDefaultCertificate: true },
 });
+
+if (domain && zoneId) {
+  for (const type of ["A", "AAAA"] as const) {
+    new aws.route53.Record(`site-alias-${type}`, {
+      zoneId,
+      name: domain,
+      type,
+      aliases: [
+        {
+          name: distribution.domainName,
+          zoneId: distribution.hostedZoneId,
+          evaluateTargetHealth: false,
+        },
+      ],
+    });
+  }
+}
 
 new aws.s3.BucketPolicy("site-policy", {
   bucket: bucket.id,
@@ -131,4 +178,6 @@ export const bucketName = bucket.bucket;
 export const distributionId = distribution.id;
 export const distributionDomain = distribution.domainName;
 export const deployPolicyArn = deployPolicy.arn;
-export const siteUrl = pulumi.interpolate`https://${distribution.domainName}`;
+export const siteUrl = domain
+  ? pulumi.output(`https://${domain}`)
+  : pulumi.interpolate`https://${distribution.domainName}`;
