@@ -60,7 +60,7 @@ export function OpsEnvironmentsPage() {
         {cells.error && <ErrorState message={cells.error} />}
         {cells.loading && <Skeleton progress={cells.fetchProgress} />}
         {cells.rows && clients.length > 0 && (
-          <svg width={170 + classes.length * (CELL + 2)} height={clients.length * (CELL + 2) + 90} className="max-w-full">
+          <svg width={230 + classes.length * (CELL + 2)} height={clients.length * (CELL + 2) + 90} className="max-w-full">
             <title>client × signature-class error-rate heatmap</title>
             {classes.map((cls, j) => (
               <text
