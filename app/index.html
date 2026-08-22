@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trace Insights</title>
+  </head>
+  <body>
+    <div id="errtap" style="display: none"></div>
+    <script>
+      // headless-diagnostics tap: surfaces uncaught errors into the DOM so
+      // driver scripts can read them without a console connection
+      const tap = (m) => {
+        document.getElementById("errtap").textContent += ` ERRTAP[${m}]`;
+      };
+      window.addEventListener("error", (e) => tap(`${e.message} @ ${e.filename || ""}`));
+      window.addEventListener("unhandledrejection", (e) => tap(String(e.reason)));
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

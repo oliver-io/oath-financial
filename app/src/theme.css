@@ -1,0 +1,77 @@
+/* Theme tokens — docs/plans/app.md §6. All colors in the app come from these
+ * semantic tokens; page components never touch raw hexes. Categorical series
+ * hues were finalized by the dataviz palette validator (see
+ * ../PALETTE_REPORT.md) and are assigned to entities in FIXED order,
+ * never cycled or repainted when filters change the series count. */
+
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Inter";
+  src: url("./fonts/InterVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Consolas", monospace;
+
+  /* ink ramp — cool slate on near-white paper */
+  --color-paper: #fdfdfc;
+  --color-surface: #ffffff;
+  --color-ink: #1e2833;
+  --color-ink-2: #45525f;
+  --color-ink-3: #77828d;
+  --color-hairline: #e3e7ea;
+  --color-grid: #eef0f2;
+
+  /* side identities (nav rail, title underline, active states — never floods) */
+  --color-ops: #3e5c76;
+  --color-ops-soft: #e9eef3;
+  --color-product: #1f5f55;
+  --color-product-soft: #e7f0ee;
+
+  /* status — reserved, never reused as series colors */
+  --color-failure: #8e3b2f;
+  --color-failure-soft: #f6ebe8;
+
+  /* provenance chips (outline-style letters) */
+  --color-chip-heuristic: #96690f; /* H muted amber */
+  --color-chip-curated: #5a6774; /* C mid-slate */
+  --color-chip-model: #33627e; /* M steel blue (purple is banned) */
+
+  /* categorical series theme — validator-passed fixed order (../PALETTE_REPORT.md).
+   * Slot k is bound to entity k of a dimension's fixed order, never re-assigned. */
+  --color-series-1: #3a6ea5; /* slate blue */
+  --color-series-2: #80801f; /* olive */
+  --color-series-3: #a8432f; /* brick */
+  --color-series-4: #0f7d58; /* teal */
+  --color-series-5: #b3822d; /* amber */
+  --color-series-6: #1f81ab; /* steel cyan */
+  --color-series-7: #b5643a; /* copper */
+
+  /* sequential ramp (heatmap): one hue, slate, light→dark */
+  --color-seq-1: #f2f5f8;
+  --color-seq-2: #d5dfe8;
+  --color-seq-3: #a8bccd;
+  --color-seq-4: #7797b0;
+  --color-seq-5: #4d7392;
+  --color-seq-6: #2f5573;
+  /* uncertainty grey (undetermined slices; hatched via the shared 45° def) */
+  --color-undetermined: #9aa4ad;
+  --color-unclassified: #c2c9cf;
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* tabular numerals are mandatory in every table and metric (app.md §6) */
+table,
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
