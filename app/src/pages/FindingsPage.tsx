@@ -82,7 +82,7 @@ function FindingCards() {
   const filters = useFilters();
   const findings = useRows(FindingRowQ, "SELECT * FROM findings ORDER BY rank LIMIT 8", null);
   return (
-    <section className="mb-8 max-w-3xl">
+    <section className="mb-8">
       {findings.error && <ErrorState message={findings.error} />}
       {findings.loading && <Skeleton lines={5} />}
       {findings.rows && findings.rows.length === 0 && (
@@ -90,7 +90,7 @@ function FindingCards() {
           No findings met their thresholds for this run.
         </div>
       )}
-      <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
         {(findings.rows ?? []).map((f) => {
           const kind = chipKind(f.provenance);
           const spark = parseIntArray(f.sparkline);

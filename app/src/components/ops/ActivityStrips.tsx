@@ -37,10 +37,12 @@ export function ActivityStrips({
   const byKey = useMemo(() => new Map(rows.map((r) => [`${r.auditor}|${r.day}`, r])), [rows]);
   const maxTurns = Math.max(1, ...rows.map((r) => r.turns));
   const CELL = compact ? 10 : 14;
+  const W = 120 + days.length * (CELL + 1);
+  const H = auditors.length * (CELL + 2) + 26;
   return (
+    // compact renders scale to their container via viewBox instead of clipping
     <svg
-      width={120 + days.length * (CELL + 1)}
-      height={auditors.length * (CELL + 2) + 26}
+      {...(compact ? { viewBox: `0 0 ${W} ${H}`, width: "100%" } : { width: W, height: H })}
       className="max-w-full"
     >
       <title>activity strips: turns per auditor per day</title>
