@@ -34,8 +34,10 @@ bun run dev                 # serves the SPA against contracts/fixtures until M2
                             # then against build/serve/ — a base-URL flip
 ```
 
-Open the printed URL. Landing page = ranked findings; `/ops` and `/product/*` are the
-two rooms; every value drills down to the session transcript it came from.
+Open the printed URL. Landing page = a hub routing to the two rooms (`/ops` and
+`/product/*`); every value drills down to the session transcript it came from.
+Findings live in `FINDINGS.md` (the written deliverable) and as queryable rows in
+the published `ref/findings.parquet` — deliberately not as a UI surface.
 
 ## Deploy (AWS, optional)
 

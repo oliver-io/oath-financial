@@ -87,7 +87,9 @@ POC serves from a local static Bun server; production is object store + CDN + ed
 every POC stand-in preserves its production interface.
 
 **UI** (→ `docs/plans/ui.md`, READY; implementation plan `docs/plans/app.md`): a
-findings brief (ranked actionable cards) fronting the two rooms; first-class
+hub landing routing to the two rooms — findings are a written deliverable
+(`FINDINGS.md`) plus queryable `ref/findings` rows, deliberately not a UI
+surface (revision 3); first-class
 CloudWatch-style time-window control (**ops = event-timestamp membership; product =
 whole-session containment with an excluded-count caption**); provenance chips, evidence
 popovers, ghost cards for unsupported views; every path drills to a session transcript

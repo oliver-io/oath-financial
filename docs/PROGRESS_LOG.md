@@ -1236,3 +1236,15 @@ emitting it as a job. Directives relayed to ETL and app tracks.
 - Verified in-browser: job-share no longer lists portal_auth (tie_out now tops the
   mix); pinning Auth overhead from outcomes lands the tile with its crossover chip.
   Gates: tsc clean, biome clean, 38/38 app tests. Not committed — orchestrator sweeps.
+
+## 45. Findings leave the UI (revision 3, user decision)
+
+Prompted by the fixture card '"Portal work falls back to raw browser driving" is the
+costliest workaround (667 human turns)' — synthetic fixture prose with no producing
+rule behind it — the user ruled that findings are conclusions we draw from *using*
+the tool: they belong in FINDINGS.md (the README's one-page deliverable) and as
+queryable ref/findings rows, not as a UI surface implying the app divines insights.
+Decision: remove the findings presentation from the app entirely (hub keeps only the
+two room cards); ref/findings.parquet stays in the serving contract as structured
+output; ETL untouched. RUNNING.md, CLAUDE.md BRIEF, and FINDINGS.md updated; app
+track directed to record ui.md revision 3 and strip the components.

@@ -55,4 +55,7 @@ telemetry write time), auditor performance rankings (auditors ≅ clients; confo
 cross-turn amount arithmetic (amounts invented), prose mining (template-generated), an
 ad-hoc query-builder UI (canned views + a group-by pivot answer the real questions),
 and session merging (above). The UI shows these as explicit "this data cannot support
-X" cards rather than omitting them silently.
+X" cards rather than omitting them silently. We also removed an in-app "findings
+brief" late: findings are conclusions we drew from using the tool — they belong in
+this document (and as queryable `ref/findings` rows), not as a UI surface implying
+the app divines insights itself.
