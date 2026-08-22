@@ -19,6 +19,10 @@ is_final_turn=true is the session's LAST exchange — no turn follows anywhere i
 judge the ending from it (what happened afterwards is unknowable, not implied); the digest with
 is_first_observed_turn=true is the earliest turn telemetry captured — the true session start
 unless resumed_fragment is true (then the real beginning was lost, not absent).
+Each digest's typed_prefix is the HUMAN-AUTHORED portion of the user message ONLY — when it is
+empty the auditor typed nothing and the message was harness-injected (the digest's marker
+booleans say what: a skill body, a background task notification, or a pasted extract). Do not
+read injected content as the user's intent.
 Each output field's meaning and its decision rules are given in that field's schema
 description — follow them exactly; outcome and ended_mid_work are SEPARATE judgments that must
 respect the coherence rule stated on ended_mid_work (a session that closes with delivered work
@@ -49,7 +53,7 @@ export const j3Session: JobSpec = {
   buildPacket: buildJ3Packet,
   outputSchema: J3OutputSchema,
   promptTemplate: PROMPT,
-  promptVersion: "j3-v3",
+  promptVersion: "j3-v5",
   modelTier: "strong",
   writerSqlFile: "s3_j3_writer",
   outputTable: "enrich.j3_verdicts",

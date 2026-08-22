@@ -115,7 +115,6 @@ export const JobTypeSchema = z.enum([
   "doc_location",
   "doc_inventory",
   "tie_out",
-  "portal_auth",
   "extraction_supervision",
   "drafting",
   "capability_probe",
@@ -127,10 +126,13 @@ export const J3OutputSchema = z.object({
     "The session's PRIMARY line of business — what the auditor was trying to get done overall, " +
       "not the incidental tools used. doc_receipt_check: verifying documents were received; " +
       "doc_location: finding where documents live; doc_inventory: listing what is on file; " +
-      "tie_out: agreeing figures across documents/workpapers; portal_auth: fighting portal " +
-      "access/login itself as the task; extraction_supervision: overseeing data extraction; " +
+      "tie_out: agreeing figures across documents/workpapers; " +
+      "extraction_supervision: overseeing data extraction; " +
       "drafting: producing/updating a document or workpaper; capability_probe: the user testing " +
-      "what the agent can do; other: none of these fits.",
+      "what the agent can do; other: none of these fits. " +
+      "Portal/auth activity (logins, token checks, 403 fighting, browser grinds to reach the " +
+      "portal) is INFRASTRUCTURE FRICTION, never a job_type — classify an auth-heavy session by " +
+      "the document work it was trying to get done; auth noise does not change the line of business.",
   ),
   job_type_secondary: JobTypeSchema.nullable().describe(
     "A clearly-present SECONDARY line of business, or null. Only set when a second work stream " +
