@@ -885,3 +885,42 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   output) and A6 enriched-mode pass — both depend on the ETL track.
 - test:etl currently reports failures — those are the ETL track's own red/green suite
   (unimplemented stages), not app-track breakage.
+
+## 29. ETL M2 — s4 aggregate + s5 publish (degraded mode), seam items landed
+
+- Newly green: all pipeline_degraded tests + publish_atomicity (fault after partition
+  writes leaves latest.json on the prior run; re-run recovers). Verified by
+  orchestrator: `bun test ./test` **62 pass / 46 fail** (all remaining reds are
+  stage-3 enrichment scope), tsc + biome clean. No test files modified.
+- All five cross-track seam items landed: six `stated_params` keys
+  (`small_n_call_threshold: 5`, `grind_run_threshold: 20` added);
+  `counts_as_failure` published as string enum (mapped at stage-2 rule injection);
+  explicit publish renames (`timestamp`→`ts`, `repeat_of`→`repeat_of_seq_index`,
+  derived `day`); serving manifest carries `rule_versions` (YAML version strings);
+  contracts adopted — local duplicate enums deleted, every published row validated
+  against @trace-insights/contracts row schemas, manifest built to ServeManifestSchema.
+- **Open conflict (flagged to orchestration session)**: the degraded-publish test +
+  etl.md ("embeds the same content") make the published manifest.json carry the
+  internal sha256 `rule_hashes` alongside `rule_versions`; if seam item 4 intended
+  hashes absent from serving, test/etl.md vs the seam note disagree — followed
+  test/etl.md.
+- capability_gap `description` has its column home (agg + ref, NULL degraded); gap
+  clusters versioned in findings.yaml (`shell-pdf-pipeline` deliberately absent —
+  needs tool input text derive does not carry; M4 note). `matched_snippet` computed in
+  stage 2. Stage contract gained `finalize()` (s5 export/pointer swap); `enrich.*`
+  guaranteed-empty-if-absent keeps s4/s5 SQL statically NULL-tolerant.
+- Real-dataset publish: 116 sessions, 763 turn rows, 48 partitions / 24 days; top
+  signatures cli-command-not-found 117, missing-file 113, portal-auth-403 106 (42
+  sessions); 7 incidents all inside the predicted Mar 29–31 window; both degraded
+  findings cards publish; outcomes all NULL. Committed sample run at `sample-output/`
+  (58 files, ~1.0 MB).
+- Judgment calls: incident baseline = events per active-span-day with ≥3-event small-n
+  guard; findings claim gates implement min_sessions/min_auditors generically; only
+  `metric: event_count` computable at M2; platform-limit shows 0 tool-event count in
+  ref/failure_signatures (assistant-output marker, not a tool event) — future UI
+  caption.
+- §29 manifest conflict adjudicated (orchestration session): superset resolution
+  approved — rule_versions is the UI-facing display field, hashes stay embedded in
+  serving (strengthens manifest-chain traceability; contracts zod ignores unknown
+  fields). No doc/test change. Commits are owned by the orchestration session; ETL
+  track does not commit/push.
