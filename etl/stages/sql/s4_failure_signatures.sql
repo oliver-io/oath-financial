@@ -9,7 +9,13 @@
 --   co-occurrence rate, "kills work" is interpretation),
 --   shape_same_tool_clean_later / shape_other_calls_after /
 --   shape_turn_ends_on_failure (structural distribution as counts),
---   j5_false_positive_rate, j5_missed_rate (NULL until J5/M4).
+--   j5_false_positive_rate, j5_missed_rate — GLOBAL instrument error rates
+--   from the J5 audit samples (llm.md J5: the audit measures the rule table,
+--   not individual signatures; per-signature splits of a 100/150-record sample
+--   would be small-n noise, so every row carries the same global annotation).
+--   false_positive_rate = false_positive / judged over the matched sample;
+--   missed_rate = missed_failure / judged over the unmatched sample. NULL when
+--   J5 did not run or a bucket's judged count is under small_n_call_threshold.
 -- Rules arrive as _signature_rules (prepare()).
 -- Contract: docs/architecture/etl.md Stage 4; derivations.md §5.
 CREATE TABLE agg.failure_signatures AS
@@ -67,6 +73,20 @@ span_days AS (
     )) AS d
   FROM per_sig p
 ),
+j5 AS (
+  SELECT
+    SUM(CASE WHEN bucket = 'matched'
+          AND assessment IN ('missed_failure', 'correct', 'false_positive')
+        THEN 1 ELSE 0 END) AS matched_judged,
+    SUM(CASE WHEN bucket = 'matched' AND assessment = 'false_positive'
+        THEN 1 ELSE 0 END) AS matched_fp,
+    SUM(CASE WHEN bucket = 'unmatched'
+          AND assessment IN ('missed_failure', 'correct', 'false_positive')
+        THEN 1 ELSE 0 END) AS unmatched_judged,
+    SUM(CASE WHEN bucket = 'unmatched' AND assessment = 'missed_failure'
+        THEN 1 ELSE 0 END) AS unmatched_missed
+  FROM enrich.j5_audit
+),
 series AS (
   SELECT
     sd.pattern_id,
@@ -93,9 +113,14 @@ SELECT
   COALESCE(p.shape_same_tool_clean_later, 0) AS shape_same_tool_clean_later,
   COALESCE(p.shape_other_calls_after, 0) AS shape_other_calls_after,
   COALESCE(p.shape_turn_ends_on_failure, 0) AS shape_turn_ends_on_failure,
-  CAST(NULL AS DOUBLE) AS j5_false_positive_rate,
-  CAST(NULL AS DOUBLE) AS j5_missed_rate
+  CASE WHEN j5.matched_judged >= CAST(getvariable('small_n_call_threshold') AS INTEGER)
+       THEN j5.matched_fp * 1.0 / j5.matched_judged
+  END AS j5_false_positive_rate,
+  CASE WHEN j5.unmatched_judged >= CAST(getvariable('small_n_call_threshold') AS INTEGER)
+       THEN j5.unmatched_missed * 1.0 / j5.unmatched_judged
+  END AS j5_missed_rate
 FROM _signature_rules r
 LEFT JOIN per_sig p USING (pattern_id)
 LEFT JOIN series se USING (pattern_id)
+CROSS JOIN j5
 ORDER BY r.rule_order;

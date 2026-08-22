@@ -30,6 +30,7 @@ export async function installSessionVariables(ctx: RunContext): Promise<void> {
     `SET VARIABLE j5_seed = ${thr.j5.seed}`,
     `SET VARIABLE cc_max_typed_chars = ${thr.correction_candidate.max_typed_chars}`,
     `SET VARIABLE cc_max_gap_s = ${thr.correction_candidate.max_gap_s}`,
+    `SET VARIABLE small_n_call_threshold = ${thr.small_n_call_threshold}`,
     `SET VARIABLE signatures_version = ${sqlString(ctx.rules.signatures.version)}`,
     `SET VARIABLE enrichment_ran = ${ctx.enrichment !== null}`,
   ];

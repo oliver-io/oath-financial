@@ -2,9 +2,11 @@
 # Contract: docs/architecture/etl.md stage 5 (ref/findings); shape in
 # etl/schemas/rules.ts FindingRuleSchema. Minimally populated: the two
 # best-verified findings from the adversarial fan-out (progress log §3), as
-# shape-valid seed rows. The full card set is phase-2+ work; rows with
-# requires_enrichment: false are exactly the degraded-mode card set.
-version: "fnd-v0"
+# shape-valid seed rows; M4 added the two enrichment-gated cards (rows with
+# requires_enrichment: false are exactly the degraded-mode card set — the
+# true-rows publish only when enrichment ran and their claim gates pass; see
+# s5_ref_findings.sql for the computable metric set).
+version: "fnd-v1"
 findings:
   - finding_id: portal-auth-wall
     audience: ops
@@ -31,10 +33,41 @@ findings:
       signature: cli-command-not-found
     provenance: heuristic
     requires_enrichment: false
+  # Enrichment-gated cards (M4). Provenance model: metric values are rollups
+  # of J2/J3 judgments; absent in degraded mode by construction.
+  - finding_id: portal-auth-friction-cost
+    audience: product
+    title: "Portal auth failures carry the largest attributed friction cost"
+    claim_params:
+      signature: portal-auth-403
+      # distinct sessions with J2 friction attributed to this signature
+      min_sessions: 5
+    metric: "linked_friction"
+    target_params:
+      side: product
+      cause: system_failure
+      signature: portal-auth-403
+    provenance: model
+    requires_enrichment: true
+  - finding_id: abandoned-sessions
+    audience: product
+    title: "Sessions judged abandoned on outcome review"
+    claim_params:
+      # minimum abandoned-judged sessions for the card to be a finding
+      min_sessions: 3
+    metric: "abandoned_session_count"
+    target_params:
+      side: product
+      outcome: abandoned
+    provenance: model
+    requires_enrichment: true
 # Curated capability-gap clusters (derivations.md §7) — gap_id is the stable
 # public deeplink key; detectors are deterministic (stage 4 over derive.*).
-# shell-pdf-pipeline is deliberately ABSENT: detecting it needs tool INPUT
-# text, which derive does not carry yet (known limitation, revisit at M4).
+# shell-pdf-pipeline is deliberately ABSENT (decided at M4): detecting it
+# needs tool INPUT text, which clean/derive do not carry — adding the column,
+# a fourth evidence_pattern, and its detector is real scope, not a tweak, and
+# input-based detection would need its own trap review (README: only failure
+# PLACEMENT in outputs is trustworthy). A known, documented non-gap until then.
 capability_gaps:
   - gap_id: browser-grind
     evidence_pattern: browser_call_concentration

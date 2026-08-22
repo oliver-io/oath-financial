@@ -9,6 +9,7 @@
 import { parseArgs } from "node:util";
 import { createRunContext, type RunContextOptions } from "./context.ts";
 import { EnrichmentInvariantViolation, GateFailure } from "./lib/errors.ts";
+import { writeInspectArtifact } from "./lib/inspect.ts";
 import { createLogger } from "./lib/log.ts";
 import { executeStage } from "./stages/executor.ts";
 import { s0Raw } from "./stages/s0_raw.ts";
@@ -67,6 +68,8 @@ async function commandRun(flags: RunFlags, overrides?: CliOverrides): Promise<vo
       if (!stage) throw new Error(`unknown stage number: ${n}`);
       await executeStage(ctx, stage);
     }
+    // Optional local-inspection artifact (never served — etl.md stage 5).
+    if (flags.sqlite) await writeInspectArtifact(ctx);
   } finally {
     // Finalize in all outcomes so gate failures still leave their report
     // (docs/plans/etl_testing.md §3 gate/abort integration).
