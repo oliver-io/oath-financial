@@ -1,4 +1,4 @@
-// /ops/rhythm — "How does work actually flow, per auditor and engagement?"
+// /ops/rhythm — "When and in what pattern does each auditor work?"
 // All constructs turn-grain -> event semantics; the gap cap appears as a
 // stated parameter on each panel's chip.
 
@@ -10,7 +10,7 @@ export function OpsRhythmPage() {
       <PageTitle
         side="ops"
         title="Working rhythm"
-        question="How does work actually flow, per auditor and engagement?"
+        question="When and in what pattern does each auditor work?"
         stats={[{ id: "stat-active-auditors", side: "ops" }]}
       />
       <PanelSection id="activity-strips" />

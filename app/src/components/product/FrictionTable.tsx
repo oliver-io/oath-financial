@@ -98,6 +98,7 @@ export function FrictionTable({ rows }: { rows: Row[] }) {
                       window: filters.window,
                       signature: r.dominant_linked_signature,
                     }),
+                    hash: "#panel-signature-table",
                   }}
                   className="rounded border px-1 py-0.5 text-[10px]"
                   style={{ borderColor: "var(--color-ops)", color: "var(--color-ops)" }}

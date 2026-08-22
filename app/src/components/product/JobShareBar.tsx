@@ -44,6 +44,7 @@ export function JobShareBar({ rows, compact = false }: { rows: Row[]; compact?: 
                       ? [r.job_type as never]
                       : [],
                 }),
+                hash: "#panel-outcome-bars",
               }}
               className="block h-3.5 rounded-r-sm"
               style={{

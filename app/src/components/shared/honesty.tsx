@@ -35,7 +35,7 @@ export function ProvenanceChip({
     <span
       className="inline-flex h-4 w-4 items-center justify-center rounded-sm border text-[10px] font-semibold leading-none align-middle select-none"
       style={{ color: c.color, borderColor: c.color }}
-      title={`${c.label}${method ? ` — ${method}` : ""} (see derivations.md)`}
+      title={`${c.label}${method ? ` — ${method}` : ""}`}
     >
       {c.letter}
     </span>

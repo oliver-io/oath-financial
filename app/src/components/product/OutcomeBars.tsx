@@ -6,13 +6,13 @@
 // completion-rate-among-determined.
 
 import type { JobType } from "@trace-insights/contracts";
-import { Link } from "react-router";
 import type { z } from "zod";
 import { useData, useFilters } from "../../data/DataContext.tsx";
 import type { OutcomeCountSchema } from "../../data/queries.ts";
 import { count, pct } from "../../fmt.ts";
 import { filtersToSearch } from "../../state/urlState.ts";
 import { CaptionBar, ProvenanceChip } from "../shared/honesty.tsx";
+import { SvgDrillLink } from "../shared/SvgDrillLink.tsx";
 
 type Row = z.infer<typeof OutcomeCountSchema>;
 
@@ -93,8 +93,26 @@ export function OutcomeBars({ rows }: { rows: Row[] }) {
           const jobTotal = [...(m?.values() ?? [])].reduce((a, b) => a + b, 0);
           let x = 150;
           const y = i * ROW_H + 4;
+          const to = {
+            pathname: "/product/outcomes",
+            search: filtersToSearch({
+              ...filters,
+              jobTypes: job.startsWith("(") ? [] : [job as JobType],
+            }),
+          };
           return (
-            <g key={job}>
+            // the whole row is the click target
+            <SvgDrillLink key={job} to={to} label={`${job} sessions — filter to this job type`}>
+              <rect
+                x={0}
+                y={y - 2}
+                width={W + 200}
+                height={ROW_H - 4}
+                fill="transparent"
+                className="hover:fill-[var(--color-paper)]"
+              >
+                <title>{`${job} sessions — click to filter to this job type`}</title>
+              </rect>
               <text x={144} y={y + 11} textAnchor="end" fontSize={11} fill="var(--color-ink-2)">
                 {job}
               </text>
@@ -121,7 +139,7 @@ export function OutcomeBars({ rows }: { rows: Row[] }) {
               >
                 {count(jobTotal)}
               </text>
-            </g>
+            </SvgDrillLink>
           );
         })}
       </svg>
@@ -135,23 +153,7 @@ export function OutcomeBars({ rows }: { rows: Row[] }) {
           </span>
         ))}
       </div>
-      <div className="mt-2 flex flex-wrap gap-1 text-[11px]">
-        {jobs.slice(0, 6).map((job) => (
-          <Link
-            key={job}
-            className="rounded border border-hairline px-1.5 py-0.5 text-ink-2 hover:border-ink-3"
-            to={{
-              pathname: "/product/outcomes",
-              search: filtersToSearch({
-                ...filters,
-                jobTypes: job.startsWith("(") ? [] : [job as JobType],
-              }),
-            }}
-          >
-            {job} sessions →
-          </Link>
-        ))}
-      </div>
+      <p className="mt-1 text-[11px] text-ink-3">Click a row to filter to that job type.</p>
     </div>
   );
 }

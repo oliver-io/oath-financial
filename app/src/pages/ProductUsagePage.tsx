@@ -16,7 +16,10 @@ export function ProductUsagePage() {
         side="product"
         title="Usage"
         question="Who uses this, for what work, where is it concentrated?"
-        stats={[{ id: "stat-turns", side: "product" }]}
+        stats={[
+          { id: "stat-sessions", side: "product" },
+          { id: "stat-turns", side: "product" },
+        ]}
       />
       <PanelSection id="job-share" />
       <ContainmentCaption />

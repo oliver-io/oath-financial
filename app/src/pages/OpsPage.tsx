@@ -34,7 +34,7 @@ export function OpsPage() {
               })
             }
           />
-          include Agent-tool failures
+          include agent-tool failures
         </label>
       </div>
       <PanelSection id="failure-series" />

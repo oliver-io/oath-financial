@@ -1,5 +1,5 @@
 // /product/outcomes — "Do tasks finish, what do they cost in human
-// interactions, where is the wrestling?" Session-grain: whole-containment
+// interactions, where is the friction?" Session-grain: whole-containment
 // semantics with the excluded-count caption.
 
 import { ExcludedSessionsList } from "../components/shared/ExcludedSessionsList.tsx";
@@ -12,7 +12,7 @@ export function ProductOutcomesPage() {
       <PageTitle
         side="product"
         title="Outcomes"
-        question="Do tasks finish, what do they cost in human interactions, where is the wrestling?"
+        question="Do tasks finish, what do they cost in human interactions, where is the friction?"
         stats={[
           { id: "stat-determined", side: "product" },
           { id: "stat-auth-overhead", side: "product" },

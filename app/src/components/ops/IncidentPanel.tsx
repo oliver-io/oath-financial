@@ -69,6 +69,7 @@ export function IncidentPanel({
               to={{
                 pathname: "/ops/failures",
                 search: filtersToSearch({ ...filters, signature: s, incident: null }),
+                hash: "#panel-signature-table",
               }}
               className="rounded border border-hairline px-1.5 py-0.5 text-[11px] text-ink-2 hover:border-ink-3"
             >
@@ -97,6 +98,7 @@ export function IncidentPanel({
         to={{
           pathname: "/product/outcomes",
           search: filtersToSearch({ ...DEFAULT_FILTERS, window: span }),
+          hash: "#panel-friction-table",
         }}
         className="inline-block rounded border px-2 py-1 text-xs font-medium"
         style={{ borderColor: "var(--color-product)", color: "var(--color-product)" }}

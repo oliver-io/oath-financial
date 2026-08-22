@@ -1,4 +1,4 @@
-// /product/agent — "Where does the agent thrash, retry, or get corrected?"
+// /product/agent — "Where does the agent repeat itself, run long, or get corrected?"
 // Turn/event-grain; counts are facts, names are judgments.
 
 import { EventSemanticsCaption, PageTitle, PanelSection } from "./PageScaffold.tsx";
@@ -9,7 +9,7 @@ export function ProductAgentPage() {
       <PageTitle
         side="product"
         title="Agent behavior"
-        question="Where does the agent thrash, retry, or get corrected?"
+        question="Where does the agent repeat itself, run long, or get corrected?"
         stats={[{ id: "stat-chain-turns", side: "product" }]}
       />
       <EventSemanticsCaption />

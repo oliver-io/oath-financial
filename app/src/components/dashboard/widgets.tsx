@@ -142,6 +142,7 @@ function AuthOverheadWidget() {
             window: filters.window,
             signature: "portal-auth-403",
           }),
+          hash: "#panel-signature-table",
         }}
         className="mt-1.5 inline-block rounded border px-1.5 py-0.5 text-[10px]"
         style={{ borderColor: "var(--color-ops)", color: "var(--color-ops)" }}
@@ -192,7 +193,7 @@ export const WIDGETS: WidgetDef[] = [
   {
     id: "telemetry-integrity",
     side: "ops",
-    title: "Telemetry integrity — observability of the observability",
+    title: "Telemetry integrity — completeness of the trace record",
     source: "/ops/environments",
     size: "half",
     detail: () => <IntegrityStripPanel />,
@@ -210,7 +211,7 @@ export const WIDGETS: WidgetDef[] = [
   {
     id: "bout-profile",
     side: "ops",
-    title: "Bout profile — one-sitting workers vs fragmented attention",
+    title: "Bout profile — work stretches per day and typical length",
     source: "/ops/rhythm",
     size: "half",
     chip: () => (
@@ -227,7 +228,7 @@ export const WIDGETS: WidgetDef[] = [
   {
     id: "span-scatter",
     side: "ops",
-    title: "Wall span vs engaged time — why wall spans are never summed",
+    title: "Wall span vs engaged time",
     source: "/ops/rhythm",
     size: "half",
     chip: () => (
@@ -303,7 +304,7 @@ export const WIDGETS: WidgetDef[] = [
   {
     id: "lob-timeline",
     side: "product",
-    title: "Lines of business over time — turns per day by client",
+    title: "Client activity over time — turns per day by client",
     source: "/product/usage",
     size: "full",
     detail: () => <LobTimelinePanel />,
@@ -311,7 +312,7 @@ export const WIDGETS: WidgetDef[] = [
   {
     id: "auditor-grid",
     side: "product",
-    title: "Auditor × client load — deliberately unranked",
+    title: "Auditor × client load",
     source: "/product/usage",
     size: "half",
     detail: () => <AuditorClientGridPanel />,
@@ -355,7 +356,7 @@ export const WIDGETS: WidgetDef[] = [
   {
     id: "friction-table",
     side: "product",
-    title: "Where is the wrestling?",
+    title: "Where is the friction?",
     source: "/product/outcomes",
     size: "full",
     detail: () => <FrictionTablePanel />,
@@ -412,10 +413,24 @@ export const WIDGETS: WidgetDef[] = [
   {
     id: "family-shapes",
     side: "product",
-    title: "What happens after a failure, by tool family — structural only",
+    title: "What happens after a failure, by tool family",
     source: "/product/agent",
     size: "half",
     detail: () => <FamilyShapesPanel />,
+  },
+  {
+    id: "stat-sessions",
+    side: "product",
+    title: "Sessions",
+    source: "/product/usage",
+    size: "stat",
+    detail: () => (
+      <StatWidget
+        pick={(s) => count(s.contained)}
+        label="sessions in window"
+        caption="whole-session containment"
+      />
+    ),
   },
   {
     id: "stat-turns",

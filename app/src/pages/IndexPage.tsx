@@ -16,11 +16,15 @@ const ROOMS = [
         label: "Failures & incidents",
         q: "What is breaking, how badly, one-off or systemic?",
       },
-      { to: "/ops/environments", label: "Environments", q: "Which client box is unhealthy?" },
+      {
+        to: "/ops/environments",
+        label: "Environments",
+        q: "Which client environments show elevated error rates?",
+      },
       {
         to: "/ops/rhythm",
         label: "Working rhythm",
-        q: "How does work actually flow, per auditor and engagement?",
+        q: "When and in what pattern does each auditor work?",
       },
     ],
   },
@@ -43,7 +47,7 @@ const ROOMS = [
       {
         to: "/product/agent",
         label: "Agent behavior",
-        q: "Where does the agent thrash, retry, or get corrected?",
+        q: "Where does the agent repeat itself, run long, or get corrected?",
       },
     ],
   },

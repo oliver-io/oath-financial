@@ -1,4 +1,5 @@
-// /ops/environments — "Which client box is unhealthy?" Panels via the registry.
+// /ops/environments — "Which client environments show elevated error rates?"
+// Panels via the registry.
 
 import { EventSemanticsCaption, PageTitle, PanelSection } from "./PageScaffold.tsx";
 
@@ -8,7 +9,7 @@ export function OpsEnvironmentsPage() {
       <PageTitle
         side="ops"
         title="Environments"
-        question="Which client box is unhealthy?"
+        question="Which client environments show elevated error rates?"
         stats={[{ id: "stat-active-clients", side: "ops" }]}
       />
       <PanelSection id="env-heatmap" />

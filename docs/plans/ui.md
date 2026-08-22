@@ -32,11 +32,11 @@ deeplinks wherever its evidence lives, regardless of room.
 |---|---|
 | `/` | **Findings** — "What should I act on this week?" |
 | `/ops` | **Failures & incidents** — "What is breaking, how badly, one-off or systemic?" |
-| `/ops/environments` | "Which client box is unhealthy?" (candidate to fold into `/ops`) |
-| `/ops/rhythm` | **Working rhythm** — "How does work actually flow, per auditor and engagement?" (added on adversarial review: a verbatim README question had no construct) |
+| `/ops/environments` | "Which client environments show elevated error rates?" (candidate to fold into `/ops`) |
+| `/ops/rhythm` | **Working rhythm** — "When and in what pattern does each auditor work?" (added on adversarial review: a verbatim README question had no construct) |
 | `/product/usage` | "Who uses this, for what work, where is it concentrated?" |
-| `/product/outcomes` | "Do tasks finish, what do they cost in human interactions, where is the wrestling?" |
-| `/product/agent` | **Agent behavior** — "Where does the agent thrash, retry, or get corrected?" (added on review: the README's "where the agent needs better instructions" had no surface) |
+| `/product/outcomes` | "Do tasks finish, what do they cost in human interactions, where is the friction?" |
+| `/product/agent` | **Agent behavior** — "Where does the agent repeat itself, run long, or get corrected?" (added on review: the README's "where the agent needs better instructions" had no surface) |
 | `/session/:id` | **Session viewer** — shared drill-down terminus; the trust-builder |
 
 **Time window control (first-class, app header, CloudWatch-style):** presets (24h / 7d /

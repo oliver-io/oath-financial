@@ -4,7 +4,7 @@
 
 import { SignatureClassSchema } from "@trace-insights/contracts";
 import { useMemo } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useData, useFilters, useRows, useWindow } from "../../data/DataContext.tsx";
 import {
   AuditorDaySchema,
@@ -31,6 +31,7 @@ import {
 import { count, dayLabel, duration } from "../../fmt.ts";
 import { filtersToSearch } from "../../state/urlState.ts";
 import { ErrorState, Skeleton } from "../shared/honesty.tsx";
+import { SvgDrillLink } from "../shared/SvgDrillLink.tsx";
 import { signatureClassColor } from "../shared/series.ts";
 import { ActivityStrips } from "./ActivityStrips.tsx";
 import { FailureTimeSeries } from "./FailureTimeSeries.tsx";
@@ -140,7 +141,6 @@ const SEQ = [
 export function EnvHeatmapPanel() {
   const win = useWindow();
   const filters = useFilters();
-  const navigate = useNavigate();
   const { manifest } = useData();
   const smallN = manifest.stated_params.small_n_call_threshold;
   const cells = useRows(EnvCellSchema, qEnvHeatmap(win, filters), win);
@@ -207,32 +207,31 @@ export function EnvHeatmapPanel() {
                   const r = rate.get(`${client}|${cls}`) ?? 0;
                   const step = r === 0 ? 0 : Math.min(5, 1 + Math.floor((r / maxRate) * 4.999));
                   return (
-                    // biome-ignore lint/a11y/useSemanticElements: SVG heatmap cell
-                    <rect
+                    <SvgDrillLink
                       key={cls}
-                      x={170 + j * (CELL + 2)}
-                      y={i * (CELL + 2)}
-                      width={CELL}
-                      height={CELL}
-                      rx={3}
-                      fill={small && r > 0 ? "url(#dot-small-n)" : SEQ[step]}
-                      stroke={small && r > 0 ? "var(--color-ink-3)" : "none"}
-                      strokeDasharray={small && r > 0 ? "2,2" : undefined}
-                      className="cursor-pointer"
-                      role="button"
-                      onClick={() =>
-                        navigate({
-                          pathname: "/ops/failures",
-                          search: filtersToSearch({ ...filters, client }),
-                        })
-                      }
+                      to={{
+                        pathname: "/ops/failures",
+                        search: filtersToSearch({ ...filters, client }),
+                      }}
+                      label={`${client} × ${cls} — open the failures page filtered to ${client}`}
                     >
-                      <title>
-                        {small
-                          ? `${client} × ${cls}: ${r.toFixed(1)} per 100 calls — fewer than ${smallN} calls; treat with caution`
-                          : `${client} × ${cls}: ${r.toFixed(1)} errors per 100 calls — click to open the failures page filtered`}
-                      </title>
-                    </rect>
+                      <rect
+                        x={170 + j * (CELL + 2)}
+                        y={i * (CELL + 2)}
+                        width={CELL}
+                        height={CELL}
+                        rx={3}
+                        fill={small && r > 0 ? "url(#dot-small-n)" : SEQ[step]}
+                        stroke={small && r > 0 ? "var(--color-ink-3)" : "none"}
+                        strokeDasharray={small && r > 0 ? "2,2" : undefined}
+                      >
+                        <title>
+                          {small
+                            ? `${client} × ${cls}: ${r.toFixed(1)} per 100 calls — fewer than ${smallN} calls; treat with caution`
+                            : `${client} × ${cls}: ${r.toFixed(1)} errors per 100 calls — click to open the failures page filtered`}
+                        </title>
+                      </rect>
+                    </SvgDrillLink>
                   );
                 })}
               </g>
@@ -352,7 +351,6 @@ export function BoutProfilePanel() {
 export function SpanScatterPanel() {
   const win = useWindow();
   const filters = useFilters();
-  const navigate = useNavigate();
   const spans = useRows(SessionSpanSchema, qSessionSpans(win, filters), null);
   const maxSpan = Math.max(1, ...(spans.rows ?? []).map((s) => s.wall_span_s));
   const maxEngaged = Math.max(1, ...(spans.rows ?? []).map((s) => s.capped_gap_span_s));
@@ -377,25 +375,27 @@ export function SpanScatterPanel() {
           engaged (log)
         </text>
         {(spans.rows ?? []).map((s) => (
-          // biome-ignore lint/a11y/noStaticElementInteractions: SVG dot acts as a drill-down link
-          <circle
+          <SvgDrillLink
             key={s.session_id}
-            cx={60 + logx(s.wall_span_s, maxSpan, 480)}
-            cy={210 - logx(s.capped_gap_span_s, maxEngaged, 195)}
-            r={4}
-            fill="var(--color-ops)"
-            fillOpacity={0.5}
-            className="cursor-pointer"
-            onClick={() => navigate(`/session/${s.session_id}`)}
+            to={`/session/${s.session_id}`}
+            label={`open session ${s.session_id}`}
           >
-            <title>{`${s.session_id} (${s.auditor}): wall ${duration(s.wall_span_s)}, engaged ${duration(s.capped_gap_span_s, true)} — click to open`}</title>
-          </circle>
+            <circle
+              cx={60 + logx(s.wall_span_s, maxSpan, 480)}
+              cy={210 - logx(s.capped_gap_span_s, maxEngaged, 195)}
+              r={4}
+              fill="var(--color-ops)"
+              fillOpacity={0.5}
+            >
+              <title>{`${s.session_id} (${s.auditor}): wall ${duration(s.wall_span_s)}, engaged ${duration(s.capped_gap_span_s, true)} — click to open`}</title>
+            </circle>
+          </SvgDrillLink>
         ))}
       </svg>
       <p className="mt-1 text-[10px] text-ink-3">
-        Dots far below the diagonal are long-lived sessions with little attention. Wall spans
-        include days of absence and are never summed as effort. Sessions overlapping the window are
-        shown.
+        Dots far below the diagonal are sessions that stayed open a long time with little active
+        work. Wall spans include days of absence, so sessions are shown individually rather than
+        totaled. Sessions overlapping the window are included.
       </p>
     </div>
   );
@@ -406,7 +406,7 @@ export function SpanScatterPanel() {
 export function QuickRestartsPanel({ limit }: { limit?: number }) {
   const win = useWindow();
   const filters = useFilters();
-  const navigate = useNavigate();
+  const location = useLocation();
   const restarts = useRows(QuickRestartSchema, qQuickRestarts(win, filters), null);
   if (restarts.loading) return <Skeleton lines={2} />;
   const rows = limit ? (restarts.rows ?? []).slice(0, limit) : (restarts.rows ?? []);
@@ -414,27 +414,34 @@ export function QuickRestartsPanel({ limit }: { limit?: number }) {
     <div>
       <div className="flex flex-wrap gap-1.5">
         {rows.map((r) => (
-          <button
+          <Link
             key={r.session_id}
-            type="button"
-            className="cursor-pointer rounded border border-hairline px-1.5 py-0.5 text-[10px] text-ink-2 hover:border-ink-3"
-            onClick={() => navigate(`/session/${r.session_id}`)}
+            to={`/session/${r.session_id}`}
+            className="rounded border border-hairline px-1.5 py-0.5 text-[10px] text-ink-2 hover:border-ink-3"
             title={`${r.auditor} started a new session ${duration(r.quick_restart_after_s)} after this one ended — click to open the first of the pair`}
           >
             {dayLabel(r.day)} · {r.auditor} · +{duration(r.quick_restart_after_s)}
-          </button>
+          </Link>
         ))}
         {rows.length === 0 && (
           <span className="text-sm text-ink-3">No quick restarts in this window.</span>
         )}
         {limit && (restarts.rows ?? []).length > limit && (
-          <Link to="/ops/rhythm" className="text-[10px] text-ink-3 underline decoration-dotted">
+          <Link
+            to={{
+              pathname: "/ops/rhythm",
+              search: location.search,
+              hash: "#panel-quick-restarts",
+            }}
+            className="text-[10px] text-ink-3 underline decoration-dotted"
+          >
             +{(restarts.rows ?? []).length - limit} more
           </Link>
         )}
       </div>
       <p className="mt-1 text-[10px] text-ink-3">
-        Captioned as workflow granularity, not continuation (derivations.md §3).
+        Sessions reopened shortly after the previous one ended — a signal of how work is chunked
+        into runs, not evidence that the two sessions are one continued task.
       </p>
     </div>
   );

@@ -2,15 +2,14 @@
 // x = human-authored-turn count, row = job type; H chip under the marker-flag
 // definition. Outlier dots clickable → session viewer.
 
-import { useNavigate } from "react-router";
 import type { z } from "zod";
 import type { InteractionCostDotSchema } from "../../data/queries.ts";
 import { count } from "../../fmt.ts";
+import { SvgDrillLink } from "../shared/SvgDrillLink.tsx";
 
 type Dot = z.infer<typeof InteractionCostDotSchema>;
 
 export function InteractionStrip({ dots }: { dots: Dot[] }) {
-  const navigate = useNavigate();
   const jobs = [...new Set(dots.map((d) => d.job_type ?? "(not classified)"))];
   const max = Math.max(1, ...dots.map((d) => d.interaction_cost));
   const W = 460;
@@ -31,21 +30,23 @@ export function InteractionStrip({ dots }: { dots: Dot[] }) {
             {dots
               .filter((d) => (d.job_type ?? "(not classified)") === job)
               .map((d) => (
-                // biome-ignore lint/a11y/noStaticElementInteractions: SVG dot acts as a drill-down link
-                <circle
+                <SvgDrillLink
                   key={d.session_id}
-                  cx={150 + (d.interaction_cost / max) * W}
-                  cy={y}
-                  r={4}
-                  fill="var(--color-product)"
-                  fillOpacity={0.55}
-                  stroke="var(--color-surface)"
-                  strokeWidth={1}
-                  className="cursor-pointer"
-                  onClick={() => navigate(`/session/${d.session_id}`)}
+                  to={`/session/${d.session_id}`}
+                  label={`open session ${d.session_id}`}
                 >
-                  <title>{`${d.session_id}: ${count(d.interaction_cost)} human-authored turns — click to open`}</title>
-                </circle>
+                  <circle
+                    cx={150 + (d.interaction_cost / max) * W}
+                    cy={y}
+                    r={4}
+                    fill="var(--color-product)"
+                    fillOpacity={0.55}
+                    stroke="var(--color-surface)"
+                    strokeWidth={1}
+                  >
+                    <title>{`${d.session_id}: ${count(d.interaction_cost)} human-authored turns — click to open`}</title>
+                  </circle>
+                </SvgDrillLink>
               ))}
           </g>
         );

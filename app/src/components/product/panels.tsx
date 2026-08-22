@@ -4,7 +4,7 @@
 
 import { ToolFamilySchema } from "@trace-insights/contracts";
 import { useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import {
   Bar,
   BarChart,
@@ -134,8 +134,8 @@ export function LobTimelinePanel() {
         </ResponsiveContainer>
       </div>
       <p className="mt-1 text-[10px] text-ink-3">
-        Bars, not area: with one client at ~70% and another present only two days, area
-        interpolation would fabricate ramps and hide slivers.
+        Shown as daily bars: activity is uneven across clients, and a continuous area would suggest
+        activity on days where there was none.
       </p>
     </div>
   );
@@ -297,6 +297,7 @@ export function InteractionStripPanel() {
 export function FrictionTablePanel({ limit }: { limit?: number }) {
   const win = useWindow();
   const filters = useFilters();
+  const location = useLocation();
   const friction = useRows(FrictionRowSchema, qFrictionTable(win, filters), null);
   if (friction.error) return <ErrorState message={friction.error} />;
   if (friction.loading) return <Skeleton />;
@@ -307,7 +308,11 @@ export function FrictionTablePanel({ limit }: { limit?: number }) {
       <FrictionTable rows={rows} />
       {limit && friction.rows.length > limit && (
         <Link
-          to="/product/outcomes"
+          to={{
+            pathname: "/product/outcomes",
+            search: location.search,
+            hash: "#panel-friction-table",
+          }}
           className="mt-1 inline-block text-[10px] text-ink-3 underline decoration-dotted"
         >
           +{friction.rows.length - limit} more sessions
@@ -392,8 +397,8 @@ export function RepeatChainsPanel({ limit }: { limit?: number }) {
         </tbody>
       </table>
       <p className="mt-1 text-[10px] text-ink-3">
-        Identical re-invocation is the fact; whether it is a retry is interpretation (polling loops
-        repeat inputs legitimately) — no judgment column without enrichment.
+        Counts byte-identical re-invocations only. Whether a chain is a retry or a legitimate
+        polling loop is not determined here.
       </p>
     </div>
   );
@@ -404,6 +409,7 @@ export function RepeatChainsPanel({ limit }: { limit?: number }) {
 export function GrindTablePanel({ limit }: { limit?: number }) {
   const win = useWindow();
   const filters = useFilters();
+  const location = useLocation();
   const { manifest } = useData();
   const threshold = manifest.stated_params.grind_run_threshold;
   const grinds = useRows(GrindRowSchema, qGrindTurns(win, filters, threshold), win);
@@ -439,7 +445,11 @@ export function GrindTablePanel({ limit }: { limit?: number }) {
                   {r.dominant_family}
                   {r.dominant_family === "browser" && (
                     <Link
-                      to={{ pathname: "/product/outcomes", search: "" }}
+                      to={{
+                        pathname: "/product/outcomes",
+                        search: location.search,
+                        hash: "#panel-gap-ledger",
+                      }}
                       className="ml-2 text-[10px] underline decoration-dotted"
                       title="browser-family runs concentrate in the browser-grind capability gap — see the gap ledger"
                     >
@@ -551,8 +561,8 @@ export function FamilyShapesPanel() {
         </div>
       ))}
       <p className="mt-1 text-[10px] text-ink-3">
-        Segments: same-tool-clean-later / other-calls-after / turn-ends-on-failure. Positional facts
-        — recovery claims are model-class and deliberately absent here.
+        Segments: the same tool later succeeds in the turn / other calls follow / the turn ends on
+        the failure. These are positional facts; whether a follow-up was a recovery is not asserted.
       </p>
     </div>
   );
