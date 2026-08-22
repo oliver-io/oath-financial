@@ -1274,3 +1274,22 @@ track directed to record ui.md revision 3 and strip the components.
   detail in view; unified titles ("When is it failing, and what kind? →" on the tile =
   the page section heading). Gates: tsc clean, biome clean, 54/54 tests. Uncommitted —
   orchestrator sweeps.
+
+## 34. Pre-full-run double-check: J1/J4/J5 packet review + live calibration
+
+- Real-packet dump for the unscrutinized jobs: J5 snippets read exactly as the raw
+  logs; J4 clusters correct with candidate-id validation sets. J1 had the same
+  super-view gap as J2/J3: empty following_tools was ambiguous ("turn ended" vs
+  unknown) and seq_index lacked a total — selector/packet now carry turn_tool_count +
+  is_last_call_in_turn with the semantics stated in the prompt.
+- Live capped J5 (8): every assessment agrees with the raw snippet, evidence quotes
+  real text. Live capped J1 (6) exposed prompt-sensitivity both ways: v3 rubber-
+  stamped non_failure/recovered_immediately ("agent continued afterwards"), v4
+  over-corrected to uniform failure/high off the bare template. Fixes: recovered_
+  immediately now means the SAME operation visibly succeeded on retry (continuing
+  with other tools is not recovery — that is a failure worked around), and
+  confidence=high requires discriminating context beyond the matched text (v5 result:
+  5 low / 1 high failure verdicts — honest calibration; correct direction per the
+  dataset's "error placement is trustworthy" property).
+- Prompt versions at full-run launch: j1-v5, j2-v4, j3-v5, j4-v2, j5-v2. Suite 107/0
+  throughout. Sanity spend total: 70 calls, all cached.
