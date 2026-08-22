@@ -2,8 +2,7 @@
 // named question as the description, one live summary stat, whole card links.
 // Ghost cards share the grid, greyed with their one-line explanations.
 
-import { Link } from "react-router";
-import { useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 
 export function CategoryCard({
   to,

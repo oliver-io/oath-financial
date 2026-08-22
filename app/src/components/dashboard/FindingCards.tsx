@@ -75,8 +75,8 @@ export function FindingCards({ audience }: { audience: "ops" | "product" }) {
       {findings.loading && <Skeleton lines={4} />}
       {findings.rows && findings.rows.length === 0 && (
         <div className="mb-4 rounded border border-hairline bg-paper p-4 text-sm text-ink-3">
-          No {audience === "ops" ? "operations" : "product"} findings met their thresholds for
-          this run.
+          No {audience === "ops" ? "operations" : "product"} findings met their thresholds for this
+          run.
         </div>
       )}
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-2 xl:[&>div:last-child:nth-child(odd)]:col-span-2">

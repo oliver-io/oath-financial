@@ -13,14 +13,14 @@ type Side = "ops" | "product";
 
 const SUB_PAGES: Record<Side, { to: string; label: string }[]> = {
   ops: [
-    { to: "/ops/failures", label: "Failures" },
+    { to: "/ops/failures", label: "Failures & incidents" },
     { to: "/ops/environments", label: "Environments" },
-    { to: "/ops/rhythm", label: "Rhythm" },
+    { to: "/ops/rhythm", label: "Working rhythm" },
   ],
   product: [
     { to: "/product/usage", label: "Usage" },
     { to: "/product/outcomes", label: "Outcomes" },
-    { to: "/product/agent", label: "Agent" },
+    { to: "/product/agent", label: "Agent behavior" },
   ],
 };
 
@@ -60,43 +60,39 @@ function TopBar({ showFilters }: { showFilters: boolean }) {
   );
 }
 
-/** Row 2 — the domain navbar: top-level domains; the active domain's
- * sub-categories render indented inline after its entry. */
-function DomainNav() {
+/** Left vertical nav rail (as originally): Ops and Product as distinct
+ * sections — each header links to its domain dashboard — with the
+ * sub-category pages indented beneath. */
+function NavRail() {
   const location = useLocation();
   const search = location.search;
   const room = roomOf(location.pathname);
   return (
-    <nav className="flex items-center gap-1 border-b border-hairline bg-surface px-6 text-sm">
-      {(["ops", "product"] as const).map((s) => (
-        <div key={s} className="flex items-center">
-          <NavLink
-            to={{ pathname: `/${s}`, search }}
-            end
-            className="px-3 py-1.5 font-medium"
-            style={({ isActive }) => ({
-              color: room === s ? sideColor(s) : "var(--color-ink-2)",
-              background: isActive ? sideSoft(s) : undefined,
-              boxShadow: room === s ? `inset 0 -2px 0 ${sideColor(s)}` : undefined,
-            })}
-          >
-            {s === "ops" ? "Ops" : "Product"}
-          </NavLink>
-          {room === s && (
-            <div className="ml-1 mr-3 flex items-center">
+    <nav className="w-52 shrink-0 border-r border-hairline bg-surface px-3 py-4">
+      <div className="flex flex-col gap-5">
+        {(["ops", "product"] as const).map((s) => (
+          <div key={s}>
+            <NavLink
+              to={{ pathname: `/${s}`, search }}
+              end
+              className="block rounded px-2 py-1 text-[11px] font-semibold uppercase tracking-wider"
+              style={({ isActive }) => ({
+                color: room === s ? sideColor(s) : "var(--color-ink-3)",
+                background: isActive ? sideSoft(s) : undefined,
+              })}
+            >
+              {s === "ops" ? "Ops" : "Product"}
+            </NavLink>
+            <div className="mt-0.5 flex flex-col">
               {SUB_PAGES[s].map((t) => (
                 <NavLink
                   key={t.to}
                   to={{ pathname: t.to, search }}
                   end
-                  className="px-2.5 py-1.5 text-[13px] text-ink-2 hover:text-ink"
+                  className="block rounded py-1 pr-2 pl-4 text-sm text-ink-2 hover:bg-paper"
                   style={({ isActive }) =>
                     isActive
-                      ? {
-                          color: sideColor(s),
-                          fontWeight: 600,
-                          boxShadow: `inset 0 -2px 0 ${sideColor(s)}`,
-                        }
+                      ? { color: sideColor(s), background: sideSoft(s), fontWeight: 500 }
                       : {}
                   }
                 >
@@ -104,9 +100,9 @@ function DomainNav() {
                 </NavLink>
               ))}
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
     </nav>
   );
 }
@@ -134,22 +130,26 @@ function ShellBody() {
     <div className="min-h-screen">
       <header className="sticky top-0 z-10">
         <TopBar showFilters={!onSession && !onIndex} />
-        <DomainNav />
       </header>
-      <main className="px-6 py-5">
-        <Outlet />
-      </main>
-      <footer className="border-t border-hairline px-6 py-3 text-[11px] text-ink-3">
-        run <span className="font-mono">{api.manifest.run_id}</span> · rules{" "}
-        {Object.entries(api.manifest.rule_versions)
-          .map(([k, v]) => `${k}:${v}`)
-          .join(" · ")}
-        {api.degraded.any && (
-          <span className="ml-3">
-            enrichment partial — model-class fields may be absent (see per-view captions)
-          </span>
-        )}
-      </footer>
+      <div className="flex min-h-[calc(100vh-45px)]">
+        <NavRail />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main className={onIndex ? "flex flex-1 flex-col px-6 py-5" : "flex-1 px-6 py-5"}>
+            <Outlet />
+          </main>
+          <footer className="border-t border-hairline px-6 py-3 text-[11px] text-ink-3">
+            run <span className="font-mono">{api.manifest.run_id}</span> · rules{" "}
+            {Object.entries(api.manifest.rule_versions)
+              .map(([k, v]) => `${k}:${v}`)
+              .join(" · ")}
+            {api.degraded.any && (
+              <span className="ml-3">
+                enrichment partial — model-class fields may be absent (see per-view captions)
+              </span>
+            )}
+          </footer>
+        </div>
+      </div>
     </div>
   );
 }
