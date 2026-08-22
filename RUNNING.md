@@ -38,6 +38,17 @@ bun run dev                 # serves the SPA against contracts/fixtures until M2
 Open the printed URL. Landing page = ranked findings; `/ops` and `/product/*` are the
 two rooms; every value drills down to the session transcript it came from.
 
+## Deploy (AWS, optional)
+
+```
+bun run deploy:app          # vite build → S3 → invalidate /index.html
+bun run deploy:data         # publish build/serve/ (immutable upload, latest.json swapped last)
+```
+
+Stack: `infra/` (Pulumi — one private S3 bucket + CloudFront; see `infra/README.md`).
+Parity checklist: `bun run parity -- <base-url>` against both `bun run
+serve:prod-local` and the deployed URL (`docs/plans/infra.md` §4).
+
 ## Reading order for an evaluator
 
 `FINDINGS.md` (one page — what we found) → this file → `CLAUDE.md` (project guide) →

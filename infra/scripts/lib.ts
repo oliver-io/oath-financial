@@ -19,6 +19,7 @@ const CONTENT_TYPES: Record<string, string> = {
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
   ".png": "image/png",
+  ".wasm": "application/wasm",
   ".woff2": "font/woff2",
   ".txt": "text/plain; charset=utf-8",
   ".map": "application/json",
@@ -55,7 +56,15 @@ export async function stackOutputs(stack: string): Promise<StackOutputs> {
   const infraDir = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
   const proc = Bun.spawn(
     ["pulumi", "stack", "output", "--json", "--stack", stack, "--cwd", infraDir],
-    { stdout: "pipe", stderr: "pipe" },
+    {
+      stdout: "pipe",
+      stderr: "pipe",
+      // empty-passphrase provider per infra/README.md — config holds no secrets
+      env: {
+        ...process.env,
+        PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE ?? "",
+      },
+    },
   );
   const [out, err, code] = await Promise.all([
     new Response(proc.stdout).text(),
@@ -70,8 +79,10 @@ export async function stackOutputs(stack: string): Promise<StackOutputs> {
   return parsed as StackOutputs;
 }
 
-export const s3 = new S3Client({});
-export const cloudfront = new CloudFrontClient({});
+// stack region per plan §5 (config default us-east-1; CloudFront API is global)
+const REGION = process.env.AWS_REGION ?? "us-east-1";
+export const s3 = new S3Client({ region: REGION });
+export const cloudfront = new CloudFrontClient({ region: REGION });
 
 export async function putFile(
   bucket: string,
