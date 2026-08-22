@@ -80,7 +80,7 @@ export function ProductOutcomesPage() {
         {dots.rows && <InteractionStrip dots={dots.rows} />}
       </Section>
 
-      <Section title="Where is the wrestling?">
+      <Section title="Where is the wrestling?" pin={{ id: "stat-auth-overhead", side: "product" }}>
         {friction.loading && <Skeleton />}
         {friction.error && <ErrorState message={friction.error} />}
         {friction.rows && <FrictionTable rows={friction.rows} />}

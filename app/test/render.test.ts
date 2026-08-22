@@ -85,3 +85,37 @@ describe("render smoke", () => {
 afterAll(() => {
   for (const r of roots) r.unmount();
 });
+
+// Widget/page invariant (user directive): the dashboard can only ever contain
+// widgets that are pinnable from a sub-page — every registry entry must render
+// a pin control (data-pin-id) on its source page.
+import { WIDGETS } from "../src/components/dashboard/widgets.tsx";
+
+describe("widget pinnability invariant", () => {
+  for (const w of WIDGETS) {
+    test(`"${w.title}" (${w.id}) has a pin control on ${w.source}`, async () => {
+      const runtime = await createTestRuntime("fixture-run-0001");
+      const router = createMemoryRouter(
+        [
+          {
+            path: "/",
+            element: createElement(AppShell, { runtimeFactory: async () => runtime }),
+            children: appChildRoutes,
+          },
+        ],
+        { initialEntries: [w.source] },
+      );
+      const el = document.createElement("div");
+      document.body.appendChild(el);
+      const root = createRoot(el);
+      roots.push(root);
+      root.render(createElement(RouterProvider, { router }));
+      let found = false;
+      for (let i = 0; i < 100 && !found; i++) {
+        await new Promise((r) => setTimeout(r, 50));
+        found = el.querySelector(`[data-pin-id="${w.id}"]`) !== null;
+      }
+      expect(found).toBe(true);
+    }, 20000);
+  }
+});

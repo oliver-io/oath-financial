@@ -8,12 +8,6 @@
   "partitions": [
     {
       "table": "turns",
-      "day": "2026-03-05",
-      "path": "facts/turns/day=2026-03-05.parquet",
-      "rows": 20
-    },
-    {
-      "table": "turns",
       "day": "2026-03-06",
       "path": "facts/turns/day=2026-03-06.parquet",
       "rows": 3
@@ -22,67 +16,79 @@
       "table": "turns",
       "day": "2026-03-07",
       "path": "facts/turns/day=2026-03-07.parquet",
-      "rows": 31
+      "rows": 16
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-08",
+      "path": "facts/turns/day=2026-03-08.parquet",
+      "rows": 13
     },
     {
       "table": "turns",
       "day": "2026-03-09",
       "path": "facts/turns/day=2026-03-09.parquet",
-      "rows": 3
+      "rows": 25
     },
     {
       "table": "turns",
       "day": "2026-03-10",
       "path": "facts/turns/day=2026-03-10.parquet",
-      "rows": 32
+      "rows": 28
     },
     {
       "table": "turns",
       "day": "2026-03-11",
       "path": "facts/turns/day=2026-03-11.parquet",
-      "rows": 14
+      "rows": 7
     },
     {
       "table": "turns",
       "day": "2026-03-12",
       "path": "facts/turns/day=2026-03-12.parquet",
-      "rows": 52
+      "rows": 51
     },
     {
       "table": "turns",
       "day": "2026-03-13",
       "path": "facts/turns/day=2026-03-13.parquet",
-      "rows": 11
+      "rows": 2
     },
     {
       "table": "turns",
       "day": "2026-03-14",
       "path": "facts/turns/day=2026-03-14.parquet",
-      "rows": 18
+      "rows": 15
     },
     {
       "table": "turns",
       "day": "2026-03-15",
       "path": "facts/turns/day=2026-03-15.parquet",
-      "rows": 45
+      "rows": 42
     },
     {
       "table": "turns",
       "day": "2026-03-16",
       "path": "facts/turns/day=2026-03-16.parquet",
-      "rows": 29
+      "rows": 19
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-17",
+      "path": "facts/turns/day=2026-03-17.parquet",
+      "rows": 12
     },
     {
       "table": "turns",
       "day": "2026-03-18",
       "path": "facts/turns/day=2026-03-18.parquet",
-      "rows": 34
+      "rows": 36
     },
     {
       "table": "turns",
       "day": "2026-03-19",
       "path": "facts/turns/day=2026-03-19.parquet",
-      "rows": 54
+      "rows": 43
     },
     {
       "table": "turns",
@@ -94,31 +100,37 @@
       "table": "turns",
       "day": "2026-03-21",
       "path": "facts/turns/day=2026-03-21.parquet",
-      "rows": 13
+      "rows": 25
     },
     {
       "table": "turns",
       "day": "2026-03-22",
       "path": "facts/turns/day=2026-03-22.parquet",
-      "rows": 20
+      "rows": 33
     },
     {
       "table": "turns",
       "day": "2026-03-23",
       "path": "facts/turns/day=2026-03-23.parquet",
-      "rows": 31
+      "rows": 15
+    },
+    {
+      "table": "turns",
+      "day": "2026-03-24",
+      "path": "facts/turns/day=2026-03-24.parquet",
+      "rows": 15
     },
     {
       "table": "turns",
       "day": "2026-03-25",
       "path": "facts/turns/day=2026-03-25.parquet",
-      "rows": 34
+      "rows": 12
     },
     {
       "table": "turns",
       "day": "2026-03-26",
       "path": "facts/turns/day=2026-03-26.parquet",
-      "rows": 22
+      "rows": 26
     },
     {
       "table": "turns",
@@ -130,31 +142,25 @@
       "table": "turns",
       "day": "2026-03-28",
       "path": "facts/turns/day=2026-03-28.parquet",
-      "rows": 12
+      "rows": 24
     },
     {
       "table": "turns",
       "day": "2026-03-29",
       "path": "facts/turns/day=2026-03-29.parquet",
-      "rows": 29
+      "rows": 53
     },
     {
       "table": "turns",
       "day": "2026-03-30",
       "path": "facts/turns/day=2026-03-30.parquet",
-      "rows": 55
+      "rows": 62
     },
     {
       "table": "turns",
       "day": "2026-03-31",
       "path": "facts/turns/day=2026-03-31.parquet",
-      "rows": 48
-    },
-    {
-      "table": "tool_events",
-      "day": "2026-03-05",
-      "path": "facts/tool_events/day=2026-03-05.parquet",
-      "rows": 97
+      "rows": 64
     },
     {
       "table": "tool_events",
@@ -166,67 +172,79 @@
       "table": "tool_events",
       "day": "2026-03-07",
       "path": "facts/tool_events/day=2026-03-07.parquet",
-      "rows": 139
+      "rows": 66
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-08",
+      "path": "facts/tool_events/day=2026-03-08.parquet",
+      "rows": 74
     },
     {
       "table": "tool_events",
       "day": "2026-03-09",
       "path": "facts/tool_events/day=2026-03-09.parquet",
-      "rows": 10
+      "rows": 131
     },
     {
       "table": "tool_events",
       "day": "2026-03-10",
       "path": "facts/tool_events/day=2026-03-10.parquet",
-      "rows": 142
+      "rows": 145
     },
     {
       "table": "tool_events",
       "day": "2026-03-11",
       "path": "facts/tool_events/day=2026-03-11.parquet",
-      "rows": 61
+      "rows": 16
     },
     {
       "table": "tool_events",
       "day": "2026-03-12",
       "path": "facts/tool_events/day=2026-03-12.parquet",
-      "rows": 239
+      "rows": 211
     },
     {
       "table": "tool_events",
       "day": "2026-03-13",
       "path": "facts/tool_events/day=2026-03-13.parquet",
-      "rows": 56
+      "rows": 14
     },
     {
       "table": "tool_events",
       "day": "2026-03-14",
       "path": "facts/tool_events/day=2026-03-14.parquet",
-      "rows": 89
+      "rows": 51
     },
     {
       "table": "tool_events",
       "day": "2026-03-15",
       "path": "facts/tool_events/day=2026-03-15.parquet",
-      "rows": 182
+      "rows": 207
     },
     {
       "table": "tool_events",
       "day": "2026-03-16",
       "path": "facts/tool_events/day=2026-03-16.parquet",
-      "rows": 155
+      "rows": 83
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-17",
+      "path": "facts/tool_events/day=2026-03-17.parquet",
+      "rows": 52
     },
     {
       "table": "tool_events",
       "day": "2026-03-18",
       "path": "facts/tool_events/day=2026-03-18.parquet",
-      "rows": 174
+      "rows": 188
     },
     {
       "table": "tool_events",
       "day": "2026-03-19",
       "path": "facts/tool_events/day=2026-03-19.parquet",
-      "rows": 395
+      "rows": 336
     },
     {
       "table": "tool_events",
@@ -238,61 +256,67 @@
       "table": "tool_events",
       "day": "2026-03-21",
       "path": "facts/tool_events/day=2026-03-21.parquet",
-      "rows": 48
+      "rows": 115
     },
     {
       "table": "tool_events",
       "day": "2026-03-22",
       "path": "facts/tool_events/day=2026-03-22.parquet",
-      "rows": 89
+      "rows": 156
     },
     {
       "table": "tool_events",
       "day": "2026-03-23",
       "path": "facts/tool_events/day=2026-03-23.parquet",
-      "rows": 180
+      "rows": 97
+    },
+    {
+      "table": "tool_events",
+      "day": "2026-03-24",
+      "path": "facts/tool_events/day=2026-03-24.parquet",
+      "rows": 77
     },
     {
       "table": "tool_events",
       "day": "2026-03-25",
       "path": "facts/tool_events/day=2026-03-25.parquet",
-      "rows": 202
+      "rows": 61
     },
     {
       "table": "tool_events",
       "day": "2026-03-26",
       "path": "facts/tool_events/day=2026-03-26.parquet",
-      "rows": 106
+      "rows": 115
     },
     {
       "table": "tool_events",
       "day": "2026-03-27",
       "path": "facts/tool_events/day=2026-03-27.parquet",
-      "rows": 66
+      "rows": 64
     },
     {
       "table": "tool_events",
       "day": "2026-03-28",
       "path": "facts/tool_events/day=2026-03-28.parquet",
-      "rows": 64
+      "rows": 120
     },
     {
       "table": "tool_events",
       "day": "2026-03-29",
       "path": "facts/tool_events/day=2026-03-29.parquet",
-      "rows": 138
+      "rows": 254
     },
     {
       "table": "tool_events",
       "day": "2026-03-30",
       "path": "facts/tool_events/day=2026-03-30.parquet",
-      "rows": 303
+      "rows": 299
     },
     {
       "table": "tool_events",
       "day": "2026-03-31",
       "path": "facts/tool_events/day=2026-03-31.parquet",
-      "rows": 209
+      "rows": 352
     }
   ],
   "ref": [
@@ -319,7 +343,7 @@
     {
       "table": "gap_sessions",
       "path": "ref/gap_sessions.parquet",
-      "rows": 81
+      "rows": 83
     },
     {
       "table": "findings",
@@ -329,12 +353,12 @@
     {
       "table": "auditor_timeline",
       "path": "ref/auditor_timeline.parquet",
-      "rows": 57
+      "rows": 52
     },
     {
       "table": "dims",
       "path": "ref/dims.parquet",
-      "rows": 40
+      "rows": 39
     }
   ],
   "enrichment": {

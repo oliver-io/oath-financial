@@ -523,4 +523,14 @@ export function qDashboardStats(w: TimeWindow, f: FilterState): string {
       WHERE ${ev} AND ${dims} AND identical_input_chain_count > 0) AS chain_turns`;
 }
 
+export const AuthOverheadSchema = z.object({ touched: z.number() });
+/** Sessions touched by portal-auth failures in the window (event semantics,
+ * distinct sessions — the product side's auth-overhead crossover stat). */
+export function qAuthOverhead(w: TimeWindow, f: FilterState): string {
+  return `SELECT count(DISTINCT session_id)::INT AS touched FROM tool_events e
+    WHERE ${eventMembership(w, "e")} AND ${dimensionPredicate(f, "e")}
+      AND matched_signature_id = 'portal-auth-403'
+      AND failure_verdict IN ('rule', 'model_added')`;
+}
+
 export { eventMembership, sessionContainment, type TimeWindow };

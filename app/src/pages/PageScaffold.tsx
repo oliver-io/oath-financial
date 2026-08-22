@@ -3,6 +3,7 @@
 
 import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router";
+import { widgetById } from "../components/dashboard/widgets.tsx";
 import { CaptionBar } from "../components/shared/honesty.tsx";
 import { useFilters, useRows, useWindow } from "../data/DataContext.tsx";
 import { CountSchema, qExcludedSessionCount } from "../data/queries.ts";
@@ -93,9 +94,11 @@ export function ContainmentCaption() {
 export function PinControl({ id, side }: { id: string; side: PinSide }) {
   const { isPinned, pin, unpin } = usePins(side);
   const pinned = isPinned(id);
+  const title = widgetById(id)?.title ?? id;
   return (
     <button
       type="button"
+      data-pin-id={id}
       className="cursor-pointer text-xs"
       style={{
         color: pinned
@@ -104,10 +107,12 @@ export function PinControl({ id, side }: { id: string; side: PinSide }) {
             : "var(--color-product)"
           : "var(--color-ink-3)",
       }}
-      title={pinned ? "unpin from the room dashboard" : "pin to the room dashboard"}
+      title={
+        pinned ? `unpin "${title}" from the room dashboard` : `pin "${title}" to the room dashboard`
+      }
       onClick={() => (pinned ? unpin(id) : pin(id))}
     >
-      📌{pinned ? " pinned" : " pin"}
+      📌 {pinned ? `"${title}" pinned` : `pin "${title}"`}
     </button>
   );
 }

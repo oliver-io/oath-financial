@@ -56,7 +56,6 @@ export const JobTypeSchema = z.enum([
   "doc_location",
   "doc_inventory",
   "tie_out",
-  "portal_auth",
   "extraction_supervision",
   "drafting",
   "capability_probe",

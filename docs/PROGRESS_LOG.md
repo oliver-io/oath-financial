@@ -1179,3 +1179,38 @@ source of work. Removed `portal_auth` from J3's `job_type` enum (llm.md,
 derivations.md); auth is represented as ops failure signatures + J2 friction cause +
 a product-side overhead/interruption metric, and the fixture generator must stop
 emitting it as a job. Directives relayed to ETL and app tracks.
+- Hub polish round (user feedback): dashboard link annotated with a room-colored
+  "DASHBOARD ->" pill and sub-category links restyled as subordinate tinted nav rows
+  with chevrons; content block truly centered (removed the flex-1 grid stretch that
+  ate the below-fold slack). Adversarial design-intent review (not
+  describe-what-is-rendered): **pass**, 0 mismatches, after failing iterations for
+  dead space / imbalance — the intent wording now states the design goal and asks
+  Gemini to flag any deviation.
+
+## 33. Classifier-context hardening (session-boundary facts, digest honesty, enum trim)
+
+- User concern validated: packets never told the model which turn was the session's
+  first/last exchange — the classifier judged endings without knowing nothing follows.
+  J2 packets gained a structural `position` block (is_first_turn, is_final_turn,
+  session_turn_count, session_resumed_fragment; computed in the selector's whole-
+  session window); J3 digests mark `is_first_observed_turn`/`is_final_turn` (marked
+  pre-elision so boundaries always survive); both prompts state the semantics
+  ("no turn follows anywhere in the data — what happened afterwards is unknowable,
+  not implied"; first-turn null prev tail = none exists, unless resumed_fragment).
+- Real-packet spot check (selector→builder dump on real sessions) caught two more:
+  (a) the J3 digest's typed_prefix showed the raw user_content head — presenting
+  harness-injected skill bodies as auditor-typed text; now honors typed_prefix_chars
+  (empty when nothing was typed) and digests carry the marker booleans, with the
+  prompt instructing not to read injected content as user intent; (b) a J2 prompt
+  paragraph had been inserted mid-sentence — restructured.
+- Sanity evidence the boundary context matters: session 09910e4b flipped
+  completed→abandoned once the model knew the 49-call browser grind ending in
+  portal-auth-403 was the last thing in the data.
+- **portal_auth removed from the J3 job_type enum** (orchestrator directive, user-
+  approved, spec commit 711d3f2): auth is infra friction with a browser-grind
+  fallback, never a line of business; schema + description now instruct classifying
+  auth-heavy sessions by their document work. Ops-side portal-auth-403 signatures and
+  fixtures unaffected. llm_matrix enum loop updated (107 tests).
+- Prompt versions: j2-v4, j3-v5 (packet/schema changes are model-visible). Suite
+  107/0, tsc/biome clean. contracts/src/enums.ts still carries portal_auth (app-track
+  owned; superset enum validates trimmed values — flagged to orchestration).

@@ -5,15 +5,18 @@
 // entries the full pages use, so semantics cannot fork.
 
 import type { ReactNode } from "react";
+import { Link } from "react-router";
 import { useFilters, useRows, useWindow } from "../../data/DataContext.tsx";
 import {
   AuditorDaySchema,
+  AuthOverheadSchema,
   DashboardStatsSchema,
   FailureSeriesPointSchema,
   IncidentRowQ,
   JobShareSchema,
   OutcomeCountSchema,
   qAuditorDaily,
+  qAuthOverhead,
   qDashboardStats,
   qFailureSeries,
   qIncidents,
@@ -22,6 +25,7 @@ import {
 } from "../../data/queries.ts";
 import { count } from "../../fmt.ts";
 import type { Side } from "../../state/pins.ts";
+import { DEFAULT_FILTERS, filtersToSearch } from "../../state/urlState.ts";
 import { ActivityStrips } from "../ops/ActivityStrips.tsx";
 import { FailureTimeSeries } from "../ops/FailureTimeSeries.tsx";
 import { JobShareBar } from "../product/JobShareBar.tsx";
@@ -81,6 +85,40 @@ function OutcomeBarsWidget() {
   const outcomes = useRows(OutcomeCountSchema, qOutcomesByJob(win, filters), null);
   if (outcomes.loading) return <Skeleton />;
   return outcomes.rows ? <OutcomeBars rows={outcomes.rows} /> : null;
+}
+
+/** Auth overhead: sessions touched by portal-auth failures, with the ops
+ * crossover (ui.md §4 pattern — always a visible chip, never a merged view). */
+function AuthOverheadWidget() {
+  const win = useWindow();
+  const filters = useFilters();
+  const auth = useRows(AuthOverheadSchema, qAuthOverhead(win, filters), win);
+  if (auth.loading) return <Skeleton lines={2} />;
+  const touched = auth.rows?.[0]?.touched ?? null;
+  return (
+    <div>
+      <div className="text-2xl font-semibold tabular text-ink">
+        {touched !== null ? count(touched) : "—"}
+      </div>
+      <div className="text-[11px] text-ink-3">sessions touched by portal-auth failures</div>
+      <div className="mt-1 text-[10px] text-ink-3">event-timestamp membership</div>
+      <Link
+        to={{
+          pathname: "/ops/failures",
+          search: filtersToSearch({
+            ...DEFAULT_FILTERS,
+            window: filters.window,
+            signature: "portal-auth-403",
+          }),
+        }}
+        className="mt-1.5 inline-block rounded border px-1.5 py-0.5 text-[10px]"
+        style={{ borderColor: "var(--color-ops)", color: "var(--color-ops)" }}
+        title="the failure entity behind this overhead — auth is infra friction, not work"
+      >
+        ↗ portal-auth-403 in Ops
+      </Link>
+    </div>
+  );
 }
 
 /** One stat tile off the shared dashboard-stats query. */
@@ -219,6 +257,14 @@ export const WIDGETS: WidgetDef[] = [
         caption="whole-session containment"
       />
     ),
+  },
+  {
+    id: "stat-auth-overhead",
+    side: "product",
+    title: "Auth overhead",
+    source: "/product/outcomes",
+    size: "stat",
+    render: () => <AuthOverheadWidget />,
   },
   {
     id: "stat-chain-turns",
