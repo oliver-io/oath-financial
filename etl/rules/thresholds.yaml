@@ -1,6 +1,6 @@
 # Pipeline thresholds. VERSIONED DATA — never inline constants (CLAUDE.md).
 # Contract: docs/plans/etl.md §3 RuleSet; consumers noted per key.
-version: "thr-v2"
+version: "thr-v3"
 # capped_gap_span_s / bout segmentation cap, seconds (derivations.md §3/§4).
 # Provisional: 30 min, pending review against real gap distribution (median
 # ~6 min, p90 ~2.3 h).
@@ -36,6 +36,13 @@ grind_run_threshold: 20
 enrichment:
   max_transport_attempts: 6
   backoff_base_ms: 250
+  # In-flight LLM calls (p-limit). Records within a job are independent
+  # (docs/architecture/llm.md "concurrency N with retry"); DB writes stay
+  # sequential in batch order regardless (single DuckDB connection + the
+  # deterministic resume contract). Tests pin this to 1 via the harness —
+  # the scripted client's shared per-call cursor requires a deterministic
+  # consumption order.
+  concurrency: 8
 # J5 heuristic-audit sampling (docs/architecture/llm.md J5) — seeded so
 # re-runs are comparable.
 j5:

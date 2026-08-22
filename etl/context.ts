@@ -56,6 +56,8 @@ export interface RunContext {
   sleep: Sleep;
   /** Test-only fault hook; null in production. */
   injectFault: FaultInjector | null;
+  /** In-flight LLM calls: the test override, or thresholds.yaml's value. */
+  enrichmentConcurrency: number;
   paths: {
     root: string;
     build: string;
@@ -86,6 +88,10 @@ export interface RunContextOptions {
   sleep?: Sleep;
   /** Test seam: simulated mid-run kill at a named point. */
   injectFault?: FaultInjector;
+  /** Test seam: pins in-flight LLM calls (the scripted client's shared
+   * per-call cursor needs a deterministic consumption order — the harness
+   * passes 1). Production: thresholds.yaml `enrichment.concurrency`. */
+  enrichmentConcurrency?: number;
 }
 
 const RULE_FILES = ["signatures", "tool_families", "thresholds", "findings"] as const;
@@ -159,6 +165,7 @@ export async function createRunContext(opts: RunContextOptions): Promise<RunCont
     clientFactory: opts.clientFactory ?? ((e, sleep) => new OpenAiClient(e, sleep)),
     sleep: opts.sleep ?? realSleep,
     injectFault: opts.injectFault ?? null,
+    enrichmentConcurrency: opts.enrichmentConcurrency ?? rules.thresholds.enrichment.concurrency,
     paths,
   };
 }

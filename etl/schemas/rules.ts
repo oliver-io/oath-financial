@@ -79,6 +79,8 @@ export const ThresholdsFileSchema = z.object({
   enrichment: z.object({
     max_transport_attempts: z.number().int().positive(),
     backoff_base_ms: z.number().int().positive(),
+    /** In-flight LLM calls (p-limit); harness pins to 1 for script determinism. */
+    concurrency: z.number().int().positive(),
   }),
   j5: z.object({
     unmatched_sample_n: z.number().int().positive(), // N=150 per llm.md

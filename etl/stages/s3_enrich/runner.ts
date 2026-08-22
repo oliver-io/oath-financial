@@ -10,15 +10,19 @@
 // reason, or an error. A failed invariant is a hard error
 // (EnrichmentInvariantViolation → exit 3). Coverage counts go to the manifest.
 //
-// Records are processed SEQUENTIALLY (deliberate: deterministic script/cache/
-// backoff interleaving is a test contract — docs/plans/etl_testing.md §7
-// determinism; at this dataset's scale, <1,500 one-shot calls, concurrency
-// buys nothing the cache doesn't already give re-runs).
+// LLM calls run CONCURRENTLY (p-limit, `thresholds.yaml enrichment.concurrency`);
+// DB writes are serialized through a mutex chain — transactional batches on the
+// single DuckDB connection must never interleave. The harness pins concurrency
+// to 1 (a determinism seam like the injected clock/sleep): the scripted
+// client's shared per-call cursor requires a deterministic consumption order
+// (docs/plans/etl_testing.md §7), and at 1 this loop is exactly the old
+// sequential compute→write→fault order.
 //
 // Batched responses: a call carrying N records accepts either a JSON array of
 // N outputs (one per record, in order) or a single output object that applies
 // to every record in the call (docs/plans/etl_testing.md §4 batch grain).
 
+import pLimit from "p-limit";
 import { type ZodType, z } from "zod";
 import type { RunContext } from "../../context.ts";
 import { countRows, exec, querySqlFile, runSqlFile, sqlString } from "../../lib/duckdb.ts";
@@ -208,7 +212,21 @@ export async function runJob(opts: RunJobOptions): Promise<EnrichmentCoverage> {
 
   const coverage = { judged: 0, abstained: 0, error: 0, cached_hit: 0 };
 
-  for (const batch of batches) {
+  // Serialized writes: transactional batches share one DuckDB connection and
+  // must never interleave; each batch's write (and its fault point) chains
+  // onto the previous one while other batches' LLM calls stay in flight.
+  let writeChain: Promise<void> = Promise.resolve();
+  const enqueueWrite = (rows: Record<string, unknown>[]): Promise<void> => {
+    const next = writeChain.then(async () => {
+      await writeBatch(ctx, job, rows);
+      ctx.injectFault?.("s3_after_batch_write");
+    });
+    // Keep the chain alive for later batches; `next` still rejects for its caller.
+    writeChain = next.catch(() => {});
+    return next;
+  };
+
+  const processBatch = async (batch: SelectedRecord[]): Promise<void> => {
     const rows: Record<string, unknown>[] = [];
     const skips = batch.filter((r) => r.packet.kind === "skip");
     const live = batch.filter((r) => r.packet.kind === "packet");
@@ -326,9 +344,11 @@ export async function runJob(opts: RunJobOptions): Promise<EnrichmentCoverage> {
       }
     }
 
-    await writeBatch(ctx, job, rows);
-    ctx.injectFault?.("s3_after_batch_write");
-  }
+    await enqueueWrite(rows);
+  };
+
+  const limit = pLimit(Math.max(1, ctx.enrichmentConcurrency));
+  await Promise.all(batches.map((batch) => limit(() => processBatch(batch))));
 
   const written = await countRows(ctx.db, job.outputTable);
   if (written !== selected.length) {

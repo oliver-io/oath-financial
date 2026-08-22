@@ -157,6 +157,10 @@ export class Harness {
       logSink: (line) => this.logLines.push(line),
       ...(script ? { clientFactory: () => script } : {}),
       sleep: sleepSpy,
+      // Determinism seam (like the injected clock/sleep): the scripted client's
+      // shared per-call cursor requires in-order consumption, so tests always
+      // run the enrichment loop sequentially.
+      enrichmentConcurrency: 1,
       injectFault: (point) => {
         if (point === this.faultPoint) throw new InjectedFault(point);
       },
