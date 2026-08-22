@@ -48,13 +48,16 @@ const { values } = parseArgs({
 });
 
 const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) die(2, "GEMINI_API_KEY is not set. This tool requires a real key; it never fabricates a review.");
-if (!values.image || !values.intent) die(2, "required: --image <path> and --intent \"<stated intent>\"");
+if (!apiKey)
+  die(2, "GEMINI_API_KEY is not set. This tool requires a real key; it never fabricates a review.");
+if (!values.image || !values.intent)
+  die(2, 'required: --image <path> and --intent "<stated intent>"');
 
 const model = values.model ?? process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
 const ext = values.image.split(".").pop()?.toLowerCase() ?? "";
 const mime = MIME[ext];
-if (!mime) die(2, `unsupported image extension ".${ext}" (supported: ${Object.keys(MIME).join(", ")})`);
+if (!mime)
+  die(2, `unsupported image extension ".${ext}" (supported: ${Object.keys(MIME).join(", ")})`);
 
 const file = Bun.file(values.image);
 if (!(await file.exists())) die(2, `image not found: ${values.image}`);
@@ -82,8 +85,15 @@ const RESPONSE_SCHEMA = {
   type: "OBJECT",
   required: ["reviewable", "verdict", "summary", "mismatches", "visual_defects"],
   properties: {
-    reviewable: { type: "BOOLEAN", description: "false if the image cannot be judged (wrong surface, illegible)" },
-    verdict: { type: "STRING", enum: ["pass", "fail"], description: "pass ONLY if every element of the intent is visibly fulfilled" },
+    reviewable: {
+      type: "BOOLEAN",
+      description: "false if the image cannot be judged (wrong surface, illegible)",
+    },
+    verdict: {
+      type: "STRING",
+      enum: ["pass", "fail"],
+      description: "pass ONLY if every element of the intent is visibly fulfilled",
+    },
     summary: { type: "STRING", description: "one-sentence overall judgment" },
     mismatches: {
       type: "ARRAY",
@@ -100,7 +110,8 @@ const RESPONSE_SCHEMA = {
     },
     visual_defects: {
       type: "ARRAY",
-      description: "visible breakage independent of the intent (clipping, overflow, contrast, render failures)",
+      description:
+        "visible breakage independent of the intent (clipping, overflow, contrast, render failures)",
       items: { type: "STRING" },
     },
   },
@@ -156,5 +167,6 @@ try {
 
 console.log(JSON.stringify({ model, image: values.image, ...review }, null, 2));
 
-if (!review.reviewable) die(4, "image was not reviewable (see summary above) — retake the screenshot");
+if (!review.reviewable)
+  die(4, "image was not reviewable (see summary above) — retake the screenshot");
 process.exit(review.verdict === "pass" ? 0 : 1);
