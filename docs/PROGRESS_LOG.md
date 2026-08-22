@@ -1038,3 +1038,67 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   CloudFront Function or accept the deviation.
 - M2-flip statement: when ETL M2 lands, `bun run deploy:data` against `build/serve/`
   needs zero infra changes — proven by the fixture rehearsal above.
+
+## 2026-08-22 — Landing page: dashboard revision reversed to hub (user directive)
+
+- User directive: `/` is a **hub/router** to the two rooms, not the three-zone
+  dashboard of ui.md revision 1. ui.md §Dashboard rewritten as §Hub (revision 2);
+  finding cards + compact headline visuals dropped from `/` (they live in the rooms;
+  `ref/findings` remains an ETL output).
+- Evidence: app-capture of `/` (state `ready`, contract `data-capture-state`) +
+  ui-visual-review — dashboard intent **fail** (both missing-zone blockers), hub
+  intent **pass** (0 mismatches, 0 visual defects). The built page already was the hub.
+- Tooling notes: capture must run under PowerShell on Windows (Git Bash mangles
+  `--route "/"` into a filesystem path); ui-visual-review needs `GEMINI_API_KEY`
+  mapped from `.env` `GOOGLE_AI_STUDIO_API_KEY`.
+
+## 31. ETL M4 — J5 error bars, findings gating, doc reconciliation, sweep (ETL complete)
+
+- J5 error bars: s4 computes `j5_false_positive_rate` / `j5_missed_rate` from
+  enrich.j5_audit as GLOBAL instrument rates on every signature row (per-signature
+  splits of a 100/150 sample would be small-n noise — in the SQL header); NULL when J5
+  absent or bucket under `small_n_call_threshold`. `incidents.linked_friction_cost`
+  implemented (J2 friction where cause=system_failure, non-dangling link = incident
+  signature, turn inside the excursion window); NULL degraded.
+- findings.yaml → fnd-v1: two requires_enrichment cards (`portal-auth-friction-cost`,
+  `abandoned-sessions`) publish only when enrichment ran and claim gates pass;
+  degraded card set unchanged.
+- Doc reconciliation (orchestration-approved spec edits): llm.md — J1 reason nullable,
+  shared insufficient_reason space (+unreadable_context/other), batched-response
+  contract documented; derivations.md — measured post_failure_shape 484/67/49 recorded
+  vs provisional numbers.
+- Sweep: `--sqlite` implemented (etl/lib/inspect.ts → build/inspect.sqlite, 16 tables,
+  never served); latent production bug fixed — persistent pipeline.duckdb kept an
+  old-shape enrich table forever under CREATE IF NOT EXISTS; ensureEnrichTables now
+  drops/recreates on column-set mismatch (LLM cache is the durable store).
+  shell-pdf-pipeline recorded as a decided non-gap (needs tool input text; documented
+  in findings.yaml). RUNNING.md ETL sections refreshed; sample-output/ regenerated
+  (run 20260822T212643-59a005ce, fnd-v1/sig-v1).
+- No live LLM calls made (mid-flight guard honored; all real runs --no-enrich).
+- Verified by orchestrator: **108/0**, tsc + biome clean. ETL implementation M1-M4
+  complete; next step is the user-gated staged enriched run (J3 --limit 10 first).
+
+## 28. Navigation final form + per-room dashboards (user directive, supersedes §25 nav)
+
+- **`/` is a pure data-free index** (no queries): two room cards (Ops / Product) listing
+  each room's sub-pages with their named questions; brand link in the top bar returns
+  here. The former all-in-one dashboard is gone.
+- **Each room has its own dashboard at its root**: `/ops` = ops findings (audience-
+  filtered) + compact failure time series + daily-activity strip + category cards
+  (Failures/Environments/Rhythm stats, Tool-latency ghost); `/product` = product
+  findings + compact job-type share (with containment caption) + category cards
+  (Usage/Outcomes/Agent stats, Cost-analysis ghost). Shared dashboard components live
+  in `components/dashboard/` (FindingCards with audience prop, CategoryCard/Ghost,
+  CompactPanel).
+- **Route change**: the Failures page moved `/ops` → `/ops/failures`; all deeplinks
+  updated (finding target links, friction-table and incident-panel crossovers, time-
+  series band clicks, environments heatmap cell clicks). URL codec unchanged.
+- **Chrome is back to the original two pieces**: the top control bar (brand · window
+  control · filter bar · provenance note — filters hidden on the index and session
+  viewer) and the left vertical nav rail with OPS and PRODUCT section headers (each a
+  link to its room dashboard, tinted when active) and sub-categories indented beneath —
+  the intermediate horizontal-navbar/tab experiments are removed.
+- index.html now stamps `data-capture-state="booting"` statically so app-capture never
+  sees a contract-less document pre-boot (its first-poll refusal, found while testing).
+- Gates: app tsc clean, biome clean, 27/27 app tests (route list updated for
+  /ops/failures and /product). Verified by screenshot: top bar + rail + ops dashboard.

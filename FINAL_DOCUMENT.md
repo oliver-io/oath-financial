@@ -2,6 +2,8 @@
 Approaching this as I would many different kinds of dashboarding or reporting for service-data.  It's a bit of a unique source in the form of Claude log-streams, but can be normalized into other shapes pretty easily.  So fundamentally the task (to me) looks like:
 1) Ingest the raw data
 2) Digest it into something useful to the UI
+ a) with a set of relational queries to clean, massage & agg data
+ b) with a pipeline of LLM review.  Why?  Certain critical metrics (did the conversation get abandoned or complete?) seem impossible to determine without the use of an LLM to evaluate the conversation itself.  To do this, we will feed LLMs conversation context and have them analyze messages into structured outputs making determinations (i.e., did a tool call seem to operate as designed or did it succeed but actually fail).
 3) Build a UI to present the data usefully
 4) Deploy it all, may as well
 
@@ -31,3 +33,4 @@ I started with a rough sketch of my own architecture, built that into a spec.  A
 - Will rock a deploy as soon as the infra lands.  Reviewing mostly, finding UI nitpicks.
 - Infra agent deploying around 4:15.
 - Hey, site's up at 4:23 serving the fake data.  Yet to run the entire LLM enrichment pipeline for the real ETL.
+- Queue up a smoke test a few runs of the LLM output, and if all looks good, produce the real dataset & redeploy.
