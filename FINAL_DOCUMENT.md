@@ -27,6 +27,7 @@ I started with a rough sketch of my own architecture, built that into a spec.  A
 
 # Time
 - I started this project around 2:30 PM.  
-- In the flow state of step 6, above, around 3:30 and waiting on implementor loops for hte most part.  
-- Will rock a deploy when the ETL pipeline lands and looks reasonable in the UI.
-- 
+- In the flow state of step 6, above, around 3:30 and waiting on implementor loops for the most part.  
+- Will rock a deploy as soon as the infra lands.  Reviewing mostly, finding UI nitpicks.
+- Infra agent deploying around 4:15.
+- Hey, site's up at 4:23.

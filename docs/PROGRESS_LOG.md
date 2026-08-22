@@ -1011,3 +1011,30 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   (single error row, bounded retries, job continues) was already passing.
 - Verified by orchestrator: `bun test ./test` **108 pass / 0 fail**; tsc + biome
   clean; real-dataset degraded run still publishes end-to-end (exit 0, 48 partitions).
+
+## 28. Infra track — I1–I3 live at https://oath.oliver-io.online (dev stack)
+
+- Domain support built (plan §1 optional row, user-directed): `domain` config now
+  provisions an ACM cert (DNS-validated against the parent hosted zone, us-east-1),
+  distribution aliases (SNI, TLSv1.2_2021), and Route53 A/AAAA alias records. dev
+  stack config: `domain: oath.oliver-io.online` (zone Z03668002G8ZI7HWZUOPK,
+  account 778157431261).
+- **I1**: `pulumi up` created 13 resources in 4m32s (bucket `site-2d1a0db`,
+  distribution `E2V8KT0VMPK8HL` / d3k09n6n2xsvph.cloudfront.net); second `up` =
+  **13 unchanged** (idempotency proven).
+- **I2**: `deploy:app` (6 files, index.html last) and `deploy:data` shipped. Script
+  fixes en route: spawn env now defaults `PULUMI_CONFIG_PASSPHRASE=""` (documented
+  provider); SDK clients pinned to the stack region (default-region mismatch caused
+  S3 PermanentRedirect).
+- **I3**: both fixture runs published (57 objects each, count-verified before each
+  pointer swap); `latest.json` swapped 0001 → degraded → 0001 — the flip is a
+  pointer write + one invalidation, zero infra changes. Re-publish of
+  fixture-run-0001 correctly no-opped ("already published — skipping upload"):
+  parity item 6 evidenced.
+- **Parity checklist**: local prod-shaped server (`serve:prod-local`) **5/5 PASS**;
+  deployed **4/5 PASS** — item 5 fails deployed exactly per the §27 conflict report
+  (missing /runs/ object → SPA shell via distribution-wide custom-error responses).
+  Decision still pending with the user: sanction a ~10-line viewer-request
+  CloudFront Function or accept the deviation.
+- M2-flip statement: when ETL M2 lands, `bun run deploy:data` against `build/serve/`
+  needs zero infra changes — proven by the fixture rehearsal above.
