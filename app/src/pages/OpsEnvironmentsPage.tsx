@@ -119,7 +119,7 @@ export function OpsEnvironmentsPage() {
                         role="button"
                         onClick={() =>
                           navigate({
-                            pathname: "/ops",
+                            pathname: "/ops/failures",
                             search: filtersToSearch({ ...filters, client }),
                           })
                         }

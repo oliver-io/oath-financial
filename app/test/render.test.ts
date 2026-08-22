@@ -20,8 +20,10 @@ installFetchStub();
 const ROUTES = [
   "/",
   "/ops",
+  "/ops/failures",
   "/ops/environments",
   "/ops/rhythm",
+  "/product",
   "/product/usage",
   "/product/outcomes",
   "/product/agent",

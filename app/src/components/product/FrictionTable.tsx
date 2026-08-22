@@ -92,7 +92,7 @@ export function FrictionTable({ rows }: { rows: Row[] }) {
               {r.dominant_friction_cause === "system_failure" && r.dominant_linked_signature ? (
                 <Link
                   to={{
-                    pathname: "/ops",
+                    pathname: "/ops/failures",
                     search: filtersToSearch({
                       ...DEFAULT_FILTERS,
                       window: filters.window,

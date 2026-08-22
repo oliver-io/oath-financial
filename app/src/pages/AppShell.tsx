@@ -1,8 +1,7 @@
-// App shell — navigation revision (ui.md §3 "Navigation shell"): horizontal
-// navbar with the two rooms as top-level entries; their sub-pages render as
-// horizontal tabs within the room, underlined in the room identity color. The
-// shared filter bar sits below the navbar and persists across tab switches
-// (URL state unchanged — tabs are the existing routes). Boot gate + footer.
+// App shell (user directive, final): the old top bar (brand · window control ·
+// filters) on top, then ONE horizontal navbar showing the top-level domains —
+// clicking a domain opens its dashboard, and the active domain's sub-category
+// pages appear indented inline after it. `/` is a data-free index.
 
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { FilterBar } from "../components/shared/FilterBar.tsx";
@@ -12,9 +11,9 @@ import { DataProvider, type RuntimeFactory, useDataState } from "../data/DataCon
 
 type Side = "ops" | "product";
 
-export const ROOM_TABS: Record<Side, { to: string; label: string }[]> = {
+const SUB_PAGES: Record<Side, { to: string; label: string }[]> = {
   ops: [
-    { to: "/ops", label: "Failures" },
+    { to: "/ops/failures", label: "Failures" },
     { to: "/ops/environments", label: "Environments" },
     { to: "/ops/rhythm", label: "Rhythm" },
   ],
@@ -36,72 +35,79 @@ function roomOf(pathname: string): Side | null {
   return null;
 }
 
-function TopNav() {
+/** Row 1 — the original control bar: brand, window control, filter bar. */
+function TopBar({ showFilters }: { showFilters: boolean }) {
   const location = useLocation();
-  const search = location.search;
-  const room = roomOf(location.pathname);
-  const onDashboard = location.pathname === "/";
   return (
-    <div className="border-b border-hairline bg-surface">
-      <div className="flex items-center gap-6 px-6 pt-2">
+    <div className="border-b border-hairline bg-surface/95 px-6 py-2 backdrop-blur">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
         <Link
-          to={{ pathname: "/", search }}
+          to={{ pathname: "/", search: location.search }}
           className="text-sm font-semibold tracking-tight text-ink"
         >
           Trace Insights
         </Link>
-        <nav className="flex items-center gap-1 text-sm">
-          <NavLink
-            to={{ pathname: "/", search }}
-            className="rounded px-2.5 py-1 text-ink-2 hover:bg-paper"
-            style={onDashboard ? { color: "var(--color-ink)", fontWeight: 600 } : {}}
-          >
-            Dashboard
-          </NavLink>
-          {(["ops", "product"] as const).map((s) => (
-            <NavLink
-              key={s}
-              to={{ pathname: ROOM_TABS[s][0]?.to ?? "/", search }}
-              className="rounded px-2.5 py-1 text-ink-2 hover:bg-paper"
-              style={
-                room === s ? { color: sideColor(s), background: sideSoft(s), fontWeight: 600 } : {}
-              }
-            >
-              {s === "ops" ? "Ops" : "Product"}
-            </NavLink>
-          ))}
-        </nav>
-        <span className="ml-auto hidden text-[10px] text-ink-3 md:block">
-          Provenance: unchipped = structural · H heuristic · C curated · M model
+        <TimeWindowControl />
+        {showFilters && <FilterBar demoOnly={false} />}
+        <span
+          className="ml-auto hidden text-[10px] text-ink-3 xl:block"
+          title="Provenance: unchipped values are structural; H heuristic · C curated · M model."
+        >
+          unchipped = structural · H · C · M
         </span>
       </div>
-      {room && (
-        <div
-          className="mt-1 flex gap-1 px-6"
-          style={{ boxShadow: `inset 0 -2px 0 ${sideSoft(room)}` }}
-        >
-          {ROOM_TABS[room].map((t) => (
-            <NavLink
-              key={t.to}
-              to={{ pathname: t.to, search }}
-              end
-              className="px-3 py-1.5 text-sm text-ink-2 hover:text-ink"
-              style={({ isActive }) =>
-                isActive
-                  ? {
-                      color: sideColor(room),
-                      fontWeight: 600,
-                      boxShadow: `inset 0 -2px 0 ${sideColor(room)}`,
-                    }
-                  : undefined
-              }
-            >
-              {t.label}
-            </NavLink>
-          ))}
-        </div>
-      )}
     </div>
+  );
+}
+
+/** Row 2 — the domain navbar: top-level domains; the active domain's
+ * sub-categories render indented inline after its entry. */
+function DomainNav() {
+  const location = useLocation();
+  const search = location.search;
+  const room = roomOf(location.pathname);
+  return (
+    <nav className="flex items-center gap-1 border-b border-hairline bg-surface px-6 text-sm">
+      {(["ops", "product"] as const).map((s) => (
+        <div key={s} className="flex items-center">
+          <NavLink
+            to={{ pathname: `/${s}`, search }}
+            end
+            className="px-3 py-1.5 font-medium"
+            style={({ isActive }) => ({
+              color: room === s ? sideColor(s) : "var(--color-ink-2)",
+              background: isActive ? sideSoft(s) : undefined,
+              boxShadow: room === s ? `inset 0 -2px 0 ${sideColor(s)}` : undefined,
+            })}
+          >
+            {s === "ops" ? "Ops" : "Product"}
+          </NavLink>
+          {room === s && (
+            <div className="ml-1 mr-3 flex items-center">
+              {SUB_PAGES[s].map((t) => (
+                <NavLink
+                  key={t.to}
+                  to={{ pathname: t.to, search }}
+                  end
+                  className="px-2.5 py-1.5 text-[13px] text-ink-2 hover:text-ink"
+                  style={({ isActive }) =>
+                    isActive
+                      ? {
+                          color: sideColor(s),
+                          fontWeight: 600,
+                          boxShadow: `inset 0 -2px 0 ${sideColor(s)}`,
+                        }
+                      : {}
+                  }
+                >
+                  {t.label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </nav>
   );
 }
 
@@ -122,18 +128,13 @@ function ShellBody() {
         <div className="text-xs text-ink-3">connecting to the data plane… ({bootPhase})</div>
       </div>
     );
-  const onDashboard = location.pathname === "/";
+  const onIndex = location.pathname === "/";
   const onSession = location.pathname.startsWith("/session/");
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10">
-        <TopNav />
-        <div className="border-b border-hairline bg-surface/95 px-6 py-2 backdrop-blur">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <TimeWindowControl />
-            {!onSession && <FilterBar demoOnly={onDashboard} />}
-          </div>
-        </div>
+        <TopBar showFilters={!onSession && !onIndex} />
+        <DomainNav />
       </header>
       <main className="px-6 py-5">
         <Outlet />

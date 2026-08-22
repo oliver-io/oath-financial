@@ -107,7 +107,7 @@ export function FailureTimeSeries({
                 // incident panels live on /ops; the compact dashboard render
                 // click-through lands there too
                 navigate({
-                  pathname: "/ops",
+                  pathname: "/ops/failures",
                   search: filtersToSearch({ ...filters, incident: i.incident_id }),
                 })
               }

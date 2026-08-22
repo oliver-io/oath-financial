@@ -67,7 +67,7 @@ export function IncidentPanel({
             <Link
               key={s}
               to={{
-                pathname: "/ops",
+                pathname: "/ops/failures",
                 search: filtersToSearch({ ...filters, signature: s, incident: null }),
               }}
               className="rounded border border-hairline px-1.5 py-0.5 text-[11px] text-ink-2 hover:border-ink-3"
