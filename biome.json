@@ -9,7 +9,10 @@
       "app/src/**",
       "app/test/**",
       "*.json",
-      "!app/src/theme.css"
+      "!app/src/theme.css",
+      "!app/dist",
+      "!.claude",
+      "!contracts/fixtures/static"
     ]
   },
   "formatter": {
@@ -34,7 +37,12 @@
   },
   "overrides": [
     {
-      "includes": ["!**/*.css", "etl/lib/log.ts", "contracts/fixtures/generate.ts"],
+      "includes": [
+        "!**/*.css",
+        "etl/lib/log.ts",
+        "contracts/fixtures/generate.ts",
+        "infra/scripts/**"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
