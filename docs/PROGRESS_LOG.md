@@ -949,3 +949,16 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   revised shell since routes are unchanged), screenshot pass over dashboard (top +
   category grid) and a tabbed room. Visual double-check via ui-visual-review skipped:
   no GEMINI_API_KEY in this environment.
+
+## 26. A6-nav visual-review pass (Gemini double-check now live)
+
+- Orchestrator's ui-visual-review run flagged one legitimate major on the dashboard:
+  finding cards spanned only half the content width. Fixed — two-column card grid at
+  xl, with an odd final card spanning both columns. (Its second flag — solid incident
+  band "should be hatched" — was refuted: ui.md specs bands as shaded regions;
+  hatching is reserved for uncertainty states.)
+- GEMINI_API_KEY now sourced from the repo .env (GOOGLE_AI_STUDIO_API_KEY, CRLF-safe
+  extraction); reviews run locally. Iterated: compact ActivityStrips now scale via
+  viewBox instead of clipping, with right padding so the last axis label survives.
+  Final reviews: dashboard bottom (zones 2+3) PASS, dashboard top PASS with no
+  visual defects. Gates re-verified: tsc clean, biome clean, 25/25 app tests.
