@@ -31,7 +31,7 @@ import { s0Raw } from "../s0_raw.ts";
 import { s1Clean } from "../s1_clean.ts";
 import { s2Derive } from "../s2_derive.ts";
 import { LlmCache } from "./cache.ts";
-import { LlmHttpError, type LlmClient, LlmTimeoutError, type Sleep } from "./client.ts";
+import { type LlmClient, LlmHttpError, LlmTimeoutError, type Sleep } from "./client.ts";
 import type { PacketBuilder } from "./packets.ts";
 
 export type JobId = "J1" | "J2" | "J3" | "J4" | "J5";
@@ -142,9 +142,7 @@ function renderPrompt(job: JobSpec, packet: unknown, recordCount: number): strin
   return `${job.promptTemplate}\n\nContext packet (JSON):\n${JSON.stringify(packet)}\n${batchNote}`;
 }
 
-type ParseResult =
-  | { ok: true; outputs: Record<string, unknown>[] }
-  | { ok: false; detail: string };
+type ParseResult = { ok: true; outputs: Record<string, unknown>[] } | { ok: false; detail: string };
 
 /** Validates a response for an N-record call: a JSON array of N schema-valid
  * outputs, or a single schema-valid object broadcast to all N records. */
@@ -208,9 +206,6 @@ export async function runJob(opts: RunJobOptions): Promise<EnrichmentCoverage> {
     for (const r of skips) {
       if (r.packet.kind !== "skip") continue;
       coverage.abstained += 1;
-      // cached_hit counts records completed WITHOUT an API call this run:
-      // cache hits and deterministic packet skips alike (zero-spend contract).
-      coverage.cached_hit += 1;
       rows.push(
         job.toRow(r.row, {
           kind: "abstained",
@@ -230,7 +225,9 @@ export async function runJob(opts: RunJobOptions): Promise<EnrichmentCoverage> {
               session_id: live[0]?.row.session_id ?? null,
               turns: live.map((r) => (r.packet.kind === "packet" ? r.packet.packet : null)),
             }
-          : ((live[0]?.packet as { packet: Record<string, unknown> }).packet ?? {});
+          : live[0]?.packet.kind === "packet"
+            ? live[0].packet.packet
+            : {};
       const packetHash = sha256Object(batchPacket);
       const key = cacheKey(job.id, packetHash, job.promptVersion, modelId);
 
@@ -244,7 +241,9 @@ export async function runJob(opts: RunJobOptions): Promise<EnrichmentCoverage> {
         }
       }
 
-      let outcome: { kind: "ok"; outputs: Record<string, unknown>[] } | { kind: "error"; reason: string };
+      let outcome:
+        | { kind: "ok"; outputs: Record<string, unknown>[] }
+        | { kind: "error"; reason: string };
       if (responseText !== null) {
         const parsed = parseResponse(responseText, job.outputSchema, live.length);
         // Cache only ever holds schema-valid text; a mismatch (schema evolved

@@ -981,3 +981,33 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   settles into "error" and a ready-capture is refused as specced. States also checked
   directly (ready/empty/error) via CDP. Gates: tsc clean, biome clean, 25/25 app tests.
   app-capture is now the capture half of visual verification for this track.
+
+## 30. ETL M3 — stage-3 enrichment (runner, client, cache, packets, J1-J5); suite fully green
+
+- Built: LlmCache (bun:sqlite WAL, key = sha256(job|packet_hash|prompt_version|model),
+  cleared only by --recache); OpenAiClient.complete (structured outputs; SDK errors →
+  typed LlmHttpError/LlmTimeoutError; stale backoff comment fixed — policy lives in the
+  runner); five pure packet builders with the zero-spend escape hatches
+  (missing_source_field, structural elision → packet_overflow); the generic runner
+  (cache-first → bounded transport retries w/ exponential backoff via injected sleep →
+  one schema-repair retry → post-hoc validation → transactional per-batch writes →
+  exactly-one-row invariant → coverage); real prompts/selectors/writers for J1-J5
+  (J4/J5 pulled forward — the matrix/canary/resume tests exercise them);
+  stages/executor.ts extracted so `etl enrich` bootstraps s0-s2 without import cycles.
+- Judgment calls: sequential processing instead of p-limit ~8 (sleep-spy determinism
+  tests require deterministic call order; documented); transport bounds are versioned
+  data (thresholds thr-v2: max_transport_attempts 6, backoff_base_ms 250); batched
+  calls accept an N-array or a single broadcast object; J5 samples exclude NULL-output
+  events (unauditable, burned the fixed budget); enrich tables renamed to
+  j2_verdicts/j3_verdicts; coverage: cached records count in judged AND cached_hit.
+- Schema reconciliation (readiness item): kept `unreadable_context`/`other` in
+  InsufficientReasonSchema + nullable J1 reason — tests require them; llm.md to gain
+  the two branches at M4 (doc reconciliation) rather than code losing them.
+- **One test amended by the orchestrator** (llm_matrix "persistent 500"): the strict
+  bound `callCount < judged + 10` is arithmetically unsatisfiable under the shared
+  per-call ScriptedClient cursor (callCount = judged + fives_consumed; an error record
+  plus judged records necessarily consume all 10 scripted 500s, so equality holds
+  exactly). Changed to <= with an explanatory comment; every behavioral assertion
+  (single error row, bounded retries, job continues) was already passing.
+- Verified by orchestrator: `bun test ./test` **108 pass / 0 fail**; tsc + biome
+  clean; real-dataset degraded run still publishes end-to-end (exit 0, 48 partitions).

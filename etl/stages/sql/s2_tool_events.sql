@@ -31,6 +31,7 @@ WITH ev AS (
       ORDER BY o.obs_index NULLS LAST, o.observation_id
     ) AS seq_index,
     o.input,
+    (o.output_text IS NOT NULL) AS has_output,
     m.pattern_id AS matched_signature_id,
     m.counts_as_failure,
     m.match_index,
@@ -67,10 +68,17 @@ shaped AS (
   FROM ev
 ),
 sampled AS (
+  -- J5 samples only auditable outputs: a NULL output cannot answer either
+  -- audit question (missing outputs are already a structural flag), so the
+  -- fixed N/M budgets rank over rows that HAVE text.
   SELECT
     *,
     ROW_NUMBER() OVER (
-      PARTITION BY (matched_signature_id IS NULL)
+      PARTITION BY CASE
+        WHEN NOT has_output THEN 'no_output'
+        WHEN matched_signature_id IS NULL THEN 'unmatched'
+        ELSE 'matched'
+      END
       ORDER BY hash(concat(CAST(getvariable('j5_seed') AS VARCHAR), observation_id)), observation_id
     ) AS j5_rank
   FROM shaped
@@ -99,9 +107,9 @@ SELECT
   is_agent_tool,
   (counts_as_failure = 'uncertain') AS j1_candidate,
   CASE
-    WHEN matched_signature_id IS NULL
+    WHEN has_output AND matched_signature_id IS NULL
       AND j5_rank <= CAST(getvariable('j5_unmatched_n') AS BIGINT) THEN 'unmatched'
-    WHEN matched_signature_id IS NOT NULL
+    WHEN has_output AND matched_signature_id IS NOT NULL
       AND j5_rank <= CAST(getvariable('j5_matched_m') AS BIGINT) THEN 'matched'
   END AS j5_sample_bucket
 FROM sampled;

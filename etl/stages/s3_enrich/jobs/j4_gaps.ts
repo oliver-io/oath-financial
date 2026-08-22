@@ -7,9 +7,9 @@
 // Output: enrich.j4_gaps (schema: etl/schemas/enrichment.ts J4OutputSchema).
 // Contract: docs/architecture/llm.md "J4". Depends on J3.
 
-import { J4OutputSchema } from "../../../schemas/enrichment.ts";
 import type { RunContext } from "../../../context.ts";
 import { installGapRules } from "../../../lib/rule_tables.ts";
+import { J4OutputSchema } from "../../../schemas/enrichment.ts";
 import { buildJ4Packet } from "../packets.ts";
 import type { JobSpec, PostHocResult, RecordOutcome } from "../runner.ts";
 

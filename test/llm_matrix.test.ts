@@ -276,8 +276,12 @@ describe("sad paths (J5 carrier unless job-specific)", () => {
       const { result, rows, client } = await runMatrixCase(h, "J5", fives, happyJ5());
       expect(result.coverage?.error).toBe(1);
       expect(result.coverage?.judged ?? 0).toBeGreaterThan(0);
-      // Bounded: nowhere near the 10 scripted failures were consumed.
-      expect(client.callCount).toBeLessThan((result.coverage?.judged ?? 0) + 10);
+      // Bounded: at most the 10 scripted failures plus one happy call per judged
+      // record. (ScriptedClient's cursor is shared per-call, so an error record
+      // plus judged records necessarily consume all 10 fives — callCount equals
+      // judged + 10 exactly; strict `<` was a test-authoring bug, see
+      // PROGRESS_LOG §30.)
+      expect(client.callCount).toBeLessThanOrEqual((result.coverage?.judged ?? 0) + 10);
       expect(rows.filter((r) => r.insufficient_reason === "schema_failure")).toHaveLength(0);
     });
   });
