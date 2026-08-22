@@ -1,0 +1,4 @@
+config:
+  aws:region: us-east-1
+  trace-insights-infra:authMode: none
+  trace-insights-infra:prune: "false"
