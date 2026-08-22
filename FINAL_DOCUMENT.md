@@ -24,3 +24,9 @@ I started with a rough sketch of my own architecture, built that into a spec.  A
     4) An agent in a guided loop working on the spec for the AWS deployment
     5) An ad-hoc agent doing some adversarial review and visual double-checks with Gemini (Gemini has better eyes than Claude).
 6) Me: reading code as though in the Matrix(tm), double-checking Claude convos, and loading the actual app to act like a QA professional.  Bounce back and forth between step 1 and use it to present me with the junctures in 2-5 need review or next-steps.
+
+# Time
+- I started this project around 2:30 PM.  
+- In the flow state of step 6, above, around 3:30 and waiting on implementor loops for hte most part.  
+- Will rock a deploy when the ETL pipeline lands and looks reasonable in the UI.
+- 
