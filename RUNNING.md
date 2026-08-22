@@ -25,7 +25,9 @@ bun run test:etl              # ETL integration suite (no network; no credential
 Output: `build/serve/` — time-partitioned Parquet + `manifest.json` + `latest.json`.
 This tree is both what the app serves and the machine-readable deliverable ("structured
 output" per the challenge README); a committed sample run from the provided data lives
-in `sample-output/` (degraded mode — enrichment columns NULL by design).
+in `sample-output/` (fully enriched: all five LLM jobs ran with complete coverage —
+see `manifest.json` `enrichment`; a `--no-enrich` run produces the same tree with
+enrichment columns NULL by design).
 
 ## App
 

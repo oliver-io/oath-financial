@@ -1329,3 +1329,31 @@ track directed to record ui.md revision 3 and strip the components.
   "see the work this cost" → `#panel-friction-table`. Recharts ReferenceArea incident
   bands keep onClick (library constraint), retaining cursor + explanatory caption.
 - Gates: tsc clean, biome clean, 54/54 tests.
+
+## 35. First full enriched run + audit-driven corrections + parallel runner
+
+- Full enriched run #1 (sequential): exit 0, all invariants held. Coverage: J1 57,
+  J2 743+20 errors (one double-invalid batch — designed batch-grain behavior), J3
+  116, J4 3, J5 250. Outcomes 81 completed / 28 abandoned / 7 undetermined; job mix
+  led by doc_receipt_check/doc_location/tie_out; verdicts 543 rule + 57 model_added.
+- **The J5 audit paid for itself on run #1**: missed-failure rate 34.7% decomposed
+  into (a) a definition gap — the model flagged audit-content anomalies (amount
+  mismatches, "no valuation memo", truncated telemetry) as failures; j5-v3 pins
+  "failure" to tool/system failures only — and (b) one GENUINE rule-table blind
+  spot: the Read tool's "Error: File does not exist:" wording, 115 occurrences
+  (~= the whole grep-style signature). sig-v2 extends missing-file to both wordings
+  (credited to J5 in its notes); golden suite green (no digits → no amount risk).
+- **Runner parallelized** (user directive): p-limit over batches with concurrency
+  from thresholds.yaml (`enrichment.concurrency: 8`, thr-v3); DB writes serialized
+  via a mutex chain (transactional batches must never interleave on the single
+  DuckDB connection); harness pins concurrency 1 as a declared determinism seam
+  (scripted-client cursor) — at 1 the loop is exactly the old sequential order.
+  Suite 107/0 unchanged.
+- Corrective run #2 (parallel): **299s wall** for the full pipeline incl. ~660
+  fresh calls (vs ~25 min sequential). J2 errors recovered (763/763, 0 errors);
+  J1 56 judged + 1 honest abstention; **J5 missed rate 0.347 → 0.013, fp 0**;
+  missing-file event_count 113 → 228. Outcomes 81/29/6; incident friction costs
+  populated (portal-auth-403 Mar-30 = 8.85, the top crossover number). All four
+  findings cards (2 degraded + 2 enrichment-gated) publish.
+- sample-output/ refreshed to the enriched run (58 files, ~1.0 MB, run
+  20260822T235047-59a005ce); RUNNING.md sample sentence updated accordingly.
