@@ -8,7 +8,7 @@
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { CC_IMMUTABLE, CC_NO_CACHE, argValue, contentTypeFor } from "./lib.ts";
+import { argValue, CC_IMMUTABLE, CC_NO_CACHE, contentTypeFor } from "./lib.ts";
 
 const dist = argValue("--dist", "app/dist");
 const runsDir = argValue("--runs", "contracts/fixtures/static/runs");
@@ -38,7 +38,8 @@ Bun.serve({
         ? fileResponse(f, CC_IMMUTABLE)
         : new Response("not found", { status: 404 });
     }
-    if (p === "/" || p === "/index.html") return fileResponse(join(dist, "index.html"), CC_NO_CACHE);
+    if (p === "/" || p === "/index.html")
+      return fileResponse(join(dist, "index.html"), CC_NO_CACHE);
     const rel = p.slice(1);
     const staticFile = join(dist, rel);
     if (/\.[a-z0-9]+$/i.test(rel) && existsSync(staticFile)) {

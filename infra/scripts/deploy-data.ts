@@ -8,10 +8,11 @@
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { DeleteObjectsCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import {
+  argValue,
   CC_IMMUTABLE,
   CC_NO_CACHE,
-  argValue,
   hasFlag,
   invalidate,
   listKeys,
@@ -20,7 +21,6 @@ import {
   stackOutputs,
   walk,
 } from "./lib.ts";
-import { DeleteObjectsCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const source = argValue("--source", "build/serve");
 const stack = argValue("--stack", "dev");
@@ -51,7 +51,9 @@ const manifest = JSON.parse(await Bun.file(join(runDir, "manifest.json")).text()
 };
 const expected = manifest.partitions.length + manifest.ref.length + 1; // + manifest.json
 if (files.length < expected) {
-  console.error(`local run tree incomplete: ${files.length} files, manifest expects >= ${expected}`);
+  console.error(
+    `local run tree incomplete: ${files.length} files, manifest expects >= ${expected}`,
+  );
   process.exit(1);
 }
 
@@ -76,7 +78,9 @@ if (existing.length > 0) {
   // partially-present run.
   const uploaded = await listKeys(bucket, prefix);
   if (uploaded.length !== files.length) {
-    console.error(`verification failed: ${uploaded.length} remote vs ${files.length} local — latest.json NOT swapped`);
+    console.error(
+      `verification failed: ${uploaded.length} remote vs ${files.length} local — latest.json NOT swapped`,
+    );
     process.exit(1);
   }
   console.log(`verified ${uploaded.length}/${files.length} objects`);

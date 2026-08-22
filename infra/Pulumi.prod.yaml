@@ -2,3 +2,4 @@ config:
   aws:region: us-east-1
   trace-insights-infra:authMode: none
   trace-insights-infra:prune: "false"
+encryptionsalt: v1:XufZKuCOrVE=:v1:/5L/b9SophryoGm9:a99Gs2grp9j8CHb5Lzp6AI4+5KS5/g==

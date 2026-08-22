@@ -7,9 +7,9 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import {
+  argValue,
   CC_IMMUTABLE,
   CC_NO_CACHE,
-  argValue,
   hasFlag,
   invalidate,
   putFile,
@@ -23,7 +23,11 @@ const dist = join(appDir, "dist");
 
 if (!hasFlag("--no-build")) {
   console.log("building the SPA (vite build)…");
-  const proc = Bun.spawn(["bun", "run", "build"], { cwd: appDir, stdout: "inherit", stderr: "inherit" });
+  const proc = Bun.spawn(["bun", "run", "build"], {
+    cwd: appDir,
+    stdout: "inherit",
+    stderr: "inherit",
+  });
   if ((await proc.exited) !== 0) process.exit(1);
 }
 if (!existsSync(join(dist, "index.html"))) {

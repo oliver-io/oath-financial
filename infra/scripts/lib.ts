@@ -4,15 +4,8 @@
 
 import { readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import {
-  CloudFrontClient,
-  CreateInvalidationCommand,
-} from "@aws-sdk/client-cloudfront";
-import {
-  ListObjectsV2Command,
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { CloudFrontClient, CreateInvalidationCommand } from "@aws-sdk/client-cloudfront";
+import { ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 export const CC_IMMUTABLE = "public, max-age=31536000, immutable";
 export const CC_NO_CACHE = "no-cache";
