@@ -1,0 +1,10 @@
+-- Output: ref/sessions.parquet — reference plane, global, fetched whole.
+-- Columns: all derive.sessions facts + outcome (FULL five-state enum:
+--   completed | abandoned | undetermined | unclassified | NULL — unclassified
+--   = enrichment abstention/error; NULL = job not run; the UI renders all
+--   three differently), outcome_evidence, job_type, job_type_secondary,
+--   ended_mid_work, friction_share, dominant_friction_cause,
+--   dominant_linked_signature (session-grain crossover chip rollup),
+--   integrity flags, first_ts/last_ts (the containment predicate's inputs).
+-- Contract: docs/architecture/etl.md Stage 5 reference plane.
+-- UNIMPLEMENTED

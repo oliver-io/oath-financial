@@ -1,0 +1,8 @@
+-- Output: facts/tool_events/day=<date>.parquet — fact plane, partitioned by day.
+-- Columns: all derive.tool_events facts + matched_snippet (± radius chars from
+--   thresholds.yaml around the match, for evidence popovers) + failure_verdict
+--   provenance (rule | model_added | model_cleared | uncertain | none) +
+--   pattern_id + denormalized dims (client, entity, auditor, date,
+--   is_demo_traffic, job_type).
+-- Contract: docs/architecture/etl.md Stage 5 fact plane.
+-- UNIMPLEMENTED

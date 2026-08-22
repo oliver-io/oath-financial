@@ -1,0 +1,4 @@
+-- Output: ref/capability_gaps.parquet — agg.capability_gaps with J4 naming.
+-- Stable gap ids from versioned taxonomy, never per-run sequences.
+-- Contract: docs/architecture/etl.md Stage 5 reference plane.
+-- UNIMPLEMENTED

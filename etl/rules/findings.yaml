@@ -1,0 +1,33 @@
+# Findings-brief card rules → ref/findings. VERSIONED DATA.
+# Contract: docs/architecture/etl.md stage 5 (ref/findings); shape in
+# etl/schemas/rules.ts FindingRuleSchema. Minimally populated: the two
+# best-verified findings from the adversarial fan-out (progress log §3), as
+# shape-valid seed rows. The full card set is phase-2+ work; rows with
+# requires_enrichment: false are exactly the degraded-mode card set.
+version: "fnd-v0"
+findings:
+  - finding_id: portal-auth-wall
+    audience: ops
+    title: "Portal auth failures are systemic, with a Mar 29-31 incident spike"
+    claim_params:
+      signature: portal-auth-403
+      min_sessions: 20
+      min_auditors: 4
+    metric: "event_count"
+    target_params:
+      side: ops
+      signature: portal-auth-403
+    provenance: heuristic
+    requires_enrichment: false
+  - finding_id: missing-clis
+    audience: ops
+    title: "Three unprovisioned CLIs account for every command-not-found failure"
+    claim_params:
+      signature: cli-command-not-found
+      max_distinct_commands: 3
+    metric: "event_count"
+    target_params:
+      side: ops
+      signature: cli-command-not-found
+    provenance: heuristic
+    requires_enrichment: false

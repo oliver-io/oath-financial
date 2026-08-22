@@ -1,0 +1,7 @@
+-- Output: ref/findings.parquet — the landing-page cards, built by versioned
+--   threshold rules from rules/findings.yaml. Columns: finding_id, audience,
+--   title, claim params, metric value, sparkline data, target-URL params,
+--   provenance class, requires_enrichment (rows with false = exactly the
+--   degraded-mode card set).
+-- Contract: docs/architecture/etl.md Stage 5 reference plane.
+-- UNIMPLEMENTED

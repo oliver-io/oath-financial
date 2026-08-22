@@ -1,0 +1,4 @@
+-- Output: enrich.j3 rows — verdict / abstention / error, exactly one row
+-- per selected record (docs/architecture/llm.md invariant). Keyed by
+-- (record id, job, prompt_version); written transactionally per batch.
+-- UNIMPLEMENTED

@@ -1,0 +1,8 @@
+-- Output: agg.incidents — temporal clusters of failures.
+-- Columns (derivations.md §6): incident_id, signature_ids, start_ts, end_ts
+--   (rate excursions vs the signature baseline; multiplier from
+--   thresholds.yaml — e.g. the Mar 29-31 auth spike), blast_radius_sessions,
+--   blast_radius_auditors, blast_radius_clients, linked_friction_cost
+--   (model rollup; NULL without enrichment).
+-- Contract: docs/architecture/etl.md Stage 4; derivations.md §6.
+-- UNIMPLEMENTED

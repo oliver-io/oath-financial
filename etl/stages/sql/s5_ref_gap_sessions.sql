@@ -1,0 +1,4 @@
+-- Output: ref/gap_sessions.parquet — capability_gap ↔ session exemplar
+--   bridge (gap_id, session_id, exemplar_rank) for evidence deeplinks.
+-- Contract: docs/architecture/etl.md Stage 5 reference plane.
+-- UNIMPLEMENTED

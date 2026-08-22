@@ -1,0 +1,5 @@
+-- Output: ref/dims.parquet — shared slice dimensions (derivations.md §8):
+--   client/entity (4 clients × entities), auditor (7), job_type taxonomy,
+--   date coverage, is_demo_traffic. Same filter bar on both sides of the app.
+-- Contract: docs/architecture/etl.md Stage 5 reference plane.
+-- UNIMPLEMENTED

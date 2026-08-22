@@ -1,0 +1,9 @@
+-- Output: facts/turns/day=<date>.parquet — fact plane, partitioned by event date.
+-- Columns: all derive.turns facts + user/assistant text (the session viewer's
+--   transcript) + enrichment fields (turn_friction, friction_cause,
+--   is_correction, linked_failure_signature_id; NULL-tolerant) + every filter
+--   dimension denormalized: client, entity, auditor, date, is_demo_traffic,
+--   job_type (pushed down from the session — deliberate cross-half dependency).
+-- Window semantics: event-timestamp membership (ops side).
+-- Contract: docs/architecture/etl.md Stage 5 fact plane.
+-- UNIMPLEMENTED

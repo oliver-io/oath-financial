@@ -1,0 +1,4 @@
+-- Output: ref/auditor_timeline.parquet — agg.auditor_timeline published
+--   whole.
+-- Contract: docs/architecture/etl.md Stage 5 reference plane.
+-- UNIMPLEMENTED

@@ -1,0 +1,86 @@
+# tool_name → tool_family rollup. VERSIONED DATA.
+# Contract: docs/architecture/derivations.md §1 tool_family enum
+# (shell · file · browser · docstore · subagent · task · search · other).
+# The 69 tool names below are the complete distinct set extracted from
+# data/observations.jsonl (metadata.tool_name). Family ASSIGNMENTS are
+# provisional judgment pending review — notably: clickup tools are mapped to
+# `task` (task-management surface), ccd_session/orchestration tools to `other`.
+version: "fam-v0"
+families:
+  # shell
+  Bash: shell
+  # file
+  Edit: file
+  Read: file
+  Write: file
+  # browser (mcp__claude-in-chrome__*)
+  mcp__claude-in-chrome__computer: browser
+  mcp__claude-in-chrome__browser_batch: browser
+  mcp__claude-in-chrome__navigate: browser
+  mcp__claude-in-chrome__javascript_tool: browser
+  mcp__claude-in-chrome__tabs_context_mcp: browser
+  mcp__claude-in-chrome__list_connected_browsers: browser
+  mcp__claude-in-chrome__form_input: browser
+  mcp__claude-in-chrome__get_page_text: browser
+  mcp__claude-in-chrome__read_page: browser
+  mcp__claude-in-chrome__select_browser: browser
+  mcp__claude-in-chrome__find: browser
+  mcp__claude-in-chrome__tabs_create_mcp: browser
+  mcp__claude-in-chrome__switch_browser: browser
+  mcp__claude-in-chrome__resize_window: browser
+  # docstore (sanctioned document store + comms readers)
+  mcp__docstore__read_file_content: docstore
+  mcp__docstore__get_file_metadata: docstore
+  mcp__docstore__search_files: docstore
+  mcp__docstore__create_file: docstore
+  mcp__docstore__download_file_content: docstore
+  mcp__docstore__get_file_permissions: docstore
+  mcp__docstore__get_meetings: docstore
+  mcp__docstore__query_granola_meetings: docstore
+  mcp__docstore__get_meeting_transcript: docstore
+  mcp__docstore__list_meetings: docstore
+  mcp__docstore__slack_read_thread: docstore
+  mcp__docstore__slack_read_channel: docstore
+  mcp__docstore__slack_search_channels: docstore
+  mcp__docstore__search_threads: docstore
+  mcp__docstore__get_thread: docstore
+  mcp__docstore__whoami: docstore
+  # subagent
+  Agent: subagent
+  # task (harness task tracking + clickup task management)
+  TaskUpdate: task
+  TaskCreate: task
+  TaskList: task
+  mcp__docstore__clickup_create_comment: task
+  mcp__docstore__clickup_get_task: task
+  mcp__docstore__clickup_create_task: task
+  mcp__docstore__clickup_update_task: task
+  mcp__docstore__clickup_get_list: task
+  mcp__docstore__clickup_filter_tasks: task
+  mcp__docstore__clickup_get_workspace_hierarchy: task
+  mcp__docstore__clickup_search: task
+  mcp__clickup__clickup_create_comment: task
+  mcp__clickup__clickup_update_task: task
+  mcp__clickup__clickup_create_task: task
+  mcp__clickup__clickup_get_task: task
+  mcp__clickup__clickup_filter_tasks: task
+  mcp__clickup__clickup_get_list: task
+  mcp__clickup__clickup_resolve_assignees: task
+  clickup_get_list: task
+  # search
+  ToolSearch: search
+  WebFetch: search
+  mcp__mcp-registry__search_mcp_registry: search
+  mcp__mcp-registry__list_connectors: search
+  # other (interaction, artifacts, orchestration plumbing)
+  AskUserQuestion: other
+  SendUserFile: other
+  Skill: other
+  SendMessage: other
+  Artifact: other
+  Workflow: other
+  ScheduleWakeup: other
+  Monitor: other
+  mcp__ccd_session__mark_chapter: other
+  mcp__ccd_session__spawn_task: other
+  mcp__ccd_session__dismiss_task: other

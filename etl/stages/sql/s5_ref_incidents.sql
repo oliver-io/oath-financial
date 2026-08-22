@@ -1,0 +1,5 @@
+-- Output: ref/incidents.parquet — detected windows + blast radius + linked
+--   friction cost. Bands are global annotations and stay global under
+--   filtering (documented caveat).
+-- Contract: docs/architecture/etl.md Stage 5 reference plane.
+-- UNIMPLEMENTED

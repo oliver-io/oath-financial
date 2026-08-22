@@ -1,0 +1,5 @@
+-- Output: ref/failure_signatures.parquet — agg.failure_signatures + curated
+--   metadata + J5 error bars. Stable public keys: pattern_id from
+--   rules/signatures.yaml (deeplinks survive re-runs).
+-- Contract: docs/architecture/etl.md Stage 5 reference plane.
+-- UNIMPLEMENTED

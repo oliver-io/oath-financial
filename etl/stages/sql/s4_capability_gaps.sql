@@ -1,0 +1,8 @@
+-- Output: agg.capability_gaps — the product-side feature-request ledger.
+-- Columns (derivations.md §7): gap_id (stable, from rule/curated taxonomy —
+--   never per-run sequences), display_name (J4; NULL without enrichment),
+--   evidence_pattern (deterministic stage-2 shape — enrichment only names and
+--   groups, never counts), session_count, auditor_count,
+--   interaction_cost_estimate.
+-- Contract: docs/architecture/etl.md Stage 4; derivations.md §7.
+-- UNIMPLEMENTED

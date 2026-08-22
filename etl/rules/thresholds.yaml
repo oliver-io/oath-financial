@@ -1,0 +1,34 @@
+# Pipeline thresholds. VERSIONED DATA — never inline constants (CLAUDE.md).
+# Contract: docs/plans/etl.md §3 RuleSet; consumers noted per key.
+version: "thr-v1"
+# capped_gap_span_s / bout segmentation cap, seconds (derivations.md §3/§4).
+# Provisional: 30 min, pending review against real gap distribution (median
+# ~6 min, p90 ~2.3 h).
+gap_cap_s: 1800
+# quick_restart_after_s window (derivations.md §3): "under 1h".
+quick_restart_window_s: 3600
+# ±chars around a signature match for facts/tool_events.matched_snippet
+# (docs/architecture/etl.md stage 5).
+matched_snippet_radius_chars: 300
+# Incident detection: a day counts as a rate excursion when the signature's
+# daily count exceeds baseline * multiplier (stage 4; provisional).
+incident_excursion_multiplier: 4
+# J5 heuristic-audit sampling (docs/architecture/llm.md J5) — seeded so
+# re-runs are comparable.
+j5:
+  unmatched_sample_n: 150
+  matched_sample_m: 100
+  seed: 20260401
+# Structural-marker templates on user messages (derivations.md §2). Verbatim
+# template strings verified against data/traces.jsonl: 113 task-notification,
+# 115 skill-body, 98 extract-paste hits — matching derivations.md exactly.
+markers:
+  task_notification: "<task-notification>"
+  skill_body: "Base directory for this skill:"
+  extract_paste: "Here's the extract I'm working from:"
+# short_typed_after_short_gap candidate generator (92 candidates expected on
+# the full dataset per derivations.md §2). Provisional pending tuning against
+# the real candidate count.
+correction_candidate:
+  max_typed_chars: 200
+  max_gap_s: 600

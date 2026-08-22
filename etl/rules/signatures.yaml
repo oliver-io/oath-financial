@@ -1,0 +1,99 @@
+# Anchored failure signatures + curated metadata. VERSIONED DATA, not code.
+# Contract: docs/plans/etl.md §3 RuleSet; taxonomy: docs/architecture/derivations.md §5.
+# Patterns are ANCHORED regexes — never bare substrings (invented amounts like
+# 82,403,527.00 collide with "403"). `provisional: true` marks patterns not yet
+# verified against the real dataset (phase-2 golden tests do that).
+# notes: document known false-positive/negative modes — they surface in the
+# UI's evidence popovers (documentation as data).
+version: "sig-v1"
+signatures:
+  - pattern_id: portal-auth-403
+    display_name: "portal HTTP 403 — connector not configured"
+    signature_class: auth_token
+    counts_as_failure: true
+    pattern: '(?:^|\n)\s*(?:HTTP\s*)?403\b(?![,.]\d)|\bHTTP 403\b(?![,.]\d)'
+    provisional: true
+    notes: >-
+      ~207 anchored hits across 63 sessions, all 7 auditors, with the Mar 29-31
+      incident spike. Must NOT match digit runs inside monetary amounts — the
+      anchoring is the point; verified by the amount_403_must_not_match golden
+      case. The (?![,.]\d) guard also rejects a LINE-LEADING amount like
+      "403,527.00" (readiness-review false-positive risk).
+  - pattern_id: portal-token-missing
+    display_name: "no portal token found"
+    signature_class: auth_token
+    counts_as_failure: true
+    pattern: 'no portal token found'
+    provisional: true
+    notes: "Verbatim template phrase per SCHEMA.md 'Fields that will mislead you'."
+  - pattern_id: cli-command-not-found
+    display_name: "command not found — unprovisioned CLI"
+    signature_class: provisioning_config
+    counts_as_failure: true
+    pattern: 'command not found'
+    provisional: true
+    notes: >-
+      117 hits concentrated on three commands across 50 sessions — a bounded
+      provisioning fix (progress log §3).
+  - pattern_id: missing-file
+    display_name: "referenced file/resource not found"
+    signature_class: missing_resource
+    counts_as_failure: true
+    pattern: 'No such file or directory'
+    provisional: true
+    notes: "Placeholder pattern; enumerate real missing-resource templates in phase 2."
+  - pattern_id: tool-http-5xx
+    display_name: "platform tool HTTP 5xx"
+    signature_class: platform_tool_fault
+    counts_as_failure: true
+    pattern: '\bHTTP 5\d\d\b'
+    provisional: true
+    notes: "Anchored to the literal 'HTTP ' prefix to avoid amount collisions."
+  - pattern_id: python-traceback
+    display_name: "agent-written code crashed (traceback)"
+    signature_class: agent_code_crash
+    counts_as_failure: true
+    pattern: 'Traceback \(most recent call last\)'
+    provisional: true
+    notes: "Placeholder; verify against real agent-code crash templates."
+  - pattern_id: agent-generic-error
+    display_name: "subagent generic error template"
+    signature_class: subagent_failure
+    counts_as_failure: uncertain
+    pattern: '(?:^|\n)\s*Error:|"text":"Error:'
+    tool_scope: [Agent]
+    provisional: true
+    notes: >-
+      Agent-tool output poisoning: subagent outputs are near-uniform failure
+      templates — naive matching sees 299/307 'errors' vs ~51 real. Agent tool
+      is excluded from failure aggregates by default (is_agent_tool); matches
+      here route to J1 / stay uncertain. Scoped to the Agent tool; the second
+      alternation branch matches the JSON-list output form
+      ([{"type":"text","text":"Error: …"}]) the Agent tool emits.
+  - pattern_id: askuserquestion-exit-1
+    display_name: "AskUserQuestion exited 1 — plausibly user declined"
+    signature_class: platform_tool_fault
+    counts_as_failure: uncertain
+    pattern: '\(exit 1\)'
+    tool_scope: [AskUserQuestion]
+    provisional: false
+    notes: >-
+      The canonical gray-zone case (derivations.md §1 matched_signature_id):
+      exit 1 on an interactive tool is plausibly a user declining, not an
+      error. Routed to J1 for per-instance adjudication. Pattern verified
+      against the real template "Error: operation failed (exit 1)" — the
+      earlier 'exit code 1' wording never occurs in the dataset (readiness
+      review). Scoped to AskUserQuestion so the same template on other tools
+      is judged by their own rules.
+  - pattern_id: platform-limit
+    display_name: "org monthly spend limit reached"
+    signature_class: platform_limit
+    counts_as_failure: uncertain
+    pattern: "you have hit your org's monthly spend limit"
+    target: assistant_output
+    provisional: false
+    notes: >-
+      Matched on ASSISTANT output (40 turns, 12 sessions, 6 session-terminal),
+      not tool output — feeds turn.platform_limit_marker. Whether it ended the
+      session is interpretation: one session carries it in turns 1-7 and runs
+      to turn 70.

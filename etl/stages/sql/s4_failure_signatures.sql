@@ -1,0 +1,9 @@
+-- Output: agg.failure_signatures — one row per recurring failure pattern.
+-- Columns (derivations.md §5, names exact): pattern_id, display_name,
+--   signature_class, counts_as_failure, event_count, session_count,
+--   auditor_count, client_count, first_seen, last_seen, daily_series,
+--   terminal_rate (a co-occurrence rate — "kills work" is interpretation),
+--   post_failure_shape_dist, plus J5-derived error-bar estimates
+--   (fp_rate_estimate, fn_rate_estimate; NULL without enrichment).
+-- Contract: docs/architecture/etl.md Stage 4; derivations.md §5.
+-- UNIMPLEMENTED

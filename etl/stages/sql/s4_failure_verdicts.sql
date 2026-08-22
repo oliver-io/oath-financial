@@ -1,0 +1,9 @@
+-- Output: agg.failure_verdicts — merged per-tool_event failure verdict.
+-- Columns: tool_event_id, matched_signature_id, failure_verdict
+--   (rule | model_added | model_cleared | uncertain | none), j1_reason,
+--   j1_confidence.
+-- Merge rule (docs/architecture/etl.md Stage 4): rule counts_as_failure=true
+--   → rule; rule-uncertain + J1 → J1's verdict (model_added/model_cleared);
+--   rule-uncertain, no J1 → uncertain. NULL-tolerant over missing enrich.*.
+-- Contract: docs/architecture/etl.md Stage 4.
+-- UNIMPLEMENTED

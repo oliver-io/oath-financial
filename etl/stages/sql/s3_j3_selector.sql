@@ -1,0 +1,3 @@
+-- Output: record keys + packet inputs for enrichment job J3.
+-- Selector per docs/architecture/llm.md J3; consumed by s3_enrich/runner.ts.
+-- UNIMPLEMENTED

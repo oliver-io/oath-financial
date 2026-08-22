@@ -1,0 +1,7 @@
+-- Output: agg.auditor_timeline — attention/rhythm per auditor per day.
+-- Columns (derivations.md §4): auditor, date, capped_gap_span_s, bout_count,
+--   sessions_touched, clients_touched, daily_turns.
+-- Computed on each auditor's MERGED timeline of all their turns (prevents
+-- double-counting attention across overlapping sessions).
+-- Contract: docs/architecture/etl.md Stage 4; derivations.md §4.
+-- UNIMPLEMENTED

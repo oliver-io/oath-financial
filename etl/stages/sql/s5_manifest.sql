@@ -1,0 +1,6 @@
+-- Output: build/serve/<run_id>/manifest.json — run id, partition list + date
+--   coverage, per-job enrichment coverage (judged/abstained/error) — then the
+--   latest.json pointer swap LAST (atomicity by ordering). Mostly TS-side
+--   (lib/manifest.ts); this file documents any SQL the export needs.
+-- Contract: docs/architecture/etl.md Stage 5; docs/plans/etl.md §3.
+-- UNIMPLEMENTED
