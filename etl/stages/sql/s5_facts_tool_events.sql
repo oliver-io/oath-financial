@@ -39,4 +39,4 @@ FROM derive.tool_events e
 JOIN derive.sessions s USING (session_id)
 JOIN agg.failure_verdicts v USING (tool_event_id)
 LEFT JOIN derive.tool_events r ON r.observation_id = e.repeat_of AND r.trace_id = e.trace_id
-LEFT JOIN enrich.j3_sessions j3 ON j3.session_id = e.session_id;
+LEFT JOIN enrich.j3_verdicts j3 ON j3.session_id = e.session_id;

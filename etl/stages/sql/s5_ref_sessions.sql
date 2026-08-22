@@ -31,7 +31,7 @@ fr AS (
     AVG(j2.turn_friction) AS friction_share,
     mode(j2.friction_cause) AS dominant_friction_cause
   FROM derive.turns t
-  JOIN enrich.j2_turns j2 USING (trace_id)
+  JOIN enrich.j2_verdicts j2 USING (trace_id)
   GROUP BY t.session_id
 )
 SELECT
@@ -65,6 +65,6 @@ SELECT
   fr.dominant_friction_cause,
   dom.sig AS dominant_linked_signature
 FROM derive.sessions s
-LEFT JOIN enrich.j3_sessions j3 USING (session_id)
+LEFT JOIN enrich.j3_verdicts j3 USING (session_id)
 LEFT JOIN fr USING (session_id)
 LEFT JOIN dom ON dom.session_id = s.session_id AND dom.rn = 1;

@@ -49,5 +49,5 @@ SELECT
 FROM derive.turns t
 JOIN derive.sessions s USING (session_id)
 LEFT JOIN clean.turns ct USING (trace_id)
-LEFT JOIN enrich.j2_turns j2 USING (trace_id)
-LEFT JOIN enrich.j3_sessions j3 ON j3.session_id = t.session_id;
+LEFT JOIN enrich.j2_verdicts j2 USING (trace_id)
+LEFT JOIN enrich.j3_verdicts j3 ON j3.session_id = t.session_id;

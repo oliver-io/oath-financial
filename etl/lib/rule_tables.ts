@@ -112,19 +112,23 @@ export async function ensureEnrichTables(ctx: RunContext): Promise<void> {
   await exec(ctx.db, `CREATE SCHEMA IF NOT EXISTS enrich`);
   const tables = [
     `enrich.j1_verdicts (
-       tool_event_id VARCHAR, verdict VARCHAR, reason VARCHAR,
-       confidence VARCHAR, evidence VARCHAR)`,
-    `enrich.j2_turns (
-       trace_id VARCHAR, turn_friction DOUBLE, friction_cause VARCHAR,
-       linked_signature_pattern VARCHAR, is_correction BOOLEAN,
-       verdict VARCHAR, insufficient_reason VARCHAR)`,
-    `enrich.j3_sessions (
+       tool_event_id VARCHAR, observation_id VARCHAR, trace_id VARCHAR,
+       session_id VARCHAR, verdict VARCHAR, reason VARCHAR,
+       insufficient_reason VARCHAR, confidence VARCHAR, evidence VARCHAR)`,
+    `enrich.j2_verdicts (
+       trace_id VARCHAR, session_id VARCHAR, turn_number INTEGER,
+       turn_friction DOUBLE, friction_cause VARCHAR,
+       linked_signature_pattern VARCHAR, dangling_signature_flag BOOLEAN,
+       is_correction BOOLEAN, verdict VARCHAR, insufficient_reason VARCHAR,
+       evidence VARCHAR)`,
+    `enrich.j3_verdicts (
        session_id VARCHAR, job_type VARCHAR, job_type_secondary VARCHAR,
        outcome VARCHAR, outcome_evidence VARCHAR, ended_mid_work BOOLEAN,
        verdict VARCHAR, insufficient_reason VARCHAR)`,
     `enrich.j4_gaps (gap_id VARCHAR, display_name VARCHAR, description VARCHAR,
-       exemplar_session_ids VARCHAR)`,
-    `enrich.j5_audit (tool_event_id VARCHAR, bucket VARCHAR, verdict VARCHAR)`,
+       exemplar_session_ids VARCHAR, verdict VARCHAR, insufficient_reason VARCHAR)`,
+    `enrich.j5_audit (observation_id VARCHAR, bucket VARCHAR, assessment VARCHAR,
+       insufficient_reason VARCHAR, evidence VARCHAR, verdict VARCHAR)`,
   ];
   for (const t of tables) await exec(ctx.db, `CREATE TABLE IF NOT EXISTS ${t}`);
 }

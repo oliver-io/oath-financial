@@ -60,6 +60,19 @@ export async function runSqlFile(session: DuckDbSession, name: string): Promise<
   await session.connection.run(sql);
 }
 
+/** Runs a named SQL file that is a SELECT (enrichment selectors) and returns
+ * its rows. Same UNIMPLEMENTED guard as runSqlFile. */
+export async function querySqlFile(
+  session: DuckDbSession,
+  name: string,
+): Promise<Record<string, unknown>[]> {
+  const sql = await loadSqlFile(name);
+  if (sql.includes("-- UNIMPLEMENTED")) {
+    throw new Unimplemented(`querySqlFile(${name})`, "docs/plans/etl.md §3 JobSpec");
+  }
+  return await queryRows(session, sql);
+}
+
 /** SELECT COUNT(*) — used by stage rowCounts reports. */
 export async function countRows(session: DuckDbSession, table: string): Promise<number> {
   const rows = await queryRows(session, `SELECT COUNT(*) AS n FROM ${table}`);

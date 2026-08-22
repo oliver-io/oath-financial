@@ -75,6 +75,11 @@ export const ThresholdsFileSchema = z.object({
   small_n_call_threshold: z.number().int().positive(),
   /** UI stated params: grind-table same-tool-run cutoff. */
   grind_run_threshold: z.number().int().positive(),
+  /** Stage-3 runner transport bounds (retry/backoff — see thresholds.yaml). */
+  enrichment: z.object({
+    max_transport_attempts: z.number().int().positive(),
+    backoff_base_ms: z.number().int().positive(),
+  }),
   j5: z.object({
     unmatched_sample_n: z.number().int().positive(), // N=150 per llm.md
     matched_sample_m: z.number().int().positive(), // M=100 per llm.md

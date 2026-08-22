@@ -7,7 +7,8 @@ CREATE TABLE publish.ref_gap_sessions AS
 SELECT
   gs.gap_id,
   gs.session_id,
+  -- exemplar_session_ids is CSV text written by the enrichment runner.
   COALESCE(list_contains(
-    CAST(j4.exemplar_session_ids AS VARCHAR[]), gs.session_id), FALSE) AS is_exemplar
+    string_split(j4.exemplar_session_ids, ','), gs.session_id), FALSE) AS is_exemplar
 FROM agg.gap_sessions gs
 LEFT JOIN enrich.j4_gaps j4 USING (gap_id);
