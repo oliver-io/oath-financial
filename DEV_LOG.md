@@ -38,5 +38,5 @@ I started with a rough sketch of my own architecture, built that into a spec.  A
 - 5:00.  Start the run against all our sessions with GPT-5.6-luna.  
 - Refactor UI, dashboards, widgets, visual presentation as that runs.
 - 5:15 Walk to store; watch loops from phone.
-- 5:40: enduring a re-run of the enrichment pipeline after a bug was found.  Snack time.
-- 
+- 5:40: enduring a re-run of the enrichment pipeline after a bug was found.  Should parallelize the runs locally but it's already halfway through.  Snack time.
+- 6:00: everything looking good.  Ready to redeploy with the real data.
