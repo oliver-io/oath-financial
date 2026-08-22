@@ -37,7 +37,7 @@ export function ActivityStrips({
   const byKey = useMemo(() => new Map(rows.map((r) => [`${r.auditor}|${r.day}`, r])), [rows]);
   const maxTurns = Math.max(1, ...rows.map((r) => r.turns));
   const CELL = compact ? 10 : 14;
-  const W = 120 + days.length * (CELL + 1);
+  const W = 120 + days.length * (CELL + 1) + 24; // + right pad so the last axis label isn't clipped
   const H = auditors.length * (CELL + 2) + 26;
   return (
     // compact renders scale to their container via viewBox instead of clipping

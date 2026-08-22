@@ -90,7 +90,7 @@ function FindingCards() {
           No findings met their thresholds for this run.
         </div>
       )}
-      <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-2 xl:[&>div:last-child:nth-child(odd)]:col-span-2">
         {(findings.rows ?? []).map((f) => {
           const kind = chipKind(f.provenance);
           const spark = parseIntArray(f.sparkline);
