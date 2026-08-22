@@ -43,26 +43,35 @@ const referentialGate: Gate = {
   },
 };
 
-/** Post-gate: two sessions of the same (auditor, client) whose turn-number
- * ranges AND wall-clock windows overlap — the fork shape (derivations.md §3
- * rejected-entity note). Zero expected; any hit aborts the run. */
+/** Post-gate: fork = a DUPLICATED stream, not two concurrent tasks (which are
+ * real and expected in this data — the auditor timeline exists to handle
+ * them). Two non-demo sessions of the same (auditor, client) sharing >= 2
+ * turn NUMBERS, every shared number occurring in both sessions within the
+ * lockstep threshold (thresholds.yaml fork_lockstep_threshold_s). Demo
+ * traffic is excluded: the demo user runs scripted same-timestamp bursts
+ * that lockstep by construction. Zero expected; any hit aborts the run
+ * (derivations.md §3 rejected-entity note). */
 const forkGate: Gate = {
   name: "fork_detector",
   async evaluate(ctx: RunContext) {
+    const threshold = ctx.rules.thresholds.fork_lockstep_threshold_s;
     const forks = await queryRows(
       ctx.db,
-      `WITH s AS (
-         SELECT session_id, linux_user, client,
-                MIN(turn_number) AS tmin, MAX(turn_number) AS tmax,
-                MIN(timestamp) AS wmin, MAX(timestamp) AS wmax
-         FROM clean.turns GROUP BY session_id, linux_user, client
+      `WITH t AS (
+         SELECT session_id, linux_user, client, turn_number, timestamp
+         FROM clean.turns WHERE NOT is_demo_traffic
+       ),
+       pairs AS (
+         SELECT a.session_id AS a_id, b.session_id AS b_id,
+                COUNT(*) AS shared_turns,
+                MAX(abs(epoch(a.timestamp - b.timestamp))) AS max_offset_s
+         FROM t a JOIN t b
+           ON a.linux_user = b.linux_user AND a.client = b.client
+          AND a.session_id < b.session_id AND a.turn_number = b.turn_number
+         GROUP BY a.session_id, b.session_id
        )
-       SELECT a.session_id AS a_id, b.session_id AS b_id
-       FROM s a JOIN s b
-         ON a.linux_user = b.linux_user AND a.client = b.client
-        AND a.session_id < b.session_id
-       WHERE a.tmin <= b.tmax AND b.tmin <= a.tmax
-         AND a.wmin < b.wmax AND b.wmin < a.wmax`,
+       SELECT a_id, b_id FROM pairs
+       WHERE shared_turns >= 2 AND max_offset_s <= ${threshold}`,
     );
     const passed = forks.length === 0;
     return {

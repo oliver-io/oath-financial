@@ -13,6 +13,14 @@ matched_snippet_radius_chars: 300
 # Incident detection: a day counts as a rate excursion when the signature's
 # daily count exceeds baseline * multiplier (stage 4; provisional).
 incident_excursion_multiplier: 4
+# Fork gate (stage 1): two NON-DEMO sessions of the same auditor+client are a
+# fork when they share >= 2 turn NUMBERS and every shared number occurs in both
+# sessions within this many seconds (lockstep shadowing — a duplicated stream,
+# not merely two concurrent tasks, which are real and expected in this data).
+# Demo traffic is excluded: the demo user runs scripted same-timestamp session
+# bursts that lockstep by construction (derivations.md §3 is_demo_traffic —
+# "excludable everywhere"). Fires zero times on the real dataset, as required.
+fork_lockstep_threshold_s: 600
 # J5 heuristic-audit sampling (docs/architecture/llm.md J5) — seeded so
 # re-runs are comparable.
 j5:
@@ -26,9 +34,10 @@ markers:
   task_notification: "<task-notification>"
   skill_body: "Base directory for this skill:"
   extract_paste: "Here's the extract I'm working from:"
-# short_typed_after_short_gap candidate generator (92 candidates expected on
-# the full dataset per derivations.md §2). Provisional pending tuning against
-# the real candidate count.
+# short_typed_after_short_gap candidate generator (derivations.md §2 reported
+# ~92 candidates from the original analysis; these values yield 94 on the full
+# dataset — the closest round-number calibration; the original analysis's
+# exact thresholds were not recorded). Provisional.
 correction_candidate:
-  max_typed_chars: 200
-  max_gap_s: 600
+  max_typed_chars: 80
+  max_gap_s: 120

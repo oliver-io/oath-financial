@@ -80,6 +80,8 @@ export const ThresholdsFileSchema = z.object({
   matched_snippet_radius_chars: z.number().int().positive(),
   /** Incident detection: rate excursion vs signature baseline (stage 4). */
   incident_excursion_multiplier: z.number().positive(),
+  /** Fork gate lockstep window (stage 1) — see thresholds.yaml notes. */
+  fork_lockstep_threshold_s: z.number().positive(),
   j5: z.object({
     unmatched_sample_n: z.number().int().positive(), // N=150 per llm.md
     matched_sample_m: z.number().int().positive(), // M=100 per llm.md
