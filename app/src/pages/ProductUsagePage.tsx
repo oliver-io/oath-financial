@@ -154,6 +154,7 @@ export function ProductUsagePage() {
                     stackId="c"
                     fill={clientColor(c, clientOrder)}
                     maxBarSize={18}
+                    isAnimationActive={false}
                   />
                 ))}
               </BarChart>

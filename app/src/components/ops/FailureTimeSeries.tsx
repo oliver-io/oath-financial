@@ -115,7 +115,14 @@ export function FailureTimeSeries({
             />
           ))}
           {classes.map((c) => (
-            <Bar key={c} dataKey={c} stackId="f" fill={signatureClassColor(c)} maxBarSize={18} />
+            <Bar
+              key={c}
+              dataKey={c}
+              stackId="f"
+              fill={signatureClassColor(c)}
+              maxBarSize={18}
+              isAnimationActive={false}
+            />
           ))}
         </BarChart>
       </ResponsiveContainer>

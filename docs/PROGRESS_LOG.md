@@ -962,3 +962,22 @@ headed 22; left as-is to avoid restructuring under concurrent writers.)*
   viewBox instead of clipping, with right padding so the last axis label survives.
   Final reviews: dashboard bottom (zones 2+3) PASS, dashboard top PASS with no
   visual defects. Gates re-verified: tsc clean, biome clean, 25/25 app tests.
+
+## 27. App track — app-capture readiness contract (data-capture-state)
+
+- The shell now maintains `<html data-capture-state="booting|loading|ready|empty|error">`
+  per .claude/skills/app-capture: one shared counter store (`app/src/data/captureState.ts`)
+  fed by the states the app already tracks — boot phases from DataProvider, an in-flight
+  counter in useRows (symmetric with effect cleanup), mounted ErrorState/EmptyState
+  components self-reporting, and the loader reporting zero-partition windows so the
+  empty-window exemplar registers even where pages use inline empty text.
+- **Settled states are debounced (400ms)**: the first pipeline run caught a real race —
+  "ready" fired in the gap between a page's query batch settling and a deeplink-expanded
+  row mounting its own queries, so the capture showed an unpopulated expansion and
+  mid-animation (invisible) chart bars. Fixed by the debounce plus
+  `isAnimationActive={false}` on all Recharts bars (deterministic pixels).
+- Verified via the composed pipeline: capture(ready → /ops?signature=…) + ui-visual-review
+  = PASS; --state empty capture on an out-of-coverage window works; a broken run URL
+  settles into "error" and a ready-capture is refused as specced. States also checked
+  directly (ready/empty/error) via CDP. Gates: tsc clean, biome clean, 25/25 app tests.
+  app-capture is now the capture half of visual verification for this track.

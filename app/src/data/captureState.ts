@@ -22,9 +22,25 @@ function compute(): CaptureState {
   return "ready";
 }
 
+let settleTimer: ReturnType<typeof setTimeout> | null = null;
+
 function apply(): void {
-  if (typeof document !== "undefined") {
-    document.documentElement.dataset.captureState = compute();
+  if (typeof document === "undefined") return;
+  const next = compute();
+  if (settleTimer) {
+    clearTimeout(settleTimer);
+    settleTimer = null;
+  }
+  if (next === "ready" || next === "empty") {
+    // Settled states are debounced: a page can settle one query batch and
+    // immediately mount follow-up queries (e.g. a deeplink-expanded row), and
+    // capture must not fire in that gap.
+    settleTimer = setTimeout(() => {
+      settleTimer = null;
+      if (compute() === next) document.documentElement.dataset.captureState = next;
+    }, 400);
+  } else {
+    document.documentElement.dataset.captureState = next;
   }
 }
 
