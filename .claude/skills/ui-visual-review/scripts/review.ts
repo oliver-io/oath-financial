@@ -11,7 +11,7 @@
  *     --image <path.png|jpg|webp> \
  *     --intent "<what this UI is supposed to show/do>" \
  *     [--context "<extra context: spec excerpt, constraints, palette rules>"] \
- *     [--model gemini-2.5-flash]
+ *     [--model gemini-3.6-flash]
  *
  * Env: GEMINI_API_KEY (required)  ·  GEMINI_MODEL (optional default override)
  *
@@ -53,7 +53,7 @@ if (!apiKey)
 if (!values.image || !values.intent)
   die(2, 'required: --image <path> and --intent "<stated intent>"');
 
-const model = values.model ?? process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+const model = values.model ?? process.env.GEMINI_MODEL ?? "gemini-3.6-flash";
 const ext = values.image.split(".").pop()?.toLowerCase() ?? "";
 const mime = MIME[ext];
 if (!mime)

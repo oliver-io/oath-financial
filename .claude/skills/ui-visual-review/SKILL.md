@@ -43,7 +43,7 @@ bun .claude/skills/ui-visual-review/scripts/review.ts \
 ```
 
 Requires `GEMINI_API_KEY` in the environment (`GEMINI_MODEL` optionally
-overrides the default `gemini-2.5-flash`). **No key → loud exit 2, never a
+overrides the default `gemini-3.6-flash`). **No key → loud exit 2, never a
 fabricated verdict.**
 
 ## Output contract
