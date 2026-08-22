@@ -1,0 +1,299 @@
+[
+  {
+    "metric": "slice.trace_count",
+    "session": null,
+    "value": 55,
+    "status": "verified",
+    "provenance": "line count of slice/traces.jsonl"
+  },
+  {
+    "metric": "slice.observation_count",
+    "session": null,
+    "value": 719,
+    "status": "verified",
+    "provenance": "line count of slice/observations.jsonl"
+  },
+  {
+    "metric": "slice.tool_event_count",
+    "session": null,
+    "value": 609,
+    "status": "verified",
+    "provenance": "count of TOOL observations — expected rows in derive.tool_events (assuming 1 row per TOOL observation)"
+  },
+  {
+    "metric": "slice.session_ids",
+    "session": null,
+    "value": [
+      "327038b2-d278-6e87-bdfc-302ade01833b",
+      "49d43953-6b32-16fd-aeeb-975729fae923",
+      "7ab6b10b-e4fa-4c80-36b3-0baff524310a",
+      "9b58b0bc-9d8e-2c33-4132-19faeb89feb7",
+      "eaec5bef-391b-770f-4c66-144adc5de4a1"
+    ],
+    "status": "verified",
+    "provenance": "the five selected sessions; expected rows in derive.sessions / ref/sessions"
+  },
+  {
+    "metric": "slice.event_days",
+    "session": null,
+    "value": [
+      "2026-03-02",
+      "2026-03-03",
+      "2026-03-04",
+      "2026-03-08",
+      "2026-03-09",
+      "2026-03-11",
+      "2026-03-12",
+      "2026-03-16",
+      "2026-03-25",
+      "2026-03-29"
+    ],
+    "status": "verified",
+    "provenance": "distinct UTC dates of trace timestamps — the expected fact-plane partition set (facts/turns/<day>.parquet)"
+  },
+  {
+    "metric": "session.turn_count",
+    "session": "49d43953-6b32-16fd-aeeb-975729fae923",
+    "value": 38,
+    "status": "verified",
+    "provenance": "trace rows with session_id 49d43953"
+  },
+  {
+    "metric": "session.resumed_fragment",
+    "session": "49d43953-6b32-16fd-aeeb-975729fae923",
+    "value": true,
+    "status": "verified",
+    "provenance": "turn numbering starts above 1 (derivations.md §3)"
+  },
+  {
+    "metric": "session.first_ts",
+    "session": "49d43953-6b32-16fd-aeeb-975729fae923",
+    "value": "2026-03-02T09:17:00.000Z",
+    "status": "verified",
+    "provenance": "min trace timestamp"
+  },
+  {
+    "metric": "session.last_ts",
+    "session": "49d43953-6b32-16fd-aeeb-975729fae923",
+    "value": "2026-03-29T04:10:00.000Z",
+    "status": "verified",
+    "provenance": "max trace timestamp"
+  },
+  {
+    "metric": "session.platform_limit_turns",
+    "session": "49d43953-6b32-16fd-aeeb-975729fae923",
+    "value": 1,
+    "status": "verified",
+    "provenance": "turns whose assistant output contains the org-spend-limit marker verbatim"
+  },
+  {
+    "metric": "session.missing_output_observations",
+    "session": "49d43953-6b32-16fd-aeeb-975729fae923",
+    "value": 28,
+    "status": "verified",
+    "provenance": "observations with null/absent output (output_missing flag inputs; abstention candidates)"
+  },
+  {
+    "metric": "session.turn_count",
+    "session": "7ab6b10b-e4fa-4c80-36b3-0baff524310a",
+    "value": 7,
+    "status": "verified",
+    "provenance": "trace rows with session_id 7ab6b10b"
+  },
+  {
+    "metric": "session.resumed_fragment",
+    "session": "7ab6b10b-e4fa-4c80-36b3-0baff524310a",
+    "value": false,
+    "status": "verified",
+    "provenance": "turn numbering starts above 1 (derivations.md §3)"
+  },
+  {
+    "metric": "session.first_ts",
+    "session": "7ab6b10b-e4fa-4c80-36b3-0baff524310a",
+    "value": "2026-03-12T04:33:56.000Z",
+    "status": "verified",
+    "provenance": "min trace timestamp"
+  },
+  {
+    "metric": "session.last_ts",
+    "session": "7ab6b10b-e4fa-4c80-36b3-0baff524310a",
+    "value": "2026-03-12T06:36:00.000Z",
+    "status": "verified",
+    "provenance": "max trace timestamp"
+  },
+  {
+    "metric": "session.platform_limit_turns",
+    "session": "7ab6b10b-e4fa-4c80-36b3-0baff524310a",
+    "value": 1,
+    "status": "verified",
+    "provenance": "turns whose assistant output contains the org-spend-limit marker verbatim"
+  },
+  {
+    "metric": "session.missing_output_observations",
+    "session": "7ab6b10b-e4fa-4c80-36b3-0baff524310a",
+    "value": 0,
+    "status": "verified",
+    "provenance": "observations with null/absent output (output_missing flag inputs; abstention candidates)"
+  },
+  {
+    "metric": "session.turn_count",
+    "session": "9b58b0bc-9d8e-2c33-4132-19faeb89feb7",
+    "value": 3,
+    "status": "verified",
+    "provenance": "trace rows with session_id 9b58b0bc"
+  },
+  {
+    "metric": "session.resumed_fragment",
+    "session": "9b58b0bc-9d8e-2c33-4132-19faeb89feb7",
+    "value": false,
+    "status": "verified",
+    "provenance": "turn numbering starts above 1 (derivations.md §3)"
+  },
+  {
+    "metric": "session.first_ts",
+    "session": "9b58b0bc-9d8e-2c33-4132-19faeb89feb7",
+    "value": "2026-03-25T07:17:32.000Z",
+    "status": "verified",
+    "provenance": "min trace timestamp"
+  },
+  {
+    "metric": "session.last_ts",
+    "session": "9b58b0bc-9d8e-2c33-4132-19faeb89feb7",
+    "value": "2026-03-25T08:39:16.000Z",
+    "status": "verified",
+    "provenance": "max trace timestamp"
+  },
+  {
+    "metric": "session.platform_limit_turns",
+    "session": "9b58b0bc-9d8e-2c33-4132-19faeb89feb7",
+    "value": 0,
+    "status": "verified",
+    "provenance": "turns whose assistant output contains the org-spend-limit marker verbatim"
+  },
+  {
+    "metric": "session.missing_output_observations",
+    "session": "9b58b0bc-9d8e-2c33-4132-19faeb89feb7",
+    "value": 0,
+    "status": "verified",
+    "provenance": "observations with null/absent output (output_missing flag inputs; abstention candidates)"
+  },
+  {
+    "metric": "session.turn_count",
+    "session": "327038b2-d278-6e87-bdfc-302ade01833b",
+    "value": 1,
+    "status": "verified",
+    "provenance": "trace rows with session_id 327038b2"
+  },
+  {
+    "metric": "session.resumed_fragment",
+    "session": "327038b2-d278-6e87-bdfc-302ade01833b",
+    "value": false,
+    "status": "verified",
+    "provenance": "turn numbering starts above 1 (derivations.md §3)"
+  },
+  {
+    "metric": "session.first_ts",
+    "session": "327038b2-d278-6e87-bdfc-302ade01833b",
+    "value": "2026-03-03T11:35:24.000Z",
+    "status": "verified",
+    "provenance": "min trace timestamp"
+  },
+  {
+    "metric": "session.last_ts",
+    "session": "327038b2-d278-6e87-bdfc-302ade01833b",
+    "value": "2026-03-03T11:35:24.000Z",
+    "status": "verified",
+    "provenance": "max trace timestamp"
+  },
+  {
+    "metric": "session.platform_limit_turns",
+    "session": "327038b2-d278-6e87-bdfc-302ade01833b",
+    "value": 0,
+    "status": "verified",
+    "provenance": "turns whose assistant output contains the org-spend-limit marker verbatim"
+  },
+  {
+    "metric": "session.missing_output_observations",
+    "session": "327038b2-d278-6e87-bdfc-302ade01833b",
+    "value": 0,
+    "status": "verified",
+    "provenance": "observations with null/absent output (output_missing flag inputs; abstention candidates)"
+  },
+  {
+    "metric": "session.turn_count",
+    "session": "eaec5bef-391b-770f-4c66-144adc5de4a1",
+    "value": 6,
+    "status": "verified",
+    "provenance": "trace rows with session_id eaec5bef"
+  },
+  {
+    "metric": "session.resumed_fragment",
+    "session": "eaec5bef-391b-770f-4c66-144adc5de4a1",
+    "value": false,
+    "status": "verified",
+    "provenance": "turn numbering starts above 1 (derivations.md §3)"
+  },
+  {
+    "metric": "session.first_ts",
+    "session": "eaec5bef-391b-770f-4c66-144adc5de4a1",
+    "value": "2026-03-29T05:18:00.000Z",
+    "status": "verified",
+    "provenance": "min trace timestamp"
+  },
+  {
+    "metric": "session.last_ts",
+    "session": "eaec5bef-391b-770f-4c66-144adc5de4a1",
+    "value": "2026-03-29T06:36:06.000Z",
+    "status": "verified",
+    "provenance": "max trace timestamp"
+  },
+  {
+    "metric": "session.platform_limit_turns",
+    "session": "eaec5bef-391b-770f-4c66-144adc5de4a1",
+    "value": 0,
+    "status": "verified",
+    "provenance": "turns whose assistant output contains the org-spend-limit marker verbatim"
+  },
+  {
+    "metric": "session.missing_output_observations",
+    "session": "eaec5bef-391b-770f-4c66-144adc5de4a1",
+    "value": 1,
+    "status": "verified",
+    "provenance": "observations with null/absent output (output_missing flag inputs; abstention candidates)"
+  },
+  {
+    "metric": "slice.signature_event_estimate.portal-auth-403",
+    "session": null,
+    "value": 10,
+    "status": "estimated",
+    "provenance": "TOOL observations whose stringified output matches the provisional pattern — an upper-bound estimate for matched_signature_id counts"
+  },
+  {
+    "metric": "slice.signature_event_estimate.portal-token-missing",
+    "session": null,
+    "value": 6,
+    "status": "estimated",
+    "provenance": "TOOL observations whose stringified output matches the provisional pattern — an upper-bound estimate for matched_signature_id counts"
+  },
+  {
+    "metric": "slice.signature_event_estimate.cli-command-not-found",
+    "session": null,
+    "value": 6,
+    "status": "estimated",
+    "provenance": "TOOL observations whose stringified output matches the provisional pattern — an upper-bound estimate for matched_signature_id counts"
+  },
+  {
+    "metric": "slice.signature_event_estimate.missing-file",
+    "session": null,
+    "value": 3,
+    "status": "estimated",
+    "provenance": "TOOL observations whose stringified output matches the provisional pattern — an upper-bound estimate for matched_signature_id counts"
+  },
+  {
+    "metric": "slice.signature_event_estimate.python-traceback",
+    "session": null,
+    "value": 6,
+    "status": "estimated",
+    "provenance": "TOOL observations whose stringified output matches the provisional pattern — an upper-bound estimate for matched_signature_id counts"
+  }
+]

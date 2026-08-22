@@ -1,0 +1,2 @@
+{"id":"000000000000000a","traceId":"0000000000000000000000000000000a","type":"SPAN","name":"Turn 1","input":{"role":"user","content":"envelope"},"output":"ok","metadata":{},"parentObservationId":null}
+{"id":"000000000000000b","traceId":"000000000000000000000000000003e7","type":"TOOL","name":"Tool: Bash","input":{"role":"user","content":"envelope"},"output":"ok","metadata":{"tool_name":"Bash"},"parentObservationId":null}

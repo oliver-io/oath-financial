@@ -1,0 +1,142 @@
+[
+  {
+    "name": "amount_403_must_not_match",
+    "source": {
+      "kind": "observation",
+      "id": "0650f74e1e88da5a"
+    },
+    "tool_name": "Bash",
+    "text": "Total cost                $69,403,439.86\nTotal fair value          $82,582,928\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572\nTotal commitments         $15,547,572",
+    "expected": {
+      "pattern_id": null,
+      "counts_as_failure": null
+    },
+    "note": "Bash output containing $69,403,439.86 — the digit run '403' inside a monetary amount must NOT match portal-auth-403. The anchoring trap from README/signatures.yaml."
+  },
+  {
+    "name": "portal_auth_403_matches",
+    "source": {
+      "kind": "observation",
+      "id": "00f102eb3af7c231"
+    },
+    "tool_name": "Bash",
+    "text": "marut: portal returned HTTP 403: connector is not configured for this client.",
+    "expected": {
+      "pattern_id": "portal-auth-403",
+      "counts_as_failure": true
+    },
+    "note": "Genuine 'portal returned HTTP 403: connector is not configured' template."
+  },
+  {
+    "name": "askuserquestion_exit1_uncertain",
+    "source": {
+      "kind": "observation",
+      "id": "0e71739488c361af"
+    },
+    "tool_name": "AskUserQuestion",
+    "text": "Error: operation failed (exit 1)",
+    "expected": {
+      "pattern_id": "askuserquestion-exit-1",
+      "counts_as_failure": "uncertain"
+    },
+    "note": "AskUserQuestion output 'Error: operation failed (exit 1)' — the canonical gray-zone case; plausibly the user declining. NOTE: the real template says 'exit 1', while signatures.yaml currently anchors on 'exit code 1' — this golden case exists to force that reconciliation in the implementation phase."
+  },
+  {
+    "name": "agent_generic_error",
+    "source": {
+      "kind": "observation",
+      "id": "827283e0ad841735"
+    },
+    "tool_name": "Agent",
+    "text": "[{\"type\":\"text\",\"text\":\"Error: operation failed (exit 1)\"}]",
+    "expected": {
+      "pattern_id": "agent-generic-error",
+      "counts_as_failure": "uncertain"
+    },
+    "note": "Agent tool near-uniform failure template (JSON-list output whose text block is 'Error: operation failed (exit 1)') — must stay uncertain / excludable (is_agent_tool), never a plain failure."
+  },
+  {
+    "name": "portal_token_missing",
+    "source": {
+      "kind": "observation",
+      "id": "05adf06f7f179f4a"
+    },
+    "tool_name": "Bash",
+    "text": "{\"content\":\"carta: no portal token found.\\ncarta: not authenticated to the portal.\\ncarta: run: node /home/demo/.claude/skills/audit-auth/scripts/cli-auth.mjs login\"}",
+    "expected": {
+      "pattern_id": "portal-token-missing",
+      "counts_as_failure": true
+    },
+    "note": "'no portal token found' verbatim template phrase (SCHEMA.md)."
+  },
+  {
+    "name": "cli_command_not_found",
+    "source": {
+      "kind": "observation",
+      "id": "00f88605a13f7439"
+    },
+    "tool_name": "Bash",
+    "text": "bash: line 1: search: command not found",
+    "expected": {
+      "pattern_id": "cli-command-not-found",
+      "counts_as_failure": true
+    },
+    "note": "'bash: line 1: search: command not found' — the unprovisioned-CLI class."
+  },
+  {
+    "name": "missing_file_read",
+    "source": {
+      "kind": "observation",
+      "id": "011f7914941e2777"
+    },
+    "tool_name": "Bash",
+    "text": "grep: /srv/audit/corpus/4161e4f6-b37b-dd16-cb87-944eb2663199/Distribution_Notice.pdf.txt: No such file or directory",
+    "expected": {
+      "pattern_id": "missing-file",
+      "counts_as_failure": true
+    },
+    "note": "grep 'No such file or directory' on a corpus path — missing_resource class."
+  },
+  {
+    "name": "python_traceback",
+    "source": {
+      "kind": "observation",
+      "id": "00c992d9c6771fd6"
+    },
+    "tool_name": "Bash",
+    "text": "Traceback (most recent call last):\n  File \"<stdin>\", line 1\nValueError: could not convert string to float: ''",
+    "expected": {
+      "pattern_id": "python-traceback",
+      "counts_as_failure": true
+    },
+    "note": "'Traceback (most recent call last)' — agent-written code crash."
+  },
+  {
+    "name": "platform_limit_marker",
+    "source": {
+      "kind": "trace_output",
+      "id": "f0de317ec9109044dc528dcf28d423c7"
+    },
+    "tool_name": null,
+    "text": "I can't continue — the request failed: **you have hit your org's monthly spend limit**. Someone with billing access needs to raise it before I can run anything else.",
+    "expected": {
+      "pattern_id": "platform-limit",
+      "counts_as_failure": "uncertain"
+    },
+    "note": "Assistant-output marker (turn.platform_limit_marker), not a tool output — whether it ended the session is interpretation."
+  },
+  {
+    "name": "http_5xx_synthetic",
+    "source": {
+      "kind": "synthetic",
+      "id": null
+    },
+    "tool_name": "Bash",
+    "text": "portal returned HTTP 502: upstream connector unavailable.\nTotal fair value $12,502,118.00 unchanged.",
+    "expected": {
+      "pattern_id": "tool-http-5xx",
+      "counts_as_failure": true
+    },
+    "note": "SYNTHETIC: no real 5xx exemplar exists in this dataset (a rule-file gap worth revisiting); the amount on line 2 doubles as a 5xx anchoring trap."
+  }
+]

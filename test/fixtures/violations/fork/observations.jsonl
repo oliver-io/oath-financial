@@ -1,0 +1,5 @@
+{"id":"0000000000000001","traceId":"00000000000000000000000000000001","type":"SPAN","name":"Turn 1","input":{"role":"user","content":"envelope"},"output":"ok","metadata":{},"parentObservationId":null}
+{"id":"0000000000000002","traceId":"00000000000000000000000000000002","type":"SPAN","name":"Turn 2","input":{"role":"user","content":"envelope"},"output":"ok","metadata":{},"parentObservationId":null}
+{"id":"0000000000000003","traceId":"00000000000000000000000000000003","type":"SPAN","name":"Turn 1","input":{"role":"user","content":"envelope"},"output":"ok","metadata":{},"parentObservationId":null}
+{"id":"0000000000000004","traceId":"00000000000000000000000000000004","type":"SPAN","name":"Turn 2","input":{"role":"user","content":"envelope"},"output":"ok","metadata":{},"parentObservationId":null}
+{"id":"0000000000000005","traceId":"00000000000000000000000000000005","type":"SPAN","name":"Turn 3","input":{"role":"user","content":"envelope"},"output":"ok","metadata":{},"parentObservationId":null}
