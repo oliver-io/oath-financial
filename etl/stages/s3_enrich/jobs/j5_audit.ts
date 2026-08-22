@@ -17,6 +17,13 @@ rule table's error bars. bucket tells you which question to answer:
   rules missed? → "missed_failure", else "correct".
 - "matched": the rule table flagged this as matching signature matched_signature_id. Is that a
   false positive (the text is not actually a failure)? → "false_positive", else "correct".
+"Failure" means a TOOL or SYSTEM failure ONLY: the tool call itself erroring, refusing, or
+being unable to do its job (missing file/command, auth rejection, crash, HTTP error, timeout).
+It is NOT: anomalies IN the audit data the tool successfully returned (amount mismatches,
+diffs, a document the audit found to be absent — those are the work's findings, not tool
+failures); nor output that merely ends mid-line (telemetry truncates outputs; truncation is
+not failure). When the tool did its job and the content is simply noteworthy, the rules were
+right to stay silent — answer "correct".
 Judge only the given snippet; if it is unreadable answer "insufficient" with an
 insufficient_reason. One sentence of evidence.`;
 
@@ -41,7 +48,7 @@ export const j5Audit: JobSpec = {
   buildPacket: buildJ5Packet,
   outputSchema: J5OutputSchema,
   promptTemplate: PROMPT,
-  promptVersion: "j5-v2",
+  promptVersion: "j5-v3",
   modelTier: "fast",
   writerSqlFile: "s3_j5_writer",
   outputTable: "enrich.j5_audit",

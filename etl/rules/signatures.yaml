@@ -5,7 +5,7 @@
 # verified against the real dataset (phase-2 golden tests do that).
 # notes: document known false-positive/negative modes — they surface in the
 # UI's evidence popovers (documentation as data).
-version: "sig-v1"
+version: "sig-v2"
 signatures:
   - pattern_id: portal-auth-403
     display_name: "portal HTTP 403 — connector not configured"
@@ -39,9 +39,11 @@ signatures:
     display_name: "referenced file/resource not found"
     signature_class: missing_resource
     counts_as_failure: true
-    pattern: 'No such file or directory'
-    provisional: true
-    notes: "Placeholder pattern; enumerate real missing-resource templates in phase 2."
+    pattern: 'No such file or directory|Error: File does not exist'
+    notes: >-
+      Two real wordings: shell/grep 'No such file or directory' and the Read
+      tool's 'Error: File does not exist:' (115 occurrences — found by the J5
+      audit as a missed-failure cluster in the first enriched run; sig-v2).
   - pattern_id: tool-http-5xx
     display_name: "platform tool HTTP 5xx"
     signature_class: platform_tool_fault

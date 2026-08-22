@@ -1293,3 +1293,39 @@ track directed to record ui.md revision 3 and strip the components.
   dataset's "error placement is trustworthy" property).
 - Prompt versions at full-run launch: j1-v5, j2-v4, j3-v5, j4-v2, j5-v2. Suite 107/0
   throughout. Sanity spend total: 70 calls, all cached.
+
+## 2026-08-22 — Copy audit and revision (all pages)
+
+- Page-by-page copy audit (screenshots of every route) found: two page questions
+  misdescribing their pages (Environments "client box... unhealthy" vs an error-rate
+  heatmap; Rhythm promising "per engagement" with no engagement dimension), a systemic
+  pattern of methodology self-defense in user-facing copy ("deliberately unranked",
+  "why wall spans are never summed", "structural only", a derivations.md citation in a
+  caption), and colloquialisms ("wrestling", "thrash", "one-sitting workers vs
+  fragmented attention" — the latter a judgment about named people).
+- Revised across IndexPage, OpsPage, OpsEnvironmentsPage, OpsRhythmPage,
+  ProductOutcomesPage, ProductAgentPage, widgets.tsx titles, ops/product panels
+  captions, honesty.tsx chip tooltip; ui.md sitemap questions synced. Question-style
+  subtitles and window-rule captions kept; honesty rationale moved into neutral,
+  reader-facing phrasing. Verified rendering on /ops/environments (ready-state capture).
+
+## 2026-08-22 — Drill-in UX unified (marks are links)
+
+- User request: in "Do tasks finish?" the graphed bar rows should be the drill-in
+  targets rather than a row of generated buttons beneath — then a sweep for
+  consistency everywhere.
+- New standard: any clickable mark inside an SVG chart is a real link via the new
+  shared `SvgDrillLink` (SVG `<a href>` with SPA navigation — middle-click/copy work,
+  no role="button"/biome-ignore workarounds), always paired with a `<title>` saying
+  what clicking does. Applied to: OutcomeBars rows (button row removed, replaced with
+  a one-line hint), EnvHeatmap cells, SpanScatter dots, InteractionStrip dots.
+  HTML contexts use react-router `Link` (quick-restart chips converted from buttons).
+  Buttons remain only for non-navigation actions (ToolStrip evidence popovers,
+  show/hide toggles) — buttons act, links navigate.
+- Cross-panel deeplinks now preserve the current search and anchor to the target
+  panel (`#panel-<id>`): "+N more" links (friction, quick restarts), grind→gap-ledger,
+  job-share→outcome-bars, ops↗crossovers (friction table, auth-overhead widget) →
+  `#panel-signature-table`, incident panel → member signatures anchored and
+  "see the work this cost" → `#panel-friction-table`. Recharts ReferenceArea incident
+  bands keep onClick (library constraint), retaining cursor + explanatory caption.
+- Gates: tsc clean, biome clean, 54/54 tests.
