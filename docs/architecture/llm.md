@@ -45,6 +45,9 @@ to abstention, not the run.
   a fixed context budget (~20k tokens input per call). Turn-level jobs batch many turns
   of the *same session* per call (context coherence is free); session-level jobs are one
   session per call.
+- **Batched-response contract**: an N-record call returns a JSON array of N outputs in
+  record order; a single object is accepted as a broadcast to every record in the call
+  (this is also the semantics scripted test responses carry — one outcome per call).
 - Order within a run: J1 → J2 → J3 (J3 consumes J2's turn labels); J4 after J3; J5 any
   time. Records within a job are independent → concurrency N with retry.
 - **Validation loop**: structured output is schema-validated; on mismatch, one retry with
@@ -76,7 +79,7 @@ status), and the turn's assistant-text tail.
 ```json
 {
   "verdict": "failure | non_failure | insufficient",
-  "reason": "user_declined | recovered_immediately | benign_message | genuine_failure | other",
+  "reason": "user_declined | recovered_immediately | benign_message | genuine_failure | other | null",
   "insufficient_reason": null,
   "confidence": "high | low",
   "evidence": "one sentence citing the packet"
@@ -161,6 +164,13 @@ Cases and handling, in order of detection:
 | Model returns schema-invalid output twice | validator | `enrich_error / schema_failure` row; treated as abstention downstream. |
 | Model abstains (`verdict: insufficient`) | schema | Stored with its reason enum; UI renders these as their own slice ("unclassified: N"), never folded into a real category and never dropped from denominators. |
 | API unavailable / job skipped entirely | runner | The whole column set stays NULL; stage 4 aggregates over rule-only verdicts and the UI flips those views to their degraded captions (per `docs/plans/ui.md`). |
+
+The machine-readable `insufficient_reason` space (shared across jobs):
+`missing_source_field | packet_overflow | unreadable_context | other` for model/builder
+abstentions (`unreadable_context` = the model read the packet and could not parse what it
+describes; `other` = an abstention that fits no named branch — kept so the model is never
+forced to misfile one), plus the error-row reasons the runner writes itself
+(`schema_failure`, transport errors).
 
 The invariant behind all rows: **every selected record gets exactly one row per job per
 prompt version — a real judgment, an abstention with reason, or an error** — so
