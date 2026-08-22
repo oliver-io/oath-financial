@@ -88,6 +88,8 @@ export interface RunJobOptions {
   sleep: Sleep;
   /** `etl enrich --recache`: ignore the cache (explicit flag, never default). */
   recache: boolean;
+  /** `etl enrich --limit N`: cap the selected record set (sanity runs). */
+  limit?: number | null;
 }
 
 interface SelectedRecord {
@@ -185,7 +187,15 @@ export async function runJob(opts: RunJobOptions): Promise<EnrichmentCoverage> {
   await job.prepare?.(ctx);
   if (recache) cache.clear(job.id);
 
-  const selected = (await querySqlFile(ctx.db, job.selectorSqlFile)).map(normalizeRow);
+  let selected = (await querySqlFile(ctx.db, job.selectorSqlFile)).map(normalizeRow);
+  if (opts.limit != null && selected.length > opts.limit) {
+    ctx.log.info("s3_enrich", "selection_capped", {
+      job: job.id,
+      limit: opts.limit,
+      selected: selected.length,
+    });
+    selected = selected.slice(0, opts.limit);
+  }
   // Idempotent per run: the job owns its table; rows are rebuilt from the
   // cache/API so a resumed run converges to exactly one row per record.
   await exec(ctx.db, `DELETE FROM ${job.outputTable}`);
@@ -439,6 +449,7 @@ async function writeBatch(
 
 export interface SequenceFlags {
   recache: boolean;
+  limit?: number | null;
 }
 
 /** Runs jobs in dependency order through one client/cache pair, recording
@@ -464,6 +475,7 @@ export async function runEnrichmentSequence(
         cache,
         sleep: ctx.sleep,
         recache: flags.recache,
+        limit: flags.limit ?? null,
       });
       ctx.manifest.recordEnrichment(job.id, coverage, modelIdFor(ctx, job), job.promptVersion);
     }

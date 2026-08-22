@@ -59,9 +59,7 @@ export async function writeInspectArtifact(ctx: RunContext): Promise<void> {
          ORDER BY ordinal_position`,
       );
       const cols = colRows.map((c) => String(c.c));
-      const defs = cols
-        .map((c) => `"${c}" ${columnAffinity(parsed.map((p) => p[c]))}`)
-        .join(", ");
+      const defs = cols.map((c) => `"${c}" ${columnAffinity(parsed.map((p) => p[c]))}`).join(", ");
       const target = `${schema}_${table}`;
       out.run(`CREATE TABLE "${target}" (${defs})`);
       const insert = out.prepare(

@@ -2,7 +2,7 @@
 // Contract: docs/plans/etl.md §2 cli.ts and §4 — the ONLY module that
 // sequences stages. Subcommands:
 //   etl run    [--no-enrich] [--stage N] [--sqlite]
-//   etl enrich [--job J1..J5] [--recache]
+//   etl enrich [--job J1..J5] [--recache] [--limit N]
 // Exit codes (docs/plans/etl.md §4 step 9): 0 success · 2 gate failure ·
 // 3 enrichment invariant failure · 1 any other error (incl. Unimplemented).
 
@@ -39,6 +39,10 @@ export interface RunFlags {
 export interface EnrichFlags {
   job: string | null;
   recache: boolean;
+  /** Caps each job's SELECTED record set (sanity/cost-gate runs). The
+   * exactly-one-row invariant holds over the capped selection; a later
+   * uncapped run reuses the cached calls. Absent = uncapped. */
+  limit?: number;
 }
 
 /** Test-injectable RunContext options: everything except rootDir/enrichmentMode,
@@ -98,7 +102,10 @@ async function commandEnrich(flags: EnrichFlags, overrides?: CliOverrides): Prom
     enrichmentMode: "required",
   });
   try {
-    await runEnrichmentSequence(ctx, jobs, { recache: flags.recache });
+    await runEnrichmentSequence(ctx, jobs, {
+      recache: flags.recache,
+      limit: flags.limit ?? null,
+    });
   } finally {
     try {
       await ctx.manifest.finalize();
@@ -136,11 +143,20 @@ export function parseCliArgs(
       options: {
         job: { type: "string" },
         recache: { type: "boolean", default: false },
+        limit: { type: "string" },
       },
     });
+    const limit = values.limit === undefined ? undefined : Number.parseInt(values.limit, 10);
+    if (limit !== undefined && (Number.isNaN(limit) || limit < 1)) {
+      throw new Error(`--limit must be a positive integer, got: ${values.limit}`);
+    }
     return {
       command: "enrich",
-      flags: { job: values.job ?? null, recache: values.recache ?? false },
+      flags: {
+        job: values.job ?? null,
+        recache: values.recache ?? false,
+        ...(limit === undefined ? {} : { limit }),
+      },
     };
   }
   throw new Error(`usage: etl <run|enrich> [flags] — got: ${command ?? "(nothing)"}`);

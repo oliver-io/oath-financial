@@ -6,7 +6,7 @@
 
 import { JobTypeSchema } from "@trace-insights/contracts";
 import type { RunContext } from "../context.ts";
-import { exec, sqlString } from "./duckdb.ts";
+import { exec, queryRows, sqlString } from "./duckdb.ts";
 
 export async function batchInsert(ctx: RunContext, table: string, rows: string[]): Promise<void> {
   const CHUNK = 200;
@@ -105,9 +105,15 @@ export async function installJobTypes(ctx: RunContext): Promise<void> {
 }
 
 /** Guarantees the enrich.* side-tables exist (empty when stage 3 did not run)
- * so stage 4/5 SQL stays NULL-tolerant without dynamic SQL. Never drops —
- * the enrich schema is owned by stage 3 (docs/architecture/etl.md stage 4:
- * "runs identically with or without enrich.* rows"). */
+ * so stage 4/5 SQL stays NULL-tolerant without dynamic SQL. Never drops a
+ * current-shape table — the enrich schema is owned by stage 3
+ * (docs/architecture/etl.md stage 4: "runs identically with or without
+ * enrich.* rows"). Exception: a table whose COLUMN SET no longer matches the
+ * definition below predates the current schema (a persistent pipeline.duckdb
+ * from an older code version); its rows are unreadable by current SQL, so it
+ * is dropped and recreated empty — stage 3 repopulates from the LLM cache,
+ * which is the durable store (etl.md: the cache "survives full pipeline
+ * rebuilds"). */
 export async function ensureEnrichTables(ctx: RunContext): Promise<void> {
   await exec(ctx.db, `CREATE SCHEMA IF NOT EXISTS enrich`);
   const tables = [
@@ -130,5 +136,28 @@ export async function ensureEnrichTables(ctx: RunContext): Promise<void> {
     `enrich.j5_audit (observation_id VARCHAR, bucket VARCHAR, assessment VARCHAR,
        insufficient_reason VARCHAR, evidence VARCHAR, verdict VARCHAR)`,
   ];
-  for (const t of tables) await exec(ctx.db, `CREATE TABLE IF NOT EXISTS ${t}`);
+  for (const t of tables) {
+    const match = t.match(/^enrich\.(\w+)\s*\(([\s\S]*)\)$/);
+    const name = match?.[1];
+    const body = match?.[2];
+    if (!name || !body) throw new Error(`bad enrich table definition: ${t}`);
+    const expected = body
+      .split(",")
+      .map((c) => c.trim().split(/\s+/)[0] ?? "")
+      .sort();
+    const actual = (
+      await queryRows(
+        ctx.db,
+        `SELECT column_name AS c FROM information_schema.columns
+         WHERE table_schema = 'enrich' AND table_name = '${name}'`,
+      )
+    )
+      .map((r) => String(r.c))
+      .sort();
+    if (actual.length > 0 && actual.join("|") !== expected.join("|")) {
+      ctx.log.info("rule_tables", "enrich_table_reshaped", { table: name });
+      await exec(ctx.db, `DROP TABLE enrich.${name}`);
+    }
+    await exec(ctx.db, `CREATE TABLE IF NOT EXISTS ${t}`);
+  }
 }
