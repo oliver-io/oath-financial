@@ -42,7 +42,6 @@ sample-output/                   committed fully-enriched sample run (Parquet + 
 docs/
   TASK.md                        challenge spec (read-only)
   PROGRESS_LOG.md                chronological project log (decisions + reversals)
-  _HANDOFF*.md                   historical orchestration artifacts (ETL / app / infra tracks)
   architecture/                  the full specs (see BRIEF below)
   plans/                         ui.md (READY) · app.md · etl.md · etl_testing.md · infra.md
 contracts/                       shared zod schemas for the serving contract + synthetic
