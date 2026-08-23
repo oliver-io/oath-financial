@@ -66,6 +66,7 @@ It took ~5 hours, I notated my progress [here](./DEV_LOG.md) for the curious.  A
 - Uses DuckDB and SQLite for data processing, parquet files for distribution
 - Used AWS, Pulumi to deploy
 - Uses `GPT-5.6-luna` to do enrichment determinations.  Weak model, but fast and cheap for an MVP.
+- React on the frontend with a few libraries for charting etc.
 - Data built and deployed locally.  For a real app, would automate its rebuild on a scheduled job or ETL pipeline.
 
 # Work that I would do next
