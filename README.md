@@ -1,18 +1,26 @@
 # LLM Trace Insights - Oath
 
-Final output: a deployed (or locally-runnable) stack.  A bipart dashboard, separated into operational and product-level concerns & reporting.
+Final output: a deployed (or locally-runnable) stack.  A bipartite dashboard, separated into operational and product-level concerns & reporting.
+
+The one-page deliverable — findings, what's next, and what was deliberately left out — is in [FINDINGS.md](./FINDINGS.md).
 
 # Running it
 
 - Open in your browser at: `https://oath.oliver-io.online`, or
 - Follow instructions to: [run the app](./RUNNING.md)
 
-# Samples 
+# Samples
+
+A committed, fully-enriched sample run lives in [`sample-output/`](./sample-output/) — time-partitioned Parquet plus its manifest, the machine-readable deliverable. Some screenshots of the app:
+
+![Ops dashboard](./docs/screenshots/ops-dash.png)
+![Usage](./docs/screenshots/usage.png)
+![Abandonment](./docs/screenshots/abandonment.png)
 
 # Development
 
-A dev-log with my thoughts and process [can be read here](./DEV_LOG.md)
-An llm-produced progress log with the actual meat can [be seen here](./docs/PROGRESS_LOG.md).
+A dev-log with my thoughts and process [can be read here](./DEV_LOG.md).
+An LLM-produced progress log with the actual meat can [be seen here](./docs/PROGRESS_LOG.md).
 
 # Discoveries
 
@@ -37,7 +45,7 @@ Some of these issues presented in the UI are alright (agent code that crashed) b
 - Usage trends on a general upward bent over time
 - `Vestmar` work seems universally adopted with this system but otherwise not so much
 - `doc_location`, and `doc_receipt_check` tied for most popular job type -- possibly interesting?
--  `tie_out`, `drafting`, and `doc_inventory` follow up
+- `tie_out`, `drafting`, and `doc_inventory` follow up
 - `other`/`extraction_supervision` appear, might be worth a look for why there are the former at all and low usage for the latter
 - Certain tasks like `capability_probe` have an unusually high abandonment rate
 - Lots of cases where people are repeating the exact same operation, apparently, in a long-running session.  This likely resembles a sort of "batch-process" that could be automated for these folks, but they are likely logging in and re-executing this in Claude Code instead.  We could probably build a UI for these folks to configure a recurring or scheduled invocation of these operations, and remove the need to open up the same conversation and repeat.
@@ -48,7 +56,7 @@ Lots of actionable information here but I would need to know more about the actu
 
 # Conclusion
 
-This is in a totally viable MVP category right now.  My next typical move would be to present this to stakeholders and ask what they are exicted by, or what bothers them.  Are there things that they expect to see missing?  Are pieces of the information shown useless, given the real concerns of the users?  Et cetera.  From the outside having nothing but the logs, some of these tools would need further explicated.
+This is in a totally viable MVP category right now.  My next typical move would be to present this to stakeholders and ask what they are excited by, or what bothers them.  Are there things that they expect to see missing?  Are pieces of the information shown useless, given the real concerns of the users?  Et cetera.  From the outside having nothing but the logs, some of these tools would need further explication.
 
 It took ~5 hours, I notated my progress [here](./DEV_LOG.md) for the curious.  A decent amount of this time was waiting for guided loops, data-bakes, et cetera.
 

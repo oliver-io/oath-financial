@@ -44,9 +44,10 @@ never a category of work (we removed it from the job taxonomy on this evidence).
 ## What we'd build next
 
 Model-based enrichment (session outcomes, friction attribution, a sampled audit that
-puts error bars on the heuristic failure counts) — specced, quarantined, and optional
-by design; multi-resolution rollups for wide time windows; incremental ingest from the
-live Langfuse API. Full specs: `docs/architecture/`.
+puts error bars on the heuristic failure counts) is built and shipped — all five jobs
+run in the deployed data. Next: multi-resolution rollups for wide time windows;
+incremental ingest from the live Langfuse API; automatically closing the loop on
+J5-measured heuristic error. Full specs: `docs/architecture/`.
 
 ## What we deliberately left out
 

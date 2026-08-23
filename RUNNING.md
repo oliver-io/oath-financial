@@ -32,8 +32,16 @@ enrichment columns NULL by design).
 ## App
 
 ```
-bun run dev                 # serves the SPA against contracts/fixtures until M2,
-                            # then against build/serve/ — a base-URL flip
+bun run --cwd app dev       # dev server — deliberately serves the synthetic fixture
+                            # pack from contracts/ (contract-driven development)
+```
+
+To browse the **real data** locally, build the SPA and serve it prod-shaped against a
+published run tree (or just visit the deployed site at https://oath.oliver-io.online):
+
+```
+bun run --cwd app build
+bun run serve:prod-local -- --runs build/serve
 ```
 
 Open the printed URL. Landing page = a hub routing to the two rooms (`/ops` and

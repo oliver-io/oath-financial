@@ -3,7 +3,7 @@
 ## What this is
 
 An internal observability tool for auditor Claude Code sessions, built for the coding
-challenge specified in `README.md`. Per-turn Langfuse traces (763 turns, 8,082
+challenge specified in `docs/TASK.md`. Per-turn Langfuse traces (763 turns, 8,082
 observations, 116 sessions, ~1 month) are ingested by an offline ETL, enriched with
 deterministic facts and quarantined LLM classifications, and served as time-partitioned
 Parquet to a React SPA that presents **two distinct products over the same data**:
@@ -22,8 +22,9 @@ non-views rather than omitted.
 
 ## Read this first
 
-`README.md`, `DATA.md`, `SCHEMA.md` at the root are the **challenge-provided spec** —
-treat as read-only. Critical facts from them: the data's *structure* is real but all
+`docs/TASK.md` plus `DATA.md`, `SCHEMA.md` at the root are the **challenge-provided
+spec** — treat as read-only (root `README.md` is the user-authored submission front
+page, not the spec). Critical facts from them: the data's *structure* is real but all
 *prose is template-generated*; session ids group turns; durations/costs/amounts are
 untrustworthy; failure detection is necessarily heuristic. Traps are documented there
 and extended in our own docs.
@@ -31,22 +32,25 @@ and extended in our own docs.
 ## Repository structure
 
 ```
-README.md, DATA.md, SCHEMA.md    challenge spec (read-only)
+README.md                        user-authored submission front page
+DEV_LOG.md                       user-authored dev narrative — never edit
+DATA.md, SCHEMA.md               challenge spec (read-only)
 FINDINGS.md                      the one-page deliverable: findings, next, left-out (grader-facing)
 RUNNING.md                       run instructions (grader-facing; updated as tracks land)
 data/*.jsonl                     the trace dataset (read-only)
+sample-output/                   committed fully-enriched sample run (Parquet + manifest)
 docs/
+  TASK.md                        challenge spec (read-only)
   PROGRESS_LOG.md                chronological project log (decisions + reversals)
-  _HANDOFF.md                    orchestrator handoff: ETL shell → tests → readiness
-  _HANDOFF_APP.md                orchestrator handoff: app track (goal-based loop, parallel)
-  _HANDOFF_INFRA.md              orchestrator handoff: infra track (AWS deploy, goal-based loop)
+  _HANDOFF*.md                   historical orchestration artifacts (ETL / app / infra tracks)
   architecture/                  the full specs (see BRIEF below)
   plans/                         ui.md (READY) · app.md · etl.md · etl_testing.md · infra.md
 contracts/                       shared zod schemas for the serving contract + synthetic
                                  fixture pack — imported by BOTH etl and app (app-track owned)
 etl/                             the pipeline, per docs/plans/etl.md (ETL-track owned)
 app/                             the React SPA, per docs/plans/app.md (app-track owned)
-infra/                           (planned) Pulumi AWS deployment, per docs/plans/infra.md
+infra/                           Pulumi AWS deployment (implemented, deployed at
+                                 https://oath.oliver-io.online), per docs/plans/infra.md
 build/                           (gitignored) pipeline outputs incl. serve/ artifact
 ```
 
@@ -95,8 +99,8 @@ whole-session containment with an excluded-count caption**); provenance chips, e
 popovers, ghost cards for unsupported views; every path drills to a session transcript
 viewer. Appearance: financial-firm restrained — ink-first slate base, ops steel-blue /
 product deep teal-green, no bright colors, **no purple**, validated chart palette,
-hatching as the uncertainty texture (app.md §6). Frontend develops in parallel with the
-ETL against `contracts/` schemas + a synthetic fixture pack, flipping to real data at
+hatching as the uncertainty texture (app.md §6). Frontend developed in parallel with the
+ETL against `contracts/` schemas + a synthetic fixture pack; flipped to real data at
 ETL M2.
 
 ## Working conventions
@@ -108,4 +112,4 @@ ETL M2.
   constants.
 - Do not build: cost/token views, per-tool latency, auditor performance rankings,
   cross-turn amount arithmetic, prose/phrasing mining — the data cannot support them
-  (see `README.md` traps and `docs/architecture/derivations.md` "Known non-derivables").
+  (see `docs/TASK.md` traps and `docs/architecture/derivations.md` "Known non-derivables").
