@@ -6,7 +6,7 @@ The one-page deliverable — findings, what's next, and what was deliberately le
 
 # Running it
 
-- Open in your browser at: `https://oath.oliver-io.online`, or
+- Open in your browser at: https://oath.oliver-io.online, or
 - Follow instructions to: [run the app](./RUNNING.md)
 
 # Samples
