@@ -46,8 +46,8 @@ export function FrictionTable({ rows }: { rows: Row[] }) {
   if (rows.length === 0)
     return (
       <div className="text-sm text-ink-3">
-        No friction-classified sessions in this window (friction is a model-class field — absent
-        when enrichment has not run).
+        No friction-classified sessions in this window (friction is a model-class field — populated
+        only by enrichment).
       </div>
     );
   return (

@@ -1,7 +1,7 @@
-// Shared filter bar (ui.md §2): client/entity (select), auditor (select),
-// job type (multi-select, M chip on the control itself), include-demo toggle
-// (default off; demo rows render hatched when on). On `/` only the demo
-// toggle applies (findings are global claims).
+// Shared filter bar (ui.md §2), rendered on ops/product pages (the hub index
+// has no filter bar): client/entity (select), auditor (select), job type
+// (multi-select, M chip on the control itself), include-demo toggle
+// (default off; demo rows render hatched when on).
 
 import { type JobType, JobTypeSchema } from "@trace-insights/contracts";
 import { useLocation, useNavigate } from "react-router";
@@ -10,7 +10,7 @@ import { DimValueSchema, qDims } from "../../data/queries.ts";
 import { type FilterState, filtersToSearch } from "../../state/urlState.ts";
 import { ProvenanceChip } from "./honesty.tsx";
 
-export function FilterBar({ demoOnly }: { demoOnly: boolean }) {
+export function FilterBar() {
   const filters = useFilters();
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,29 +31,25 @@ export function FilterBar({ demoOnly }: { demoOnly: boolean }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs">
-      {!demoOnly && (
-        <>
-          <Select
-            label="client"
-            value={filters.client}
-            options={clients}
-            onChange={(v) => patch({ client: v, entity: null })}
-          />
-          <Select
-            label="entity"
-            value={filters.entity}
-            options={entities}
-            onChange={(v) => patch({ entity: v })}
-          />
-          <Select
-            label="auditor"
-            value={filters.auditor}
-            options={auditors}
-            onChange={(v) => patch({ auditor: v })}
-          />
-          <JobMulti value={filters.jobTypes} onChange={(jobTypes) => patch({ jobTypes })} />
-        </>
-      )}
+      <Select
+        label="client"
+        value={filters.client}
+        options={clients}
+        onChange={(v) => patch({ client: v, entity: null })}
+      />
+      <Select
+        label="entity"
+        value={filters.entity}
+        options={entities}
+        onChange={(v) => patch({ entity: v })}
+      />
+      <Select
+        label="auditor"
+        value={filters.auditor}
+        options={auditors}
+        onChange={(v) => patch({ auditor: v })}
+      />
+      <JobMulti value={filters.jobTypes} onChange={(jobTypes) => patch({ jobTypes })} />
       <label className="flex cursor-pointer items-center gap-1.5 text-ink-2">
         <input
           type="checkbox"

@@ -484,5 +484,4 @@ export const WIDGETS: WidgetDef[] = [
   },
 ];
 
-export const widgetsFor = (side: Side): WidgetDef[] => WIDGETS.filter((w) => w.side === side);
 export const widgetById = (id: string): WidgetDef | undefined => WIDGETS.find((w) => w.id === id);

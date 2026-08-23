@@ -44,9 +44,7 @@ Bun.serve({
     if (p.startsWith("/runs/")) {
       const f = join(runsDir, p.slice("/runs/".length));
       // real 404, never the SPA shell — parity item 5
-      return isFile(f)
-        ? fileResponse(f, CC_IMMUTABLE)
-        : new Response("not found", { status: 404 });
+      return isFile(f) ? fileResponse(f, CC_IMMUTABLE) : new Response("not found", { status: 404 });
     }
     if (p === "/" || p === "/index.html")
       return fileResponse(join(dist, "index.html"), CC_NO_CACHE);

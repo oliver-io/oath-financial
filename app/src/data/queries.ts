@@ -33,11 +33,6 @@ export function dimensionPredicate(f: FilterState, alias = ""): string {
 
 export const CountSchema = z.object({ n: z.number() });
 
-/** Boot-spike + shell smoke: one aggregated query over a windowed fact view. */
-export function qTurnCount(w: TimeWindow, f: FilterState): string {
-  return `SELECT count(*)::INT AS n FROM turns WHERE ${eventMembership(w)} AND ${dimensionPredicate(f)}`;
-}
-
 /** The excluded-count caption + clickable list share one predicate source. */
 export function qExcludedSessionCount(w: TimeWindow, f: FilterState): string {
   return `SELECT count(*)::INT AS n FROM sessions
@@ -397,11 +392,6 @@ export function qAuditorClientGrid(w: TimeWindow, f: FilterState): string {
     WHERE ${eventMembership(w)} AND ${dimensionPredicate(f)} GROUP BY 1, 2`;
 }
 
-export const FamilyAdoptionSchema = z.object({
-  tool_family: z.string(),
-  auditors: z.number(),
-  daily: z.string(), // JSON int[] built by the component from daily rows
-});
 export const FamilyDaySchema = z.object({
   tool_family: z.string(),
   day: z.string(),

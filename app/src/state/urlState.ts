@@ -89,9 +89,3 @@ export function filtersToSearch(f: FilterState): string {
   const s = serializeFilters(f).toString();
   return s ? `?${s}` : "";
 }
-
-/** Builds a link to a route carrying the given (partial) filter state. */
-export function linkTo(path: string, patch: Partial<FilterState>, base?: FilterState): string {
-  const f = { ...(base ?? DEFAULT_FILTERS), ...patch };
-  return `${path}${filtersToSearch(f)}`;
-}

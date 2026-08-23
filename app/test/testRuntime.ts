@@ -1,6 +1,7 @@
 // Test doubles for the render-smoke suite: a DbRuntime backed by
 // @duckdb/node-api reading the checked-in fixture pack from disk, and a fetch
 // stub serving /runs/* from the same directory. No network (app.md §7).
+// The suite deliberately validates the checked-in fixture pack, not real build/serve runs.
 
 import { join } from "node:path";
 import { DuckDBInstance } from "@duckdb/node-api";

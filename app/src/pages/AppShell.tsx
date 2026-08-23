@@ -48,7 +48,7 @@ function TopBar({ showFilters }: { showFilters: boolean }) {
           Trace Insights
         </Link>
         <TimeWindowControl />
-        {showFilters && <FilterBar demoOnly={false} />}
+        {showFilters && <FilterBar />}
         <span
           className="ml-auto hidden text-[10px] text-ink-3 xl:block"
           title="Provenance: unchipped values are structural; H heuristic · C curated · M model."

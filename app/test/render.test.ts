@@ -7,6 +7,15 @@ import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
 GlobalRegistrator.register();
 
+// happy-dom has no layout, so Recharts measures every chart container as 0x0
+// and warns per chart; silence exactly that message, pass everything else on.
+// biome-ignore lint/suspicious/noConsole: targeted filter of Recharts warning spam
+const realWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  if (typeof args[0] === "string" && args[0].includes("width(0) and height(0)")) return;
+  realWarn(...args);
+};
+
 import { afterAll, describe, expect, test } from "bun:test";
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";

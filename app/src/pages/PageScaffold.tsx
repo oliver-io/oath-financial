@@ -2,7 +2,6 @@
 // captions, and PanelSection — the page-side render of a registry panel
 // (title + chips + pin control + anchored detail view).
 
-import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import { widgetById } from "../components/dashboard/widgets.tsx";
@@ -163,30 +162,5 @@ export function ContainmentCaption() {
       )}
       {n === 0 && <span>No overlapping sessions excluded.</span>}
     </CaptionBar>
-  );
-}
-
-/** Legacy free-form section (non-panel page chrome). */
-export function Section({
-  title,
-  chip,
-  right,
-  children,
-}: {
-  title: string;
-  chip?: ReactNode;
-  right?: ReactNode;
-  children: ReactNode;
-}) {
-  return (
-    <section className="mb-8">
-      <div className="mb-2 flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-medium text-ink">
-          {title} {chip}
-        </h2>
-        {right}
-      </div>
-      {children}
-    </section>
   );
 }
