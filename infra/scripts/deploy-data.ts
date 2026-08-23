@@ -24,9 +24,12 @@ import {
 
 const source = argValue("--source", "build/serve");
 const stack = argValue("--stack", "dev");
-const runsDir = join(source, "runs");
+// The source is the /runs base: either it has a runs/ subdir (fixture pack
+// layout) or it IS the base (ETL build/serve layout: latest.json + <run_id>/).
+let runsDir = join(source, "runs");
+if (!existsSync(join(runsDir, "latest.json"))) runsDir = source;
 if (!existsSync(join(runsDir, "latest.json"))) {
-  console.error(`no runs/latest.json under '${source}' — pass --source <dir>`);
+  console.error(`no latest.json under '${source}' or '${source}/runs' — pass --source <dir>`);
   process.exit(1);
 }
 

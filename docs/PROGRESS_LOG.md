@@ -1357,3 +1357,15 @@ track directed to record ui.md revision 3 and strip the components.
   findings cards (2 degraded + 2 enrichment-gated) publish.
 - sample-output/ refreshed to the enriched run (58 files, ~1.0 MB, run
   20260822T235047-59a005ce); RUNNING.md sample sentence updated accordingly.
+
+## 29. Infra track — real ETL run live at https://oath.oliver-io.online (M2 flip done)
+
+- `bun run deploy:data --source build/serve` published run `20260822T235047-59a005ce`
+  (57 objects, count-verified, pointer swapped last, one invalidation). Fully
+  enriched: J1 56 judged/1 abstained, J2 763, J3 116, J4 3, J5 250 — all zero errors.
+- Zero infra changes were needed for the flip, as required by I3. One script
+  adjustment only: deploy-data now accepts both runs-base layouts (fixture pack's
+  `runs/` subdir vs the ETL serve tree being the base itself). Earlier fix in the
+  same file family: `.wasm → application/wasm` content type (DuckDB bundle).
+- Deployed parity re-run on real data: items 1–4 PASS; item 5 remains the reported
+  CloudFront custom-error deviation (decision still pending).
