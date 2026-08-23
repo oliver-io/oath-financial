@@ -7,9 +7,26 @@ import { useCallback, useState } from "react";
 
 export type Side = "ops" | "product";
 
+// Curated so a fresh board reads top-down: a stat row, the room's headline
+// chart, then two supporting panels — enough for a health read at a glance,
+// small enough that nothing scrolls off unnoticed.
 export const DEFAULT_PINS: Record<Side, string[]> = {
-  ops: ["failure-series", "activity-strips", "stat-failure-events"],
-  product: ["job-share", "stat-turns", "stat-determined"],
+  ops: [
+    "stat-failure-events",
+    "stat-active-clients",
+    "stat-active-auditors",
+    "failure-series",
+    "signature-table",
+    "activity-strips",
+  ],
+  product: [
+    "stat-sessions",
+    "stat-turns",
+    "stat-determined",
+    "outcome-bars",
+    "job-share",
+    "friction-table",
+  ],
 };
 
 const key = (side: Side): string => `trace-insights:pins:${side}`;
