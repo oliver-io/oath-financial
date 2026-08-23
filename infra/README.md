@@ -26,18 +26,21 @@ migration, zero program changes.
 pulumi preview            # always before up
 pulumi up                 # idempotent — a second up must no-op
 bun run deploy:app        # from repo root: vite build → upload → invalidate /index.html
-bun run deploy:data -- --source contracts/fixtures/static   # fixture runs (or build/serve after ETL M2)
+bun run deploy:data -- --source build/serve                 # real ETL runs
+bun run deploy:data -- --source contracts/fixtures/static   # fixture runs (alternate)
 bun run parity -- https://<distribution-domain>             # checklist §4
 ```
 
-Only fixture runs deploy until explicitly authorized otherwise — `authMode` is
-`none`, the URL is public.
+`authMode` is `none`, so the URL is public. The `dev` stack is the deployed
+stack of record — it serves https://oath.oliver-io.online.
 
 ## Config schema (per stack)
 
 `aws:region` (default us-east-1) · `authMode` (`none` | `unlisted`; `sso`
-reserved) · `prune` (default false) · `domain` (reserved; setting it errors
-until ACM/Route53 support is built).
+reserved) · `prune` (default false) · `domain` (optional custom domain, e.g.
+`oath.oliver-io.online`; when set, an ACM cert is DNS-validated against the
+parent Route53 zone and A/AAAA alias records point the domain at the
+distribution).
 
 ## Known deviation (reported, not silently adapted)
 

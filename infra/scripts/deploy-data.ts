@@ -49,6 +49,7 @@ const files = walk(runDir);
 
 // Cross-check the local tree against its manifest before anything ships.
 const manifest = JSON.parse(await Bun.file(join(runDir, "manifest.json")).text()) as {
+  published_at: string;
   partitions: { path: string }[];
   ref: { path: string }[];
 };
@@ -61,7 +62,9 @@ if (files.length < expected) {
 }
 
 // Parity item 6: a run id already published is a no-op (matching) or an error
-// (mismatched) — never a silent overwrite.
+// (mismatched) — never a silent overwrite. "Matching" is object-count equality,
+// not content comparison: acceptable because the layout is immutable and
+// content-addressed by run id, so a run id maps to exactly one tree.
 const existing = await listKeys(bucket, prefix);
 if (existing.length > 0) {
   if (existing.length === files.length) {
@@ -89,8 +92,10 @@ if (existing.length > 0) {
   console.log(`verified ${uploaded.length}/${files.length} objects`);
 }
 
-// The swap: the only mutable data object, uploaded last, no-cache.
-const pointer = JSON.stringify({ ...latest, run_id: runId });
+// The swap: the only mutable data object, uploaded last, no-cache. Built from
+// the target run's own manifest (not the local latest.json, which may describe
+// a different run when --run overrides).
+const pointer = JSON.stringify({ run_id: runId, published_at: manifest.published_at });
 await s3.send(
   new PutObjectCommand({
     Bucket: bucket,

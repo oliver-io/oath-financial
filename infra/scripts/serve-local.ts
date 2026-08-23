@@ -4,19 +4,28 @@
 // no-cache latest.json/index.html, SPA fallback for non-file routes, and REAL
 // 404s under /runs/ (the loader must see missing partitions as errors).
 // Usage: bun infra/scripts/serve-local.ts [--dist app/dist]
-//        [--runs contracts/fixtures/static/runs] [--port 4173]
+//        [--runs build/serve] [--port 4173]
+// (pass --runs contracts/fixtures/static/runs to serve the fixture pack)
 
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { argValue, CC_IMMUTABLE, CC_NO_CACHE, contentTypeFor } from "./lib.ts";
 
 const dist = argValue("--dist", "app/dist");
-const runsDir = argValue("--runs", "contracts/fixtures/static/runs");
+const runsDir = argValue("--runs", "build/serve");
 const port = Number(argValue("--port", "4173"));
 
 if (!existsSync(join(dist, "index.html"))) {
   console.error(`no ${dist}/index.html — run 'bun run --cwd app build' first`);
   process.exit(1);
+}
+
+function isFile(path: string): boolean {
+  try {
+    return statSync(path).isFile();
+  } catch {
+    return false;
+  }
 }
 
 function fileResponse(path: string, cacheControl: string): Response {
@@ -30,11 +39,12 @@ Bun.serve({
   fetch(req) {
     const url = new URL(req.url);
     const p = decodeURIComponent(url.pathname);
+    if (p.includes("..")) return new Response("not found", { status: 404 }); // path-traversal guard
     if (p === "/runs/latest.json") return fileResponse(join(runsDir, "latest.json"), CC_NO_CACHE);
     if (p.startsWith("/runs/")) {
       const f = join(runsDir, p.slice("/runs/".length));
       // real 404, never the SPA shell — parity item 5
-      return existsSync(f) && Bun.file(f).size >= 0 && !f.endsWith("/")
+      return isFile(f)
         ? fileResponse(f, CC_IMMUTABLE)
         : new Response("not found", { status: 404 });
     }

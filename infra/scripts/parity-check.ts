@@ -64,6 +64,8 @@ const manifest = (await (await fetch(`${base}/runs/${runId}/manifest.json`)).jso
 };
 const partition = manifest.partitions[0]?.path;
 
+// Item 1 checks status/headers/run_id presence only — a deliberate, documented
+// reduction of the plan's "valid per contracts schema" wording (no zod here).
 await run({
   name: "1. latest.json 200 no-cache",
   path: "/runs/latest.json",

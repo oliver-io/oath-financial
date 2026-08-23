@@ -1,6 +1,11 @@
 node_modules/
 build/
 .env
+.env.*
+*.local
+.vscode/
+.idea/
+coverage/
 .DS_Store
 infra/.pulumi/
 app/dist/
