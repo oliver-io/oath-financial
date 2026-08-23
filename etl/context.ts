@@ -172,7 +172,8 @@ export async function createRunContext(opts: RunContextOptions): Promise<RunCont
 
 /** Parses + zod-validates the four rule files into a frozen RuleSet.
  * A rule file failing to parse/validate is a startup error (docs/plans/etl.md §3).
- * Signature-regex compilation joins this step when stage 2 lands. */
+ * Signature-regex compilation deliberately lives in s2_derive's prepare(),
+ * next to where the compiled rules are installed — not here. */
 export async function loadRules(rulesDir: string): Promise<RuleSet> {
   const texts: Record<string, string> = {};
   const hashes: Record<string, string> = {};

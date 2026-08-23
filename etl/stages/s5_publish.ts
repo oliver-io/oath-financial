@@ -23,6 +23,7 @@ import {
   FindingRowSchema,
   GapSessionRowSchema,
   IncidentRowSchema,
+  ServeManifestSchema,
   SessionRowSchema,
   ToolEventRowSchema,
   TurnRowSchema,
@@ -181,17 +182,20 @@ async function finalize(ctx: RunContext): Promise<void> {
     },
     // Embedded internal run-manifest content (git rev, input/rule sha256
     // hashes, per-stage counts, model ids) — provenance chain for any number.
-    ...{
-      created_at: snapshot.created_at,
-      git_rev: snapshot.git_rev,
-      input_hashes: snapshot.input_hashes,
-      rule_hashes: snapshot.rule_hashes,
-      thresholds: snapshot.thresholds,
-      stages: snapshot.stages,
-      model_ids: snapshot.model_ids,
-      prompt_versions: snapshot.prompt_versions,
-    },
+    created_at: snapshot.created_at,
+    git_rev: snapshot.git_rev,
+    input_hashes: snapshot.input_hashes,
+    rule_hashes: snapshot.rule_hashes,
+    thresholds: snapshot.thresholds,
+    stages: snapshot.stages,
+    model_ids: snapshot.model_ids,
+    prompt_versions: snapshot.prompt_versions,
   };
+  // Contract check before writing (mirrors validateRows). Note: a run with
+  // zero partitions fails here (date_coverage days are null) — acceptable, a
+  // no-data run should never publish. The original object is written, not the
+  // parse result: zod strips the embedded run-manifest keys above.
+  ServeManifestSchema.parse(serveManifest);
   writeFileSynced(join(runDir, "manifest.json"), `${JSON.stringify(serveManifest, null, 2)}\n`);
 
   // The named kill point: everything under the run dir is written; the

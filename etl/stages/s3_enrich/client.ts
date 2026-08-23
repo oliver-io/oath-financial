@@ -53,7 +53,8 @@ export class LlmHttpError extends Error {
   }
 }
 
-/** A request timeout surfaced by the client seam; retried once by the runner. */
+/** A request timeout surfaced by the client seam; the runner retries it
+ * (immediately, no backoff) up to max_transport_attempts. */
 export class LlmTimeoutError extends Error {
   constructor() {
     super("LLM request timed out");

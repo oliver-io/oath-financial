@@ -1,5 +1,7 @@
 // Shared parse helpers for the JSON-encoded TEXT columns (see rows.ts
-// convention). Both tracks use these so the encoding cannot drift.
+// convention). The encode side is used by the ETL/fixtures; the parse side is
+// the published decode half of the contract, currently exercised only by tests
+// and future consumers (the app decodes at query time).
 
 import { z } from "zod";
 

@@ -1,7 +1,7 @@
 // DuckDB session plumbing: open/close, runSqlFile(name, params), query helpers.
-// Contract: docs/plans/etl.md §2 lib/duckdb.ts. Open/close and file plumbing are
-// real (the phase-1 smoke test depends on them); the SQL files themselves carry
-// the pipeline logic and are not implemented yet.
+// Contract: docs/plans/etl.md §2 lib/duckdb.ts. The SQL files under stages/sql/
+// carry the pipeline logic; a file whose first line is `-- UNIMPLEMENTED` is a
+// declared-but-unwritten placeholder and refuses to run (guard below).
 
 import { join } from "node:path";
 import { type DuckDBConnection, DuckDBInstance } from "@duckdb/node-api";

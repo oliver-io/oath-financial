@@ -8,6 +8,7 @@
 // Abstention is first-class: every schema carries an insufficient verdict +
 // machine-readable reason (llm.md principle 3 and the escape-hatch table).
 
+import { JobTypeSchema } from "@trace-insights/contracts";
 import { z } from "zod";
 
 /** Machine-readable abstention reasons, per the llm.md escape-hatch table.
@@ -115,17 +116,10 @@ export const J2OutputSchema = z.object({
 
 // -- J3: session classification ----------------------------------------------
 
-/** derivations.md §3 job_type taxonomy (expected to be revised post-first-run). */
-export const JobTypeSchema = z.enum([
-  "doc_receipt_check",
-  "doc_location",
-  "doc_inventory",
-  "tie_out",
-  "extraction_supervision",
-  "drafting",
-  "capability_probe",
-  "other",
-]);
+/** derivations.md §3 job_type taxonomy (expected to be revised post-first-run).
+ * Re-used from contracts (single source of truth); the .describe() applied at
+ * the use sites below keeps the generated prompt/schema text byte-identical. */
+export { JobTypeSchema };
 
 export const J3OutputSchema = z.object({
   job_type: JobTypeSchema.describe(

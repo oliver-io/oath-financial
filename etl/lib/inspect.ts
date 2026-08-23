@@ -71,7 +71,7 @@ export async function writeInspectArtifact(ctx: RunContext): Promise<void> {
       insertAll(parsed);
       tableCount += 1;
     }
-    ctx.log.info("s5_publish", "inspect_artifact", { path: outPath, tables: tableCount });
+    ctx.log.info("inspect", "inspect_artifact", { path: outPath, tables: tableCount });
   } finally {
     out.close();
   }

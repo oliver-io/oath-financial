@@ -36,7 +36,7 @@ import { s1Clean } from "../s1_clean.ts";
 import { s2Derive } from "../s2_derive.ts";
 import { LlmCache } from "./cache.ts";
 import { type LlmClient, LlmHttpError, LlmTimeoutError, type Sleep } from "./client.ts";
-import type { PacketBuilder } from "./packets.ts";
+import { type PacketBuilder, TRUNCATION } from "./packets.ts";
 
 export type JobId = "J1" | "J2" | "J3" | "J4" | "J5";
 
@@ -259,62 +259,48 @@ export async function runJob(opts: RunJobOptions): Promise<EnrichmentCoverage> {
       const packetHash = sha256Object(batchPacket);
       const key = cacheKey(job.id, packetHash, job.promptVersion, modelId);
 
-      let responseText: string | null = null;
-      let fromCache = false;
-      if (!recache) {
-        const hit = cache.get(key);
-        if (hit) {
-          responseText = hit.responseJson;
-          fromCache = true;
-        }
+      const cachedText = recache ? null : (cache.get(key)?.responseJson ?? null);
+      // Cache only ever holds schema-valid text; a mismatch (schema evolved
+      // without a version bump) degrades to a live call.
+      let cachedOutputs: Record<string, unknown>[] | null = null;
+      if (cachedText !== null) {
+        const parsed = parseResponse(cachedText, job.outputSchema, live.length);
+        if (parsed.ok) cachedOutputs = parsed.outputs;
       }
 
-      let outcome:
+      const outcome:
         | { kind: "ok"; outputs: Record<string, unknown>[] }
-        | { kind: "error"; reason: string };
-      if (responseText !== null) {
-        const parsed = parseResponse(responseText, job.outputSchema, live.length);
-        // Cache only ever holds schema-valid text; a mismatch (schema evolved
-        // without a version bump) degrades to a live call.
-        if (parsed.ok) {
-          outcome = { kind: "ok", outputs: parsed.outputs };
-          coverage.cached_hit += live.length;
-        } else {
-          responseText = null;
-          fromCache = false;
-          outcome = { kind: "error", reason: "schema_failure" };
-        }
-      } else {
-        outcome = { kind: "error", reason: "http_error" };
-      }
+        | { kind: "error"; reason: string } =
+        cachedOutputs !== null
+          ? { kind: "ok", outputs: cachedOutputs }
+          : await callAndValidate({
+              job,
+              client,
+              sleep,
+              prompt: renderPrompt(job, batchPacket, live.length),
+              modelId,
+              responseJsonSchema,
+              n: live.length,
+              maxTransportAttempts: thr.max_transport_attempts,
+              backoffBaseMs: thr.backoff_base_ms,
+            });
 
-      if (responseText === null) {
-        outcome = await callAndValidate({
-          job,
-          client,
-          sleep,
-          prompt: renderPrompt(job, batchPacket, live.length),
+      if (cachedOutputs !== null) {
+        coverage.cached_hit += live.length;
+      } else if (outcome.kind === "ok") {
+        cache.put({
+          key,
+          job: job.id,
+          packetHash,
+          promptVersion: job.promptVersion,
           modelId,
-          responseJsonSchema,
-          n: live.length,
-          maxTransportAttempts: thr.max_transport_attempts,
-          backoffBaseMs: thr.backoff_base_ms,
+          responseJson: JSON.stringify(
+            outcome.outputs.length === live.length && job.batching === "per_session_batch"
+              ? outcome.outputs
+              : outcome.outputs[0],
+          ),
+          createdAt,
         });
-        if (outcome.kind === "ok" && !fromCache) {
-          cache.put({
-            key,
-            job: job.id,
-            packetHash,
-            promptVersion: job.promptVersion,
-            modelId,
-            responseJson: JSON.stringify(
-              outcome.outputs.length === live.length && job.batching === "per_session_batch"
-                ? outcome.outputs
-                : outcome.outputs[0],
-            ),
-            createdAt,
-          });
-        }
       }
 
       if (outcome.kind === "error") {
@@ -365,7 +351,7 @@ export async function runJob(opts: RunJobOptions): Promise<EnrichmentCoverage> {
  * would blow the char budget is split deterministically. */
 function groupBatches(job: JobSpec, records: SelectedRecord[]): SelectedRecord[][] {
   if (job.batching === "per_record") return records.map((r) => [r]);
-  const budgetChars = 20_000 * 4; // TRUNCATION budget; packets stay well under
+  const budgetChars = TRUNCATION.contextBudgetTokens * TRUNCATION.charsPerToken; // packets stay well under
   const batches: SelectedRecord[][] = [];
   let current: SelectedRecord[] = [];
   let currentChars = 0;

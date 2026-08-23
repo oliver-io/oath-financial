@@ -91,11 +91,11 @@ async function commandRun(flags: RunFlags, overrides?: CliOverrides): Promise<vo
 async function commandEnrich(flags: EnrichFlags, overrides?: CliOverrides): Promise<void> {
   // Job-name validation comes first so `--job J9` reports the unknown job, not
   // a credentials error.
-  const maybeJobs = flags.job === null ? [...enrichmentJobs] : [getJob(flags.job)];
-  const jobs = maybeJobs.filter((j) => j !== undefined);
-  if (jobs.length !== maybeJobs.length) {
+  const job = flags.job === null ? undefined : getJob(flags.job);
+  if (flags.job !== null && job === undefined) {
     throw new Error(`unknown enrichment job: ${flags.job}`);
   }
+  const jobs = job === undefined ? [...enrichmentJobs] : [job];
   const ctx = await createRunContext({
     rootDir: process.cwd(),
     ...overrides,
