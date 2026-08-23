@@ -13,9 +13,25 @@ The one-page deliverable — findings, what's next, and what was deliberately le
 
 A committed, fully-enriched sample run lives in [`sample-output/`](./sample-output/) — time-partitioned Parquet plus its manifest, the machine-readable deliverable. Some screenshots of the app:
 
+**Ops dashboard**
+
 ![Ops dashboard](./docs/screenshots/ops-dash.png)
+
+**Product usage**
+
 ![Usage](./docs/screenshots/usage.png)
+
+**Abandonment**
+
 ![Abandonment](./docs/screenshots/abandonment.png)
+
+**Product dashboard**
+
+![Product dashboard](./docs/screenshots/product-dash.png)
+
+**Session transcript view**
+
+![Session view](./docs/screenshots/session-view.png)
 
 # Development
 
